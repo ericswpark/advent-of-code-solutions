@@ -3,54 +3,15 @@ use std::fs;
 
 
 fn replace_numbers_in(s: String) -> String {
-    let s: Vec<char> = s.chars().collect();
-    let mut ret_str = String::new();
-    for mut i in 0..s.len() {
-        if s[i] == 'o' {
-            if i + 2 < s.len() && s[i + 1] == 'n' && s[i + 2] == 'e' {
-                ret_str.push('1');
-                i += 2;
-            }
-        } else if s[i] == 't' {
-            if i + 2 < s.len() && s[i + 1] == 'w' && s[i + 2] == 'o' {
-                ret_str.push('2');
-                i += 2;
-            } else if i + 4 < s.len() && s[i + 1] == 'h' && s[i + 2] == 'r' && s[i + 3] == 'e' && s[i + 4] == 'e' {
-                ret_str.push('3');
-                i += 4;
-            }
-        } else if s[i] == 'f' {
-            if i + 3 < s.len() && s[i + 1] == 'o' && s[i + 2] == 'u' && s[i + 3] == 'r' {
-                ret_str.push('4');
-                i += 3;
-            } else if i + 3 < s.len() && s[i + 1] == 'i' && s[i + 2] == 'v' && s[i + 3] == 'e' {
-                ret_str.push('5');
-                i += 3;
-            }
-        } else if s[i] == 's' {
-            if i + 2 < s.len() && s[i + 1] == 'i' && s[i + 2] == 'x' {
-                ret_str.push('6');
-                i += 2;
-            } else if i + 4 < s.len() && s[i + 1] == 'e' && s[i + 2] == 'v' && s[i + 3] == 'e' && s[i + 4] == 'n' {
-                ret_str.push('3');
-                i += 4;
-            }
-        } else if s[i] == 'e' {
-            if i + 4 < s.len() && s[i + 1] == 'i' && s[i + 2] == 'g' && s[i + 3] == 'h' && s[i + 4] == 't' {
-                ret_str.push('8');
-                i += 4;
-            }
-        } else if s[i] == 'n' {
-            if i + 3 < s.len() && s[i + 1] == 'i' && s[i + 2] == 'n' && s[i + 3] == 'e' {
-                ret_str.push('9');
-                i += 3;
-            }
-        } else {
-            ret_str.push(s[i]);
-        }
-    }
-
-    ret_str
+   let mut s = s.replace("one", "o1e");
+    s = s.replace("two", "t2o");
+    s = s.replace("three", "t3e");
+    s = s.replace("four", "f4r");
+    s = s.replace("five", "f5e");
+    s = s.replace("six", "s6x");
+    s = s.replace("seven", "s7n");
+    s = s.replace("eight", "e8t");
+    s.replace("nine", "n9e")
 }
 
 fn main() {

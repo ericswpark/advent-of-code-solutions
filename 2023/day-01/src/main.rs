@@ -1,17 +1,26 @@
 use std::env;
 use std::fs;
+use phf::phf_map;
 
+static NUMBERS: phf::Map<&'static str, &'static str> = phf_map! {
+    "one" => "o1e",
+    "two" => "t2o",
+    "three" => "t3e",
+    "four" => "f4r",
+    "five" => "f5e",
+    "six" => "s6x",
+    "seven" => "s7n",
+    "eight" => "e8t",
+    "nine" => "n9e",
+};
 
 fn replace_numbers_in(s: String) -> String {
-   let mut s = s.replace("one", "o1e");
-    s = s.replace("two", "t2o");
-    s = s.replace("three", "t3e");
-    s = s.replace("four", "f4r");
-    s = s.replace("five", "f5e");
-    s = s.replace("six", "s6x");
-    s = s.replace("seven", "s7n");
-    s = s.replace("eight", "e8t");
-    s.replace("nine", "n9e")
+    let mut s = s;
+    for number in NUMBERS.keys() {
+        s = s.replace(number, NUMBERS[number])
+    }
+
+    s
 }
 
 fn main() {

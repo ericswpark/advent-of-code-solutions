@@ -39,7 +39,8 @@ fn main() {
     }
     let input: String = fs::read_to_string(path).expect("Couldn't read input file");
 
-    let mut sum: u32 = 0;
+    let mut game_id_sum: u32 = 0;
+    let mut power_sum = 0;
 
     for line in input.lines() {
         let parts: Vec<_> = line.split(": ").collect();
@@ -47,6 +48,9 @@ fn main() {
         let game_id: u32 = parts[0][5..].parse().unwrap();
 
         let mut is_possible = true;
+        let mut required_red = 0;
+        let mut required_green = 0;
+        let mut required_blue = 0;
 
         let reveal_sets: Vec<_> = parts[1].split("; ").collect();
 
@@ -63,15 +67,24 @@ fn main() {
                             // Impossible
                             is_possible = false;
                         }
+                        if count > required_red {
+                            required_red = count;
+                        }
                     }
                     Color::GREEN => {
                         if count > 13 {
                             is_possible = false;
                         }
+                        if count > required_green {
+                            required_green = count;
+                        }
                     }
                     Color::BLUE => {
                         if count > 14 {
                             is_possible = false;
+                        }
+                        if count > required_blue {
+                            required_blue = count;
                         }
                     }
                 }
@@ -79,8 +92,10 @@ fn main() {
 
 
         }
-        if is_possible { sum += game_id }
+        if is_possible { game_id_sum += game_id }
+        power_sum += required_red * required_green * required_blue;
     }
 
-    println!("The sum of the game IDs is {sum}");
+    println!("The sum of the game IDs is {game_id_sum}");
+    println!("The sum of the cube powers is {power_sum}")
 }

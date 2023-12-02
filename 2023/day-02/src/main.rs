@@ -8,6 +8,16 @@ enum Color {
     BLUE
 }
 
+impl Color {
+    fn minimums(&self) -> i32 {
+        match *self {
+            Color::RED => 12,
+            Color::GREEN => 13,
+            Color::BLUE => 14,
+        }
+    }
+}
+
 fn get_color_mapping(s: &str) -> Color {
     match s {
         "red" => Color::RED,
@@ -61,31 +71,17 @@ fn main() {
                 let count: u32 = data[0].parse().unwrap();
                 let color: Color = get_color_mapping(data[1]);
 
+                if count > color.minimums() as u32 { is_possible = false }
+
                 match color {
                     Color::RED => {
-                        if count > 12 {
-                            // Impossible
-                            is_possible = false;
-                        }
-                        if count > required_red {
-                            required_red = count;
-                        }
+                        if count > required_red { required_red = count }
                     }
                     Color::GREEN => {
-                        if count > 13 {
-                            is_possible = false;
-                        }
-                        if count > required_green {
-                            required_green = count;
-                        }
+                        if count > required_green { required_green = count }
                     }
                     Color::BLUE => {
-                        if count > 14 {
-                            is_possible = false;
-                        }
-                        if count > required_blue {
-                            required_blue = count;
-                        }
+                        if count > required_blue { required_blue = count }
                     }
                 }
             }

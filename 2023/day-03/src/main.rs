@@ -2,8 +2,17 @@ use std::env;
 use std::fs;
 use std::io::{stdin, stdout, Write};
 
-
 fn main() {
+    let input = get_input();
+
+    let sum = get_part_sum(&input);
+    let gear_ratio_sum = get_gear_ratio_sum(&input);
+
+    println!("The part number sum is {sum}.");
+    println!("The gear ratio sum is {gear_ratio_sum}.");
+}
+
+fn get_input() -> Vec<Vec<char>> {
     let mut args: Vec<String> = env::args().collect();
 
     let mut path: &mut String = &mut String::new();
@@ -22,14 +31,66 @@ fn main() {
     } else {
         path = &mut args[1];
     }
-    let input: Vec<Vec<char>> = fs::read_to_string(path)
+
+    fs::read_to_string(path)
         .expect("Couldn't read input file").split('\n')
         .map(|s: &str| s.chars().collect())
-        .collect();
+        .collect()
+}
 
+fn get_gear_ratio_sum(input: &Vec<Vec<char>>) -> i32 {
     let mut sum = 0;
-    let mut gear_ratio_sum = 0;
+    for (line_index, line) in input.iter().enumerate() {
+        for (char_index, char) in line.iter().enumerate() {
+            if *char == '*' {
+                // Find two numbers adjacent
+                let mut numbers: Vec<i32> = Vec::new();
 
+                // Check previous line (if it exists)
+                if line_index > 0 {
+                    let numbers_from_target_line = get_number_from_line(&input[line_index - 1], char_index as i32);
+                    match numbers_from_target_line {
+                        None => {}
+                        Some(val) => {
+                            for n in val { numbers.push(n) }
+                        }
+                    }
+                }
+
+                if char_index > 0 && line[char_index - 1].is_numeric() {
+                    numbers.push(get_whole_number(line, (char_index - 1) as i32));
+                }
+
+                if char_index + 1 < line.len() && line[char_index + 1].is_numeric() {
+                    numbers.push(get_whole_number(line, (char_index + 1) as i32));
+                }
+
+                if line_index + 1 < input.len() {
+                    let numbers_from_target_line = get_number_from_line(&input[line_index + 1], char_index as i32);
+                    match numbers_from_target_line {
+                        None => {}
+                        Some(val) => {
+                            for n in val { numbers.push(n) }
+                        }
+                    }
+                }
+
+                if numbers.len() == 2 {
+                    // Multiply the two numbers and then add to sum
+                    let gear_ratio = numbers.first().unwrap() * numbers.get(1).unwrap();
+                    sum += gear_ratio;
+                }
+            } else {
+                continue
+            }
+        }
+    }
+
+    sum
+}
+
+fn get_part_sum(input: &Vec<Vec<char>>) -> i32 {
+    let mut sum = 0;
     for (line_index, line) in input.iter().enumerate() {
         let mut parsed_num = String::new();
         for (char_index, char) in line.iter().enumerate() {
@@ -42,7 +103,7 @@ fn main() {
                 // End of number, see if it is adjacent to a symbol
                 let mut is_part = false;
                 // Temporarily reassign indexes
-                let char_index: i32 = if char.is_numeric() {char_index as i32} else { char_index as i32 - 1 };
+                let char_index: i32 = if char.is_numeric() { char_index as i32 } else { char_index as i32 - 1 };
                 let line_index: i32 = line_index as i32;
 
                 // Check previous line (if it exists)
@@ -94,55 +155,7 @@ fn main() {
         }
     }
 
-    for (line_index, line) in input.iter().enumerate() {
-        for (char_index, char) in line.iter().enumerate() {
-            if *char == '*' {
-                // Find two numbers adjacent
-                let mut numbers: Vec<i32> = Vec::new();
-
-                // Check previous line (if it exists)
-                if line_index > 0 {
-                    let numbers_from_target_line = get_number_from_line(&input[line_index - 1], char_index as i32);
-                    match numbers_from_target_line {
-                        None => {}
-                        Some(val) => {
-                            for n in val { numbers.push(n) }
-                        }
-                    }
-                }
-
-                if char_index > 0 && line[char_index - 1].is_numeric() {
-                    numbers.push(get_whole_number(line, (char_index - 1) as i32));
-                }
-
-                if char_index + 1 < line.len() && line[char_index + 1].is_numeric() {
-                    numbers.push(get_whole_number(line, (char_index + 1) as i32));
-                }
-
-                if line_index + 1 < input.len() {
-                    let numbers_from_target_line = get_number_from_line(&input[line_index + 1], char_index as i32);
-                    match numbers_from_target_line {
-                        None => {}
-                        Some(val) => {
-                            for n in val { numbers.push(n) }
-                        }
-                    }
-                }
-
-                if numbers.len() == 2 {
-                    // Multiply the two numbers and then add to sum
-                    let gear_ratio = numbers.first().unwrap() * numbers.get(1).unwrap();
-                    gear_ratio_sum += gear_ratio;
-                }
-            } else {
-                continue
-            }
-        }
-    }
-
-    println!("The part number sum is {sum}.");
-    println!("The gear ratio sum is {gear_ratio_sum}.");
-
+    sum
 }
 
 fn check_char(is_part: &mut bool, target: char) {

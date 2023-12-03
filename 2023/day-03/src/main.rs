@@ -46,7 +46,7 @@ fn main() {
                 let line_index: i32 = line_index as i32;
 
                 // Check previous line (if it exists)
-                if line_index - 1 >= 0 {
+                if line_index > 0 {
                     // Check diagonal left
                     if char_index - parsed_num.len() as i32 >= 0 {
                         check_char(&mut is_part, input[line_index as usize - 1][char_index as usize - parsed_num.len()]);
@@ -101,7 +101,7 @@ fn main() {
                 let mut numbers: Vec<i32> = Vec::new();
 
                 // Check previous line (if it exists)
-                if line_index - 1 >= 0 {
+                if line_index > 0 {
                     let numbers_from_target_line = get_number_from_line(&input[line_index - 1], char_index as i32);
                     match numbers_from_target_line {
                         None => {}
@@ -111,7 +111,7 @@ fn main() {
                     }
                 }
 
-                if char_index - 1 >= 0 && line[char_index - 1].is_numeric() {
+                if char_index > 0 && line[char_index - 1].is_numeric() {
                     numbers.push(get_whole_number(line, (char_index - 1) as i32));
                 }
 
@@ -131,7 +131,7 @@ fn main() {
 
                 if numbers.len() == 2 {
                     // Multiply the two numbers and then add to sum
-                    let gear_ratio = numbers.get(0).unwrap() * numbers.get(1).unwrap();
+                    let gear_ratio = numbers.first().unwrap() * numbers.get(1).unwrap();
                     gear_ratio_sum += gear_ratio;
                 }
             } else {
@@ -154,17 +154,17 @@ fn check_char(is_part: &mut bool, target: char) {
 fn get_number_from_line(line: &Vec<char>, index: i32) -> Option<Vec<i32>> {
     let mut numbers: Vec<i32> = Vec::new();
 
-    if index - 1 >= 0 && line[index as usize - 1].is_numeric() {
-        numbers.push(get_whole_number(&line, index - 1));
+    if index > 0 && line[index as usize - 1].is_numeric() {
+        numbers.push(get_whole_number(line, index - 1));
     } else if line[index as usize].is_numeric() {
-        numbers.push(get_whole_number(&line, index))
+        numbers.push(get_whole_number(line, index))
     } else if index + 1 < line.len() as i32 && line[index as usize + 1].is_numeric() {
-        numbers.push(get_whole_number(&line, index + 1));
+        numbers.push(get_whole_number(line, index + 1));
     }
 
     // It's possible that there are two numbers, separated by a middle character
-    if index - 1 >= 0 && line[index as usize - 1].is_numeric() && !line[index as usize].is_numeric() && index + 1 < line.len() as i32 && line[index as usize + 1].is_numeric() {
-        numbers.push(get_whole_number(&line, index + 1));
+    if index > 0 && line[index as usize - 1].is_numeric() && !line[index as usize].is_numeric() && index + 1 < line.len() as i32 && line[index as usize + 1].is_numeric() {
+        numbers.push(get_whole_number(line, index + 1));
     }
 
     if numbers.is_empty() { None } else { Some(numbers) }
@@ -174,7 +174,7 @@ fn get_whole_number(line: &Vec<char>, index: i32) -> i32 {
     let mut start_index = index;
     let mut end_index = index;
 
-    while start_index - 1 >= 0 && line[start_index as usize - 1].is_numeric() {
+    while start_index > 0 && line[start_index as usize - 1].is_numeric() {
         start_index -= 1;
     }
 
@@ -182,7 +182,7 @@ fn get_whole_number(line: &Vec<char>, index: i32) -> i32 {
         end_index += 1;
     }
 
-    let result_string: String = line[start_index as usize..=end_index as usize].into_iter().collect();
+    let result_string: String = line[start_index as usize..=end_index as usize].iter().collect();
 
     result_string.parse::<i32>().unwrap()
 }

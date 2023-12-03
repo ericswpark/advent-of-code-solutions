@@ -41,7 +41,7 @@ fn main() {
                 // End of number, see if it is adjacent to a symbol
                 let mut is_part = false;
                 // Temporarily reassign indexes
-                let char_index: i32 = char_index as i32 - 1; // Number end was one character before
+                let char_index: i32 = if char.is_numeric() {char_index as i32} else { char_index as i32 - 1 };
                 let line_index: i32 = line_index as i32;
 
                 // Check previous line (if it exists)

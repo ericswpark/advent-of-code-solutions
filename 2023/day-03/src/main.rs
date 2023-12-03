@@ -102,7 +102,7 @@ fn main() {
 
                 // Check previous line (if it exists)
                 if line_index - 1 >= 0 {
-                    let numbers_from_target_line = get_number_from_line(line, char_index as i32);
+                    let numbers_from_target_line = get_number_from_line(&input[line_index - 1], char_index as i32);
                     match numbers_from_target_line {
                         None => {}
                         Some(val) => {

@@ -85,9 +85,10 @@ fn main() {
 
                 if is_part {
                     sum += parsed_num.parse::<i32>().unwrap();
-                    // Reset string
-                    parsed_num = String::new();
                 }
+
+                // Reset number
+                parsed_num = String::new();
             }
         }
     }

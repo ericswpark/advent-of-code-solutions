@@ -28,6 +28,7 @@ fn main() {
         .collect();
 
     let mut sum = 0;
+    let mut gear_ratio_sum = 0;
 
     for (line_index, line) in input.iter().enumerate() {
         let mut parsed_num = String::new();
@@ -93,7 +94,54 @@ fn main() {
         }
     }
 
+    for (line_index, line) in input.iter().enumerate() {
+        for (char_index, char) in line.iter().enumerate() {
+            if *char == '*' {
+                // Find two numbers adjacent
+                let mut numbers: Vec<i32> = Vec::new();
+
+                // Check previous line (if it exists)
+                if line_index - 1 >= 0 {
+                    let numbers_from_target_line = get_number_from_line(line, char_index as i32);
+                    match numbers_from_target_line {
+                        None => {}
+                        Some(val) => {
+                            for n in val { numbers.push(n) }
+                        }
+                    }
+                }
+
+                if char_index - 1 >= 0 && line[char_index - 1].is_numeric() {
+                    numbers.push(get_whole_number(line, (char_index - 1) as i32));
+                }
+
+                if char_index + 1 < line.len() && line[char_index + 1].is_numeric() {
+                    numbers.push(get_whole_number(line, (char_index + 1) as i32));
+                }
+
+                if line_index + 1 < input.len() {
+                    let numbers_from_target_line = get_number_from_line(&input[line_index + 1], char_index as i32);
+                    match numbers_from_target_line {
+                        None => {}
+                        Some(val) => {
+                            for n in val { numbers.push(n) }
+                        }
+                    }
+                }
+
+                if numbers.len() == 2 {
+                    // Multiply the two numbers and then add to sum
+                    let gear_ratio = numbers.get(0).unwrap() * numbers.get(1).unwrap();
+                    gear_ratio_sum += gear_ratio;
+                }
+            } else {
+                continue
+            }
+        }
+    }
+
     println!("The part number sum is {sum}.");
+    println!("The gear ratio sum is {gear_ratio_sum}.");
 
 }
 
@@ -101,4 +149,40 @@ fn check_char(is_part: &mut bool, target: char) {
     if !target.is_numeric() && target != '.' {
         *is_part = true
     }
+}
+
+fn get_number_from_line(line: &Vec<char>, index: i32) -> Option<Vec<i32>> {
+    let mut numbers: Vec<i32> = Vec::new();
+
+    if index - 1 >= 0 && line[index as usize - 1].is_numeric() {
+        numbers.push(get_whole_number(&line, index - 1));
+    } else if line[index as usize].is_numeric() {
+        numbers.push(get_whole_number(&line, index))
+    } else if index + 1 < line.len() as i32 && line[index as usize + 1].is_numeric() {
+        numbers.push(get_whole_number(&line, index + 1));
+    }
+
+    // It's possible that there are two numbers, separated by a middle character
+    if index - 1 >= 0 && line[index as usize - 1].is_numeric() && !line[index as usize].is_numeric() && index + 1 < line.len() as i32 && line[index as usize + 1].is_numeric() {
+        numbers.push(get_whole_number(&line, index + 1));
+    }
+
+    if numbers.is_empty() { None } else { Some(numbers) }
+}
+
+fn get_whole_number(line: &Vec<char>, index: i32) -> i32 {
+    let mut start_index = index;
+    let mut end_index = index;
+
+    while start_index - 1 >= 0 && line[start_index as usize - 1].is_numeric() {
+        start_index -= 1;
+    }
+
+    while end_index + 1 < line.len() as i32 && line[end_index as usize + 1].is_numeric() {
+        end_index += 1;
+    }
+
+    let result_string: String = line[start_index as usize..=end_index as usize].into_iter().collect();
+
+    result_string.parse::<i32>().unwrap()
 }

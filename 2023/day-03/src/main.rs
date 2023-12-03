@@ -34,7 +34,9 @@ fn main() {
         for (char_index, char) in line.iter().enumerate() {
             if char.is_numeric() {
                 parsed_num.push(*char);
-            } else {
+            }
+
+            if char_index + 1 == line.len() || !char.is_numeric() {
                 if parsed_num.is_empty() { continue }
                 // End of number, see if it is adjacent to a symbol
                 let mut is_part = false;

@@ -41,7 +41,6 @@ fn get_points_worth(input: &Vec<String>) -> i32 {
     let mut points_sum: i32 = 0;
     for line in input {
         let parts: Vec<_> = line.split(": ").collect();
-        // let card_id = parts[0][5..].parse::<i32>().unwrap();
         let numbers: Vec<_> = parts[1].split(" | ").collect();
         let winning_numbers: Vec<i32> = parse_input_to_scratchcard_numbers(numbers[0]);
         let elf_numbers: Vec<i32> = parse_input_to_scratchcard_numbers(numbers[1]);

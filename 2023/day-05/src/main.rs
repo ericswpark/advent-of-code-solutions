@@ -1,7 +1,47 @@
 use std::env;
 use std::fs;
 use std::io::{stdin, stdout, Write};
-use std::collections::BTreeMap;
+
+struct RangeItem {
+    dest_start: i64,
+    source_start: i64,
+    range: i64
+}
+
+impl RangeItem {
+    fn is_in_range(&self, source: i64) -> bool {
+        source >= self.source_start && source <= self.source_start + self.range - 1
+    }
+
+    fn get_mapping(&self, source: i64) -> Option<i64> {
+        if !self.is_in_range(source) { return None; }
+
+        Some(self.dest_start - self.source_start + source)
+    }
+}
+
+struct RangeVec {
+    ranges: Vec<RangeItem>
+}
+
+impl RangeVec {
+    fn new() -> Self {
+        RangeVec { ranges: Vec::new() }
+    }
+
+    fn insert(&mut self, item: RangeItem) {
+        self.ranges.push(item);
+    }
+
+    fn get(&self, source: i64) -> Option<i64> {
+        for range in &self.ranges {
+            if range.is_in_range(source) {
+                return range.get_mapping(source)
+            }
+        }
+        Some(source)
+    }
+}
 
 fn main() {
     let input = get_input();
@@ -18,40 +58,13 @@ fn main() {
     let mut lowest = i64::MAX;
 
     for seed in seeds {
-        let soil = match soil_mapping.get(&seed) {
-            None => { seed }
-            Some(i) => { *i }
-        };
-
-        let fertilizer = match fertilizer_mapping.get(&soil) {
-            None => { soil }
-            Some(i) => { *i }
-        };
-
-        let water = match water_mapping.get(&fertilizer) {
-            None => { fertilizer }
-            Some(i) => { *i }
-        };
-
-        let light = match light_mapping.get(&water) {
-            None => { water }
-            Some(i) => { *i }
-        };
-
-        let temperature = match temperature_mapping.get(&light) {
-            None => { light }
-            Some(i) => { *i }
-        };
-
-        let humidity = match humidity_mapping.get(&temperature) {
-            None => { temperature }
-            Some(i) => { *i }
-        };
-
-        let location = match location_mapping.get(&humidity) {
-            None => { humidity }
-            Some(i) => { *i }
-        };
+        let soil = soil_mapping.get(seed).unwrap();
+        let fertilizer = fertilizer_mapping.get(soil).unwrap();
+        let water = water_mapping.get(fertilizer).unwrap();
+        let light = light_mapping.get(water).unwrap();
+        let temperature = temperature_mapping.get(light).unwrap();
+        let humidity = humidity_mapping.get(temperature).unwrap();
+        let location = location_mapping.get(humidity).unwrap();
 
         if location < lowest { lowest = location }
     }
@@ -63,8 +76,8 @@ fn get_seeds(input: &String) -> Vec<i64> {
     input[7..].split(' ').map(|s: &str| s.parse::<i64>().unwrap()).collect()
 }
 
-fn get_mapping(input: &String) -> BTreeMap<i64, i64> {
-    let mut map: BTreeMap<i64, i64> = BTreeMap::new();
+fn get_mapping(input: &String) -> RangeVec {
+    let mut map: RangeVec = RangeVec::new();
 
     for (index, line) in input.split('\n').enumerate() {
         if index == 0 { continue }  // Skip header
@@ -74,9 +87,11 @@ fn get_mapping(input: &String) -> BTreeMap<i64, i64> {
         let source_range_start = mapping[1];
         let range_length = mapping[2];
 
-        for i in 0..range_length {
-            map.insert(source_range_start + i, dest_range_start + i);
-        }
+        map.insert(RangeItem {
+            dest_start: dest_range_start,
+            source_start: source_range_start,
+            range: range_length,
+        });
     }
 
     map

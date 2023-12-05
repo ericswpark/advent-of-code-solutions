@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 use std::io::{stdin, stdout, Write};
+use rayon::prelude::*;
 
 struct RangeItem {
     dest_start: i64,
@@ -73,14 +74,20 @@ fn main() {
 
     println!("Part 1: The lowest location number is {lowest}.");
 
-    for (index, seed_range) in seeds_part_2.iter().enumerate() {
+    let lowest = seeds_part_2.par_iter().map( | seed_range | {
+        let mut lowest = i64::MAX;
+
         for i in 0..seed_range.range {
             let seed = seed_range.start + i;
             let location = get_location_of_seed(&soil_mapping, &fertilizer_mapping, &water_mapping, &light_mapping, &temperature_mapping, &humidity_mapping, &location_mapping, seed);
 
             if location < lowest { lowest = location }
         }
-    }
+
+        let range = seed_range.range;
+        println!("seed range {range} has the lowest value {lowest}");
+        lowest
+    }).min().unwrap();
 
     println!("Part 2: The lowest location number is {lowest}.");
 }

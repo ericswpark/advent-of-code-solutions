@@ -75,14 +75,11 @@ fn main() {
     println!("Part 1: The lowest location number is {lowest}.");
 
     let lowest = seeds_part_2.par_iter().map( | seed_range | {
-        let mut lowest = i64::MAX;
-
-        for i in 0..seed_range.range {
+        let lowest: i64 = (0..seed_range.range).into_par_iter().map( | i | {
             let seed = seed_range.start + i;
-            let location = get_location_of_seed(&soil_mapping, &fertilizer_mapping, &water_mapping, &light_mapping, &temperature_mapping, &humidity_mapping, &location_mapping, seed);
 
-            if location < lowest { lowest = location }
-        }
+            get_location_of_seed(&soil_mapping, &fertilizer_mapping, &water_mapping, &light_mapping, &temperature_mapping, &humidity_mapping, &location_mapping, seed)
+        }).min().unwrap();
 
         let range = seed_range.range;
         println!("seed range {range} has the lowest value {lowest}");

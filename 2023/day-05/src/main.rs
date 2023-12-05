@@ -43,10 +43,18 @@ impl RangeVec {
     }
 }
 
+struct RangeSeed {
+    start: i64,
+    range: i64,
+}
+
 fn main() {
     let input = get_input();
 
-    let seeds = get_seeds(&input[0]);
+    let seeds_part_1 = get_seeds(&input[0]);
+
+    let seeds_part_2 = get_range_seeds(&seeds_part_1);
+
     let soil_mapping = get_mapping(&input[1]);
     let fertilizer_mapping = get_mapping(&input[2]);
     let water_mapping = get_mapping(&input[3]);
@@ -57,19 +65,48 @@ fn main() {
 
     let mut lowest = i64::MAX;
 
-    for seed in seeds {
-        let soil = soil_mapping.get(seed).unwrap();
-        let fertilizer = fertilizer_mapping.get(soil).unwrap();
-        let water = water_mapping.get(fertilizer).unwrap();
-        let light = light_mapping.get(water).unwrap();
-        let temperature = temperature_mapping.get(light).unwrap();
-        let humidity = humidity_mapping.get(temperature).unwrap();
-        let location = location_mapping.get(humidity).unwrap();
+    for seed in seeds_part_1 {
+        let location = get_location_of_seed(&soil_mapping, &fertilizer_mapping, &water_mapping, &light_mapping, &temperature_mapping, &humidity_mapping, &location_mapping, seed);
 
         if location < lowest { lowest = location }
     }
 
-    println!("The lowest location number is {lowest}.")
+    println!("Part 1: The lowest location number is {lowest}.");
+
+    for (index, seed_range) in seeds_part_2.iter().enumerate() {
+        for i in 0..seed_range.range {
+            let seed = seed_range.start + i;
+            let location = get_location_of_seed(&soil_mapping, &fertilizer_mapping, &water_mapping, &light_mapping, &temperature_mapping, &humidity_mapping, &location_mapping, seed);
+
+            if location < lowest { lowest = location }
+        }
+    }
+
+    println!("Part 2: The lowest location number is {lowest}.");
+}
+
+fn get_location_of_seed(soil_mapping: &RangeVec, fertilizer_mapping: &RangeVec, water_mapping: &RangeVec, light_mapping: &RangeVec, temperature_mapping: &RangeVec, humidity_mapping: &RangeVec, location_mapping: &RangeVec, seed: i64) -> i64 {
+    let soil = soil_mapping.get(seed).unwrap();
+    let fertilizer = fertilizer_mapping.get(soil).unwrap();
+    let water = water_mapping.get(fertilizer).unwrap();
+    let light = light_mapping.get(water).unwrap();
+    let temperature = temperature_mapping.get(light).unwrap();
+    let humidity = humidity_mapping.get(temperature).unwrap();
+    let location = location_mapping.get(humidity).unwrap();
+    location
+}
+
+
+fn get_range_seeds(input: &Vec<i64>) -> Vec<RangeSeed> {
+    let mut seeds = Vec::new();
+
+    for i in 0..input.len() {
+        if i % 2 == 0 {
+            seeds.push(RangeSeed { start: input[i], range: input[i + 1]})
+        }
+    }
+
+    seeds
 }
 
 fn get_seeds(input: &String) -> Vec<i64> {

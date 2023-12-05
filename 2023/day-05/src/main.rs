@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 use std::io::{stdin, stdout, Write};
+use rayon::prelude::*;
 
 struct RangeItem {
     dest_start: i64,
@@ -13,21 +14,10 @@ impl RangeItem {
         source >= self.source_start && source <= self.source_start + self.range - 1
     }
 
-    fn is_in_reverse_range(&self, dest: i64) -> bool {
-        dest >= self.dest_start && dest <= self.dest_start + self.range - 1
-    }
-
     fn get_mapping(&self, source: i64) -> Option<i64> {
         if !self.is_in_range(source) { return None; }
 
         Some(self.dest_start - self.source_start + source)
-    }
-
-    fn get_reverse_mapping(&self, dest: i64) -> Option<i64> {
-        if !self.is_in_reverse_range(dest) { return None; }
-
-        Some(self.source_start - self.dest_start + dest)
-
     }
 }
 
@@ -47,31 +37,16 @@ impl RangeVec {
     fn get(&self, source: i64) -> Option<i64> {
         for range in &self.ranges {
             if range.is_in_range(source) {
-                return range.get_mapping(source);
+                return range.get_mapping(source)
             }
         }
         Some(source)
-    }
-
-    fn get_reverse(&self, dest: i64) -> Option<i64> {
-        for range in &self.ranges {
-            if range.is_in_reverse_range(dest) {
-                return range.get_reverse_mapping(dest);
-            }
-        }
-        Some(dest)
     }
 }
 
 struct RangeSeed {
     start: i64,
     range: i64,
-}
-
-impl RangeSeed {
-    fn includes(&self, i: i64) -> bool {
-        i >= self.start && i <= self.start + self.range - 1
-    }
 }
 
 fn main() {
@@ -99,21 +74,19 @@ fn main() {
 
     println!("Part 1: The lowest location number is {lowest}.");
 
-    let mut lowest_loc = 0;
-    'part2: loop {
-        let seed = get_seed_of_location(&soil_mapping, &fertilizer_mapping, &water_mapping, &light_mapping, &temperature_mapping, &humidity_mapping, &location_mapping, lowest_loc);
+    let lowest = seeds_part_2.par_iter().map( | seed_range | {
+        let lowest: i64 = (0..seed_range.range).into_par_iter().map( | i | {
+            let seed = seed_range.start + i;
 
-        print!("Part 2: trying location {lowest_loc}...");
-        for seed_range in &seeds_part_2 {
-            if seed_range.includes(seed) {
-                println!("Part 2: The lowest location number is {lowest_loc}.");
-                break 'part2;
-            }
-        }
-        println!("fail.");
+            get_location_of_seed(&soil_mapping, &fertilizer_mapping, &water_mapping, &light_mapping, &temperature_mapping, &humidity_mapping, &location_mapping, seed)
+        }).min().unwrap();
 
-        lowest_loc += 1
-    }
+        let range = seed_range.range;
+        println!("The seed range {range} has the lowest value {lowest}");
+        lowest
+    }).min().unwrap();
+
+    println!("Part 2: The lowest location number is {lowest}.");
 }
 
 fn get_location_of_seed(soil_mapping: &RangeVec, fertilizer_mapping: &RangeVec, water_mapping: &RangeVec, light_mapping: &RangeVec, temperature_mapping: &RangeVec, humidity_mapping: &RangeVec, location_mapping: &RangeVec, seed: i64) -> i64 {
@@ -125,16 +98,6 @@ fn get_location_of_seed(soil_mapping: &RangeVec, fertilizer_mapping: &RangeVec, 
     let humidity = humidity_mapping.get(temperature).unwrap();
     let location = location_mapping.get(humidity).unwrap();
     location
-}
-
-fn get_seed_of_location(soil_mapping: &RangeVec, fertilizer_mapping: &RangeVec, water_mapping: &RangeVec, light_mapping: &RangeVec, temperature_mapping: &RangeVec, humidity_mapping: &RangeVec, location_mapping: &RangeVec, location: i64) -> i64 {
-    let humidity = location_mapping.get_reverse(location).unwrap();
-    let temperature = humidity_mapping.get_reverse(humidity).unwrap();
-    let light = temperature_mapping.get_reverse(temperature).unwrap();
-    let water = light_mapping.get_reverse(light).unwrap();
-    let fertilizer = water_mapping.get_reverse(water).unwrap();
-    let soil = fertilizer_mapping.get_reverse(fertilizer).unwrap();
-    soil_mapping.get_reverse(soil).unwrap()
 }
 
 

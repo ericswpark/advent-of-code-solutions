@@ -82,7 +82,7 @@ fn main() {
         }).min().unwrap();
 
         let range = seed_range.range;
-        println!("seed range {range} has the lowest value {lowest}");
+        println!("The seed range {range} has the lowest value {lowest}");
         lowest
     }).min().unwrap();
 

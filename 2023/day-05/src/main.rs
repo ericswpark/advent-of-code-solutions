@@ -15,7 +15,7 @@ fn main() {
     let humidity_mapping = get_mapping(&input[6]);
     let location_mapping = get_mapping(&input[7]);
 
-    let mut lowest = i32::MAX;
+    let mut lowest = i64::MAX;
 
     for seed in seeds {
         let soil = match soil_mapping.get(&seed) {
@@ -59,16 +59,16 @@ fn main() {
     println!("The lowest location number is {lowest}.")
 }
 
-fn get_seeds(input: &String) -> Vec<i32> {
-    input[7..].split(' ').map(|s: &str| s.parse::<i32>().unwrap()).collect()
+fn get_seeds(input: &String) -> Vec<i64> {
+    input[7..].split(' ').map(|s: &str| s.parse::<i64>().unwrap()).collect()
 }
 
-fn get_mapping(input: &String) -> BTreeMap<i32, i32> {
-    let mut map: BTreeMap<i32, i32> = BTreeMap::new();
+fn get_mapping(input: &String) -> BTreeMap<i64, i64> {
+    let mut map: BTreeMap<i64, i64> = BTreeMap::new();
 
     for (index, line) in input.split('\n').enumerate() {
         if index == 0 { continue }  // Skip header
-        let mapping: Vec<i32> = line.split(' ').map(|s: &str| s.parse::<i32>().unwrap()).collect();
+        let mapping: Vec<i64> = line.split(' ').map(|s: &str| s.parse::<i64>().unwrap()).collect();
 
         let dest_range_start = mapping[0];
         let source_range_start = mapping[1];

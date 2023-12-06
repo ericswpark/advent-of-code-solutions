@@ -12,6 +12,9 @@ fn main() {
     let times = get_parsed_number_array(&input[0][5..]);
     let distances = get_parsed_number_array(&input[1][9..]);
 
+    let bad_kerning_time = get_parsed_number(&input[0][5..]);
+    let bad_kerning_distance = get_parsed_number(&input[1][9..]);
+
     let mut multiple_of_number_of_ways_to_win = 1;
 
     for (time_index, time) in times.iter().enumerate() {
@@ -22,10 +25,16 @@ fn main() {
 
     println!("The number of ways to win multiplied for each round is {multiple_of_number_of_ways_to_win}.");
 
+    let bad_kerning_winning_ways = get_winning_ways_for_time(&bad_kerning_time, bad_kerning_distance);
 
+    println!("The number of ways to win (with bad kerning) is {bad_kerning_winning_ways}.");
 }
 
-fn get_winning_ways_for_time(time: &i32, target_distance: i32) -> i32 {
+fn get_parsed_number(s: &str) -> i64 {
+    s.split_whitespace().collect::<String>().parse::<i64>().unwrap()
+}
+
+fn get_winning_ways_for_time(time: &i64, target_distance: i64) -> i64 {
     let mut ways = 0;
     for i in 0..=*time {
         let distance = calculate_distance(*time, i);
@@ -34,11 +43,11 @@ fn get_winning_ways_for_time(time: &i32, target_distance: i32) -> i32 {
     ways
 }
 
-fn get_parsed_number_array(input: &str) -> Vec<i32> {
-    input.split_whitespace().map(|s: &str| s.parse::<i32>().unwrap()).collect()
+fn get_parsed_number_array(input: &str) -> Vec<i64> {
+    input.split_whitespace().map(|s: &str| s.parse::<i64>().unwrap()).collect()
 }
 
-fn calculate_distance(total: i32, charge_up: i32) -> i32 {
+fn calculate_distance(total: i64, charge_up: i64) -> i64 {
     charge_up * (total - charge_up)
 }
 

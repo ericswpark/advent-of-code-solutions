@@ -5,9 +5,8 @@ use std::fs;
 use std::io::{stdin, stdout, Write};
 
 
-
 fn main() {
-    let input = get_input();
+    let input = get_input(&*get_path_from_arg());
 
     let part_1_answer = part_1(&input);
     println!("The number of ways to win multiplied for each round is {part_1_answer}.");
@@ -59,8 +58,7 @@ fn calculate_distance(total: i64, charge_up: i64) -> i64 {
     charge_up * (total - charge_up)
 }
 
-
-fn get_input() -> Vec<String> {
+fn get_path_from_arg() -> String {
     let mut args: Vec<String> = env::args().collect();
 
     let mut path: &mut String = &mut String::new();
@@ -80,6 +78,11 @@ fn get_input() -> Vec<String> {
         path = &mut args[1];
     }
 
+    path.to_owned()
+}
+
+
+fn get_input(path: &str) -> Vec<String> {
     fs::read_to_string(path)
         .expect("Couldn't read input file").split("\n").map(|s| s.to_string()).collect()
 }

@@ -9,25 +9,33 @@ use std::io::{stdin, stdout, Write};
 fn main() {
     let input = get_input();
 
+    let part_1_answer = part_1(&input);
+    println!("The number of ways to win multiplied for each round is {part_1_answer}.");
+
+    let part_2_answer = part_2(&input);
+    println!("The number of ways to win (with bad kerning) is {part_2_answer}.");
+}
+
+fn part_1(input: &Vec<String>) -> i64 {
     let times = get_parsed_number_array(&input[0][5..]);
     let distances = get_parsed_number_array(&input[1][9..]);
 
-    let bad_kerning_time = get_parsed_number(&input[0][5..]);
-    let bad_kerning_distance = get_parsed_number(&input[1][9..]);
-
-    let mut multiple_of_number_of_ways_to_win = 1;
+    let mut ways_to_win_multiple = 1;
 
     for (time_index, time) in times.iter().enumerate() {
         let ways = get_winning_ways_for_time(time, distances[time_index]);
 
-        multiple_of_number_of_ways_to_win *= ways;
+        ways_to_win_multiple *= ways;
     }
 
-    println!("The number of ways to win multiplied for each round is {multiple_of_number_of_ways_to_win}.");
+    ways_to_win_multiple
+}
 
-    let bad_kerning_winning_ways = get_winning_ways_for_time(&bad_kerning_time, bad_kerning_distance);
+fn part_2(input: &Vec<String>) -> i64 {
+    let bad_kerning_time = get_parsed_number(&input[0][5..]);
+    let bad_kerning_distance = get_parsed_number(&input[1][9..]);
 
-    println!("The number of ways to win (with bad kerning) is {bad_kerning_winning_ways}.");
+    get_winning_ways_for_time(&bad_kerning_time, bad_kerning_distance)
 }
 
 fn get_parsed_number(s: &str) -> i64 {

@@ -28,7 +28,7 @@ impl HandType {
 
 struct Round {
     hands: Vec<char>,
-    bid: i16
+    bid: i32
 }
 
 impl Round {
@@ -96,7 +96,7 @@ fn part_1(input: &Vec<String>) -> i64 {
     let mut total_winnings: i64 = 0;
 
     for (round_index, round) in rounds.iter().enumerate() {
-        total_winnings += ((round_index + 1) as i16 * round.bid) as i64;
+        total_winnings += ((round_index + 1) as i32 * round.bid) as i64;
     }
 
     total_winnings
@@ -115,7 +115,7 @@ fn get_card_rounds(input: &Vec<String>) -> Vec<Round> {
 
         ret.push(Round {
             hands: cards,
-            bid: parts[1].parse::<i16>().unwrap()
+            bid: parts[1].parse::<i32>().unwrap()
         })
 
     }

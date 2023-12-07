@@ -1,4 +1,6 @@
 mod helpers;
+mod tests;
+
 use crate::HandType::{FiveKind, FourKind, FullHouse, HighCard, OnePair, ThreeKind, TwoPair};
 
 #[derive(PartialEq)]

@@ -79,9 +79,9 @@ fn part_1(input: &Vec<String>) -> i64 {
     // Sort rounds based on their rank
     // If two rounds have the same rank, then use the individual card values
     for i in 0..=4 {
-        rounds.sort_by(|a, b| get_card_value_mapping(b.hands[4-i]).cmp(&get_card_value_mapping(a.hands[4 - i])))
+        rounds.sort_by(|a, b| get_card_value_mapping(a.hands[4-i]).cmp(&get_card_value_mapping(b.hands[4 - i])))
     }
-    rounds.sort_by(|a, b | b.hand_type().value().cmp(&a.hand_type().value()));
+    rounds.sort_by(|a, b | a.hand_type().value().cmp(&b.hand_type().value()));
 
     let mut total_winnings: i64 = 0;
 

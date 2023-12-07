@@ -89,7 +89,7 @@ fn part_1(input: &Vec<String>) -> i64 {
             b.hands[4].cmp(&a.hands[4])
         }
     } else {
-        a.hand_type().value().cmp(&b.hand_type().value())
+        b.hand_type().value().cmp(&a.hand_type().value())
     }
     );
 

@@ -42,26 +42,7 @@ impl Round {
         cards.sort();
         cards.reverse();
 
-        match cards[0] {
-            5 => HandType::FiveKind,
-            4 => HandType::FourKind,
-            3 => {
-                match cards[1] {
-                    2 => HandType::FullHouse,
-                    1 => HandType::ThreeKind,
-                    _ => panic!("Impossible three-card mapping. The input is wrong!")
-                }
-            },
-            2 => {
-                match cards[1] {
-                    2 => HandType::TwoPair,
-                    1 => HandType::OnePair,
-                    _ => panic!("Impossible two-card mapping. The input is wrong!")
-                }
-            },
-            1 => HandType::HighCard,
-            _ => panic!("Bad hand type mapping. The input is wrong!")
-        }
+        card_count_to_hand_type(cards[0], cards[1])
     }
 
     fn hand_type_with_joker(&self) -> HandType {
@@ -80,26 +61,30 @@ impl Round {
         // Add joker count to the highest card number
         cards[0] += joker_count;
 
-        match cards[0] {
-            5 => HandType::FiveKind,
-            4 => HandType::FourKind,
-            3 => {
-                match cards[1] {
-                    2 => HandType::FullHouse,
-                    1 => HandType::ThreeKind,
-                    _ => panic!("Impossible three-card mapping. The input is wrong!")
-                }
-            },
-            2 => {
-                match cards[1] {
-                    2 => HandType::TwoPair,
-                    1 => HandType::OnePair,
-                    _ => panic!("Impossible two-card mapping. The input is wrong!")
-                }
-            },
-            1 => HandType::HighCard,
-            _ => panic!("Bad hand type mapping. The input is wrong!")
-        }
+        card_count_to_hand_type(cards[0], cards[1])
+    }
+}
+
+fn card_count_to_hand_type(first: i16, second: i16) -> HandType {
+    match first {
+        5 => HandType::FiveKind,
+        4 => HandType::FourKind,
+        3 => {
+            match second {
+                2 => HandType::FullHouse,
+                1 => HandType::ThreeKind,
+                _ => panic!("Impossible three-card mapping. The input is wrong!")
+            }
+        },
+        2 => {
+            match second {
+                2 => HandType::TwoPair,
+                1 => HandType::OnePair,
+                _ => panic!("Impossible two-card mapping. The input is wrong!")
+            }
+        },
+        1 => HandType::HighCard,
+        _ => panic!("Bad hand type mapping. The input is wrong!")
     }
 }
 

@@ -74,8 +74,84 @@ fn part_1(input: &Vec<String>) -> i64 {
     count
 }
 
-fn part_2(_input: &Vec<String>) -> i64 {
-    0
+fn part_2(input: &Vec<String>) -> i64 {
+    let sequence = get_sequence(&input[0]);
+
+    let mut map: Vec<MapNode> = get_map(&input[2..]);
+
+    let current_node_indices = map.iter().enumerate().filter(|(_, r)| r.name.ends_with('A')).map(|(index, _)| index).collect::<Vec<_>>();
+    let mut steps_for_index: Vec<i64> = vec![0; current_node_indices.len()];
+
+    // For each node, figure out how many steps it would take to get to the Z part
+    for (index, &node_index) in current_node_indices.iter().enumerate() {
+        let mut node_index = node_index;
+        let mut current_sequence_index = 0;
+        let mut count = 0;
+
+        loop {
+            if map[node_index].name.ends_with('Z') { break }
+
+            // Go to the next node based on the current sequence
+            let next_direction = sequence[current_sequence_index];
+            current_sequence_index = if current_sequence_index + 1 < sequence.len() { current_sequence_index + 1 } else { 0 };
+
+            match next_direction {
+                'L' => {
+                    let next_node_name = &map[node_index].left;
+
+                    if map[node_index].left_index == None {
+                        map[node_index].left_index = Some(map.iter().position(|r| r.name == *next_node_name).unwrap() as i32);
+                    }
+
+                    node_index = map[node_index].left_index.unwrap() as usize;
+                },
+                'R' => {
+                    let next_node_name = &map[node_index].right;
+
+                    if map[node_index].right_index == None {
+                        map[node_index].right_index = Some(map.iter().position(|r| r.name == *next_node_name).unwrap() as i32);
+                    }
+
+                    node_index = map[node_index].right_index.unwrap() as usize;
+                },
+                _ => panic!("Bad sequence!"),
+            }
+
+            count += 1;
+        }
+        steps_for_index[index] = count;
+    }
+
+    lcm_vec(steps_for_index)
+}
+
+fn lcm_vec(input: Vec<i64>) -> i64 {
+    let mut total = input[0];
+
+    for i in 0..input.len() {
+        total = lcm(total, input[i]);
+    }
+
+    total
+}
+
+fn lcm(a: i64, b: i64) -> i64 {
+    a * b / gcd(a, b)
+}
+
+fn gcd(a: i64, b: i64) -> i64 {
+    let mut max = if a > b { a } else { b };
+    let mut min = if a < b { a } else { b };
+
+    loop {
+        let remainder = max % min;
+        if remainder == 0 {
+            return min
+        }
+
+        max = min;
+        min = remainder;
+    }
 }
 
 fn get_sequence(input: &String) -> Vec<char> {

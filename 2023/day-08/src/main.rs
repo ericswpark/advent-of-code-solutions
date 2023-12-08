@@ -45,28 +45,7 @@ fn part_1(input: &Vec<String>) -> i64 {
         let next_direction = sequence[current_sequence_index];
         current_sequence_index = if current_sequence_index + 1 < sequence.len() { current_sequence_index + 1 } else { 0 };
 
-        match next_direction {
-            'L' => {
-                let next_node_name = &map[current_node_index].left;
-
-                if map[current_node_index].left_index == None {
-                    map[current_node_index].left_index = Some(map.iter().position(|r| r.name == *next_node_name).unwrap() as i32);
-                }
-
-                current_node_index = map[current_node_index].left_index.unwrap() as usize;
-
-            },
-            'R' => {
-                let next_node_name = &map[current_node_index].right;
-
-                if map[current_node_index].right_index == None {
-                    map[current_node_index].right_index = Some(map.iter().position(|r| r.name == *next_node_name).unwrap() as i32);
-                }
-
-                current_node_index = map[current_node_index].right_index.unwrap() as usize;
-            },
-            _ => panic!("Bad sequence!"),
-        }
+        traverse_next_node(&mut map, &mut current_node_index, next_direction);
 
         count += 1;
     }
@@ -95,27 +74,7 @@ fn part_2(input: &Vec<String>) -> i64 {
             let next_direction = sequence[current_sequence_index];
             current_sequence_index = if current_sequence_index + 1 < sequence.len() { current_sequence_index + 1 } else { 0 };
 
-            match next_direction {
-                'L' => {
-                    let next_node_name = &map[node_index].left;
-
-                    if map[node_index].left_index == None {
-                        map[node_index].left_index = Some(map.iter().position(|r| r.name == *next_node_name).unwrap() as i32);
-                    }
-
-                    node_index = map[node_index].left_index.unwrap() as usize;
-                },
-                'R' => {
-                    let next_node_name = &map[node_index].right;
-
-                    if map[node_index].right_index == None {
-                        map[node_index].right_index = Some(map.iter().position(|r| r.name == *next_node_name).unwrap() as i32);
-                    }
-
-                    node_index = map[node_index].right_index.unwrap() as usize;
-                },
-                _ => panic!("Bad sequence!"),
-            }
+            traverse_next_node(&mut map, &mut node_index, next_direction);
 
             count += 1;
         }
@@ -123,6 +82,30 @@ fn part_2(input: &Vec<String>) -> i64 {
     }
 
     lcm_vec(steps_for_index)
+}
+
+fn traverse_next_node(map: &mut Vec<MapNode>, node_index: &mut usize, next_direction: char) {
+    match next_direction {
+        'L' => {
+            let next_node_name = &map[*node_index].left;
+
+            if map[*node_index].left_index == None {
+                map[*node_index].left_index = Some(map.iter().position(|r| r.name == *next_node_name).unwrap() as i32);
+            }
+
+            *node_index = map[*node_index].left_index.unwrap() as usize;
+        },
+        'R' => {
+            let next_node_name = &map[*node_index].right;
+
+            if map[*node_index].right_index == None {
+                map[*node_index].right_index = Some(map.iter().position(|r| r.name == *next_node_name).unwrap() as i32);
+            }
+
+            *node_index = map[*node_index].right_index.unwrap() as usize;
+        },
+        _ => panic!("Bad sequence!"),
+    }
 }
 
 fn lcm_vec(input: Vec<i64>) -> i64 {

@@ -1,4 +1,5 @@
 mod helpers;
+mod tests;
 
 
 struct MapNode {

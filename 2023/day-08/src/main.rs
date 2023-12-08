@@ -32,7 +32,7 @@ fn part_1(input: &Vec<String>) -> i64 {
 
     let mut map: Vec<MapNode> = get_map(&input[2..]);
 
-    let mut current_node_index = 0;
+    let mut current_node_index = map.iter().position(|r| r.name == "AAA").unwrap();
     let mut current_sequence_index = 0;
     let mut count = 0;
 

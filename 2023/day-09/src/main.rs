@@ -47,12 +47,7 @@ fn get_sequence(input: &Vec<String>) -> Vec<Vec<i32>> {
 }
 
 fn get_extrapolated_number(input: &Vec<i32>) -> i32 {
-    // If all the input numbers are zero, return 0
-    let mut is_all_zeros = true;
-    for &num in input {
-        if num != 0 { is_all_zeros = false }
-    }
-    if is_all_zeros { return 0 }
+    if check_all_zero(input) { return 0 }
 
     // Otherwise, create a new vector with the differences
     let mut differences: Vec<i32> = Vec::new();
@@ -65,12 +60,7 @@ fn get_extrapolated_number(input: &Vec<i32>) -> i32 {
 }
 
 fn get_backwards_extrapolated_number(input: &Vec<i32>) -> i32 {
-    // If all the input numbers are zero, return 0
-    let mut is_all_zeros = true;
-    for &num in input {
-        if num != 0 { is_all_zeros = false }
-    }
-    if is_all_zeros { return 0 }
+    if check_all_zero(input) { return 0 }
 
     // Otherwise, create a new vector with the differences
     let mut differences: Vec<i32> = Vec::new();
@@ -80,4 +70,12 @@ fn get_backwards_extrapolated_number(input: &Vec<i32>) -> i32 {
     }
 
     input[0] - get_backwards_extrapolated_number(&differences)
+}
+
+fn check_all_zero(input: &Vec<i32>) -> bool {
+    let mut is_all_zeros = true;
+    for &num in input {
+        if num != 0 { is_all_zeros = false }
+    }
+    is_all_zeros
 }

@@ -23,9 +23,16 @@ fn part_1(input: &Vec<String>) -> i32 {
     extrapolated_sum
 }
 
-fn part_2(input: &Vec<String>) -> i64 {
-    // TODO: implement
-    0
+fn part_2(input: &Vec<String>) -> i32 {
+    let histories: Vec<Vec<i32>> = get_sequence(input);
+
+    let mut extrapolated_sum = 0;
+
+    for history in histories {
+        extrapolated_sum += get_backwards_extrapolated_number(&history);
+    }
+
+    extrapolated_sum
 }
 
 fn get_sequence(input: &Vec<String>) -> Vec<Vec<i32>> {
@@ -55,4 +62,22 @@ fn get_extrapolated_number(input: &Vec<i32>) -> i32 {
     }
 
     input[input.len() - 1] + get_extrapolated_number(&differences)
+}
+
+fn get_backwards_extrapolated_number(input: &Vec<i32>) -> i32 {
+    // If all the input numbers are zero, return 0
+    let mut is_all_zeros = true;
+    for &num in input {
+        if num != 0 { is_all_zeros = false }
+    }
+    if is_all_zeros { return 0 }
+
+    // Otherwise, create a new vector with the differences
+    let mut differences: Vec<i32> = Vec::new();
+
+    for i in 1..input.len() {
+        differences.push(input[i] - input[i - 1]);
+    }
+
+    input[0] - get_backwards_extrapolated_number(&differences)
 }

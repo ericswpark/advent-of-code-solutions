@@ -23,6 +23,16 @@ fn part_1(input: &Vec<String>) -> usize {
     max_walk
 }
 
+trait BoolExt {
+    fn flip(&mut self);
+}
+
+impl BoolExt for bool {
+    fn flip(&mut self) {
+        *self = !*self;
+    }
+}
+
 fn part_2(input: &Vec<String>) -> i32 {
     let map: Vec<Vec<char>> = get_map(input);
     let (distance_map, _) = calculate_distance_map(&map);
@@ -38,21 +48,15 @@ fn part_2(input: &Vec<String>) -> i32 {
                 let pipe = map[x][y];
 
                 match pipe {
-                    '|' => {
-                        inside_loop = !inside_loop;
-                    }
+                    '|' => { inside_loop.flip() }
                     'F' | 'L' => {
                         prev_char = pipe;
                     }
                     'J' => {
-                        if prev_char == 'F' {
-                            inside_loop = !inside_loop;
-                        }
+                        if prev_char == 'F' { inside_loop.flip() }
                     }
                     '7' => {
-                        if prev_char == 'L' {
-                            inside_loop = !inside_loop;
-                        }
+                        if prev_char == 'L' { inside_loop.flip() }
                     }
                     _ => {}
                 }

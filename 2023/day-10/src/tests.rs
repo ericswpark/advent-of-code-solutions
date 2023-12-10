@@ -7,12 +7,14 @@ mod tests {
     fn sample_complex_loop() {
         let input = get_input("sample-complex-loop.txt");
         assert_eq!(part_1(&input), 8);
+        assert_eq!(part_2(&input), 1);
     }
 
     #[test]
     fn sample_simple_loop() {
         let input = get_input("sample-simple-loop.txt");
         assert_eq!(part_1(&input), 4);
+        assert_eq!(part_2(&input), 1);
     }
 
     #[test]

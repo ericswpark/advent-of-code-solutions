@@ -22,9 +22,15 @@ mod tests {
     }
 
     #[test]
+    fn sample_loop_complex_check() {
+        let input = get_input("sample-loop-complex-check.txt");
+        assert_eq!(part_2(&input), 10);
+    }
+
+    #[test]
     fn puzzle_input() {
         let input = get_input("puzzle-input.txt");
         assert_eq!(part_1(&input), 6820);
-        // assert_eq!(part_2(&input), 1012);
+        //assert_eq!(part_2(&input), 0);
     }
 }

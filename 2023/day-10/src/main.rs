@@ -18,11 +18,47 @@ struct Position {
 
 fn part_1(input: &Vec<String>) -> usize {
     let map: Vec<Vec<char>> = get_map(input);
+    let (_, max_walk) = calculate_distance_map(&map);
 
-    // Find starting position
-    let start = get_starting_position(&map);
+    max_walk
+}
 
-    // Initialize distance map
+fn part_2(input: &Vec<String>) -> i32 {
+    // TODO: implement
+    0
+}
+
+fn get_map(input: &Vec<String>) -> Vec<Vec<char>> {
+    let mut map = Vec::new();
+    for line in input {
+        map.push(line.chars().collect());
+    }
+    map
+}
+
+fn get_starting_position(map: &Vec<Vec<char>>) -> Position {
+    for x in 0..map.len() {
+        for y in 0..map[x].len() {
+            if map[x][y] == 'S' { return Position { x, y } }
+        }
+    }
+    panic!("Bad map!")
+}
+
+fn get_all_positions(distance_map: &Vec<Vec<Option<usize>>>, distance: usize) -> Vec<Position> {
+    let mut positions = Vec::new();
+    for x in 0..distance_map.len() {
+        for y in 0..distance_map[x].len() {
+            if distance_map[x][y] == Some(distance) { positions.push(Position {x, y}) }
+        }
+    }
+
+    positions
+}
+
+fn calculate_distance_map(map: &Vec<Vec<char>>) -> (Vec<Vec<Option<usize>>>, usize) {
+    let start = get_starting_position(map);
+
     let mut distance_map: Vec<Vec<Option<usize>>> = vec![vec![None; map[0].len()]; map.len()];
     distance_map[start.x][start.y] = Some(0);
 
@@ -71,38 +107,5 @@ fn part_1(input: &Vec<String>) -> usize {
         } else { break }
     }
 
-    max_walk
-}
-
-fn part_2(input: &Vec<String>) -> i32 {
-    // TODO: implement
-    0
-}
-
-fn get_map(input: &Vec<String>) -> Vec<Vec<char>> {
-    let mut map = Vec::new();
-    for line in input {
-        map.push(line.chars().collect());
-    }
-    map
-}
-
-fn get_starting_position(map: &Vec<Vec<char>>) -> Position {
-    for x in 0..map.len() {
-        for y in 0..map[x].len() {
-            if map[x][y] == 'S' { return Position { x, y } }
-        }
-    }
-    panic!("Bad map!")
-}
-
-fn get_all_positions(distance_map: &Vec<Vec<Option<usize>>>, distance: usize) -> Vec<Position> {
-    let mut positions = Vec::new();
-    for x in 0..distance_map.len() {
-        for y in 0..distance_map[x].len() {
-            if distance_map[x][y] == Some(distance) { positions.push(Position {x, y}) }
-        }
-    }
-
-    positions
+    (distance_map, max_walk)
 }

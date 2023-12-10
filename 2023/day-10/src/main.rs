@@ -36,7 +36,7 @@ impl BoolExt for bool {
 fn part_2(input: &Vec<String>) -> i32 {
     let map: Vec<Vec<char>> = get_map(input);
     let (distance_map, _) = calculate_distance_map(&map);
-    let map = get_solved_map(&map, &distance_map);
+    let mut map = get_solved_map(&map, &distance_map);
 
     let mut inside_loop = false;
     let mut inside_count = 0;
@@ -61,7 +61,12 @@ fn part_2(input: &Vec<String>) -> i32 {
                     _ => {}
                 }
             } else {
-                if inside_loop { inside_count += 1 }
+                if inside_loop {
+                    inside_count += 1;
+                    map[x][y] = '*';
+                } else {
+                    map[x][y] = ' ';
+                }
             }
 
         }
@@ -76,23 +81,52 @@ fn get_solved_map(map: &Vec<Vec<char>>, distance_map: &Vec<Vec<Option<usize>>>) 
     // Find position of starting block
     let start_pos = get_starting_position(&map);
 
-    if start_pos.x > 0 && start_pos.y > 0 && distance_map[start_pos.x - 1][start_pos.y].is_some() &&
-        distance_map[start_pos.x][start_pos.y - 1].is_some() {
+    // Left-up configuration
+    if start_pos.x > 0 && start_pos.y > 0 &&
+        distance_map[start_pos.x - 1][start_pos.y].is_some() &&
+        distance_map[start_pos.x][start_pos.y - 1].is_some() &&
+        ['|', 'F', '7'].contains(&map[start_pos.x - 1][start_pos.y]) &&
+        ['-', 'F', 'L'].contains(&map[start_pos.x][start_pos.y - 1]) {
         solved_map[start_pos.x][start_pos.y] = 'J';
-    } else if start_pos.x + 1 < map.len() && start_pos.y > 0 && distance_map[start_pos.x + 1][start_pos.y].is_some() &&
-        distance_map[start_pos.x][start_pos.y - 1].is_some() {
+    }
+    // Right-up configuration
+    else if start_pos.x > 0 && start_pos.y + 1 < map[start_pos.x].len() &&
+        distance_map[start_pos.x - 1][start_pos.y].is_some() &&
+        distance_map[start_pos.x][start_pos.y + 1].is_some() &&
+        ['|', 'F', '7'].contains(&map[start_pos.x - 1][start_pos.y]) &&
+        ['-', 'J', '7'].contains(&map[start_pos.x][start_pos.y - 1]) {
         solved_map[start_pos.x][start_pos.y] = 'L';
-    } else if start_pos.x + 1 < map.len() && start_pos.y + 1 < map[start_pos.x].len() && distance_map[start_pos.x + 1][start_pos.y].is_some() &&
-        distance_map[start_pos.x][start_pos.y + 1].is_some() {
+    }
+    // Right-down configuration
+    else if start_pos.x + 1 < map.len() && start_pos.y + 1 < map[start_pos.x].len() &&
+        distance_map[start_pos.x + 1][start_pos.y].is_some() &&
+        distance_map[start_pos.x][start_pos.y + 1].is_some() &&
+        ['|', 'J', 'L'].contains(&map[start_pos.x + 1][start_pos.y]) &&
+        ['-', 'J', '7'].contains(&map[start_pos.x][start_pos.y + 1]) {
         solved_map[start_pos.x][start_pos.y] = 'F';
-    } else if start_pos.x > 0 && start_pos.y + 1 < map[start_pos.x].len() && distance_map[start_pos.x - 1][start_pos.y].is_some() &&
-        distance_map[start_pos.x][start_pos.y + 1].is_some() {
+    }
+    // Left-down configuration
+    else if start_pos.x + 1 < map.len() && start_pos.y > 0 &&
+        distance_map[start_pos.x + 1][start_pos.y].is_some() &&
+        distance_map[start_pos.x][start_pos.y - 1].is_some() &&
+        ['|', 'J', 'L'].contains(&map[start_pos.x + 1][start_pos.y]) &&
+        ['-', 'L', 'F'].contains(&map[start_pos.x][start_pos.y - 1]) {
         solved_map[start_pos.x][start_pos.y] = '7';
-    } else if start_pos.y > 0 && start_pos.y + 1 < map[start_pos.x].len() && distance_map[start_pos.x][start_pos.y - 1].is_some() &&
-        distance_map[start_pos.x][start_pos.y + 1].is_some() {
+    }
+    // Left-right configuration
+    else if start_pos.y > 0 && start_pos.y + 1 < map[start_pos.x].len() &&
+        distance_map[start_pos.x][start_pos.y - 1].is_some() &&
+        distance_map[start_pos.x][start_pos.y + 1].is_some() &&
+        ['-', 'L', 'F'].contains(&map[start_pos.x][start_pos.y - 1]) &&
+        ['-', '7', 'J'].contains(&map[start_pos.x][start_pos.y + 1]) {
         solved_map[start_pos.x][start_pos.y] = '-';
-    } else if start_pos.x > 0 && start_pos.x + 1 < map.len() && distance_map[start_pos.x - 1][start_pos.y].is_some() &&
-        distance_map[start_pos.x + 1][start_pos.y].is_some() {
+    }
+    // Up-down configuration
+    else if start_pos.x > 0 && start_pos.x + 1 < map.len() &&
+        distance_map[start_pos.x - 1][start_pos.y].is_some() &&
+        distance_map[start_pos.x + 1][start_pos.y].is_some() &&
+        ['|', '7', 'F'].contains(&map[start_pos.x - 1][start_pos.y]) &&
+        ['-', 'L', 'J'].contains(&map[start_pos.x + 1][start_pos.y]) {
         solved_map[start_pos.x][start_pos.y] = '|';
     }
 
@@ -110,6 +144,15 @@ fn _print_distance_map(input: &Vec<Vec<Option<usize>>>) {
 
         }
         println!()
+    }
+}
+
+fn _print_map(input: &Vec<Vec<char>>) {
+    for x in 0..input.len() {
+        for y in 0..input[x].len() {
+            print!("{}", input[x][y]);
+        }
+        println!();
     }
 }
 

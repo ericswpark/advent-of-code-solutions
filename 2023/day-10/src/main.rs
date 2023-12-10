@@ -190,30 +190,69 @@ fn calculate_distance_map(map: &Vec<Vec<char>>) -> (Vec<Vec<Option<usize>>>, usi
         let current_positions = get_all_positions(&distance_map, max_walk);
 
         for position in current_positions {
+            let mut search_left = false;
+            let mut search_right = false;
+            let mut search_up = false;
+            let mut search_down = false;
+            match map[position.x][position.y] {
+                '-' => {
+                    search_left = true;
+                    search_right = true;
+                },
+                '|' => {
+                    search_up = true;
+                    search_down = true;
+                },
+                'F' => {
+                    search_right = true;
+                    search_down = true;
+                },
+                'L' => {
+                    search_up = true;
+                    search_right = true;
+                },
+                '7' => {
+                    search_left = true;
+                    search_down = true;
+                },
+                'J' => {
+                    search_up = true;
+                    search_left = true;
+                },
+                'S' => {
+                    // Starting point, search everywhere
+                    search_left = true;
+                    search_up = true;
+                    search_down = true;
+                    search_right = true;
+                }
+                _ => panic!("Bad mapping!"),
+            }
+
             // Search in a circle for None values and see if they connect
             // Left
-            if position.y > 0 &&
+            if search_left && position.y > 0 &&
                 distance_map[position.x][position.y - 1] == None &&
                 ['-', 'L', 'F'].contains(&map[position.x][position.y - 1])  {
                 has_walked_next = true;
                 distance_map[position.x][position.y - 1] = Some(max_walk + 1);
             }
-            // Top
-            if position.x > 0 &&
+            // Up
+            if search_up && position.x > 0 &&
                 distance_map[position.x - 1][position.y] == None &&
                 ['|', '7', 'F'].contains(&map[position.x - 1][position.y])  {
                 has_walked_next = true;
                 distance_map[position.x - 1][position.y] = Some(max_walk + 1);
             }
             // Right
-            if position.y + 1 < map[position.x].len() &&
+            if search_right && position.y + 1 < map[position.x].len() &&
                 distance_map[position.x][position.y + 1] == None &&
                 ['-', '7', 'J'].contains(&map[position.x][position.y + 1])  {
                 has_walked_next = true;
                 distance_map[position.x][position.y + 1] = Some(max_walk + 1);
             }
-            // Bottom
-            if position.x + 1 < map.len() &&
+            // Down
+            if search_down && position.x + 1 < map.len() &&
                 distance_map[position.x + 1][position.y] == None &&
                 ['|', 'L', 'J'].contains(&map[position.x + 1][position.y])  {
                 has_walked_next = true;

@@ -24,8 +24,127 @@ fn part_1(input: &Vec<String>) -> usize {
 }
 
 fn part_2(input: &Vec<String>) -> i32 {
-    // TODO: implement
-    0
+    let map: Vec<Vec<char>> = get_map(input);
+    let (distance_map, _) = calculate_distance_map(&map);
+
+    let mut inside_count = 0;
+
+    for x in 0..distance_map.len() {
+        for y in 0..distance_map[x].len() {
+            // Check if the position is within the loop or not, and increment in the inside count accordingly
+            let pos = distance_map[x][y];
+
+            // If the position is part of the loop, then it is obviously not the inside of the loop
+            if pos.is_some() { continue }
+
+            // Check top pipe count
+            {
+                let mut cur_x = x;
+                let mut top_pipe_encountered = 0;
+                let mut top_pipe_started = false;
+                while cur_x > 0 {
+                    cur_x -= 1;
+                    let cur_char = map[cur_x][y];
+                    if distance_map[cur_x][y].is_some() {
+                        if top_pipe_started {
+                            if cur_char == '|' { continue } else if ['F', '7'].contains(&cur_char) {
+                                top_pipe_started = false;
+                            }
+                        } else {
+                            top_pipe_encountered += 1;
+                            top_pipe_started = true;
+                        }
+                    } else {
+                        top_pipe_started = false;
+                    }
+                }
+                if top_pipe_encountered % 2 == 0 { continue }
+            }
+
+            // Check bottom pipe count
+            {
+                let mut cur_x = x;
+                let mut bottom_pipe_encountered = 0;
+                let mut bottom_pipe_started = false;
+                while cur_x + 1 < map.len() {
+                    cur_x += 1;
+                    let cur_char = map[cur_x][y];
+                    if distance_map[cur_x][y].is_some() {
+                        if bottom_pipe_started {
+                            if cur_char == '|' { continue }
+                            else if ['L', 'J'].contains(&cur_char) {
+                                bottom_pipe_started = false;
+                            }
+                        } else {
+                            bottom_pipe_encountered += 1;
+                            bottom_pipe_started = true;
+                        }
+                    }
+                    else {
+                        bottom_pipe_started = false;
+                    }
+                }
+                if bottom_pipe_encountered % 2 == 0 { continue }
+            }
+
+            // Check left pipe count
+            {
+                let mut cur_y = y;
+                let mut left_pipe_encountered = 0;
+                let mut left_pipe_started = false;
+                while cur_y > 0 {
+                    cur_y -= 1;
+                    let cur_char = map[x][cur_y];
+                    if distance_map[x][cur_y].is_some() {
+                        if left_pipe_started {
+                            if cur_char == '-' { continue }
+                            else if ['F', 'L'].contains(&cur_char) {
+                                left_pipe_started = false;
+                            }
+                        } else {
+                            left_pipe_encountered += 1;
+                            left_pipe_started = true;
+                        }
+                    }
+                    else {
+                        left_pipe_started = false;
+                    }
+                }
+                if left_pipe_encountered % 2 == 0 { continue }
+            }
+
+            // Check right pipe count
+            {
+                let mut cur_y = y;
+                let mut right_pipe_encountered = 0;
+                let mut right_pipe_started = false;
+                while cur_y + 1 < map[x].len() {
+                    cur_y += 1;
+                    let cur_char = map[x][cur_y];
+                    if distance_map[x][cur_y].is_some() {
+                        if right_pipe_started {
+                            if cur_char == '-' { continue }
+                            else if ['7', 'J'].contains(&cur_char) {
+                                right_pipe_started = false;
+                            }
+                        } else {
+                            right_pipe_encountered += 1;
+                            right_pipe_started = true;
+                        }
+                    }
+                    else {
+                        right_pipe_started = false;
+                    }
+                }
+                if right_pipe_encountered % 2 == 0 { continue }
+            }
+
+            // At this point we can conclude we are within the loop
+            inside_count += 1
+        }
+    }
+
+    inside_count
 }
 
 fn get_map(input: &Vec<String>) -> Vec<Vec<char>> {

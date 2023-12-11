@@ -15,7 +15,7 @@ fn main() {
 fn part_1(input: &Vec<String>) -> i32 {
     let (galaxy_positions, map_size) = parse_map(input);
     let empty_map = find_empties(&galaxy_positions, map_size);
-    let galaxy_positions = find_new_galaxy_positions(&galaxy_positions, empty_map);
+    let galaxy_positions = find_new_galaxy_positions(&galaxy_positions, empty_map, 1);
 
     let mut distance_sum = 0;
 
@@ -31,8 +31,21 @@ fn part_1(input: &Vec<String>) -> i32 {
 
 
 
-fn part_2(_input: &Vec<String>) -> i32 {
-    todo!("Implement")
+fn part_2(input: &Vec<String>) -> i64 {
+    let (galaxy_positions, map_size) = parse_map(input);
+    let empty_map = find_empties(&galaxy_positions, map_size);
+    let galaxy_positions = find_new_galaxy_positions(&galaxy_positions, empty_map, 1_000_000);
+
+    let mut distance_sum: i64 = 0;
+
+    for start_galaxy_index in 0..galaxy_positions.len() {
+        for end_galaxy_index in start_galaxy_index + 1..galaxy_positions.len() {
+            // Find distance between the two galaxies
+            distance_sum += get_distance(&galaxy_positions, start_galaxy_index, end_galaxy_index) as i64;
+        }
+    }
+
+    distance_sum
 }
 
 struct Position {
@@ -84,7 +97,7 @@ fn find_empties(galaxy_positions: &Vec<Position>, map_size: Position) -> EmptyMa
     EmptyMap { row_empties, col_empties }
 }
 
-fn find_new_galaxy_positions(galaxy_positions: &Vec<Position>, empty_map: EmptyMap) -> Vec<Position> {
+fn find_new_galaxy_positions(galaxy_positions: &Vec<Position>, empty_map: EmptyMap, offset: i32) -> Vec<Position> {
     let mut new_galaxy_positions = Vec::new();
 
     for galaxy in galaxy_positions {
@@ -93,11 +106,11 @@ fn find_new_galaxy_positions(galaxy_positions: &Vec<Position>, empty_map: EmptyM
         let mut new_col = 0;
 
         for i in 0..=galaxy.row {
-            new_row += if empty_map.row_empties[i as usize] { 2 } else { 1 }
+            new_row += if empty_map.row_empties[i as usize] { 1 + offset } else { 1 }
         }
 
         for i in 0..=galaxy.column {
-            new_col += if empty_map.col_empties[i as usize] { 2 } else { 1 }
+            new_col += if empty_map.col_empties[i as usize] { 1 + offset } else { 1 }
         }
 
         new_galaxy_positions.push(Position { row: new_row, column: new_col })

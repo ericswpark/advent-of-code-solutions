@@ -106,11 +106,11 @@ fn find_new_galaxy_positions(galaxy_positions: &Vec<Position>, empty_map: EmptyM
         let mut new_col = 0;
 
         for i in 0..=galaxy.row {
-            new_row += if empty_map.row_empties[i as usize] { 1 * offset } else { 1 }
+            new_row += if empty_map.row_empties[i as usize] { offset } else { 1 }
         }
 
         for i in 0..=galaxy.column {
-            new_col += if empty_map.col_empties[i as usize] { 1 * offset } else { 1 }
+            new_col += if empty_map.col_empties[i as usize] { offset } else { 1 }
         }
 
         new_galaxy_positions.push(Position { row: new_row, column: new_col })

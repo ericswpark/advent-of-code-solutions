@@ -20,8 +20,10 @@ fn part_1(input: &Vec<String>) -> i32 {
 
 
 
-fn part_2(input: &Vec<String>) -> i64 {
-    todo!()
+fn part_2(input: &Vec<String>) -> usize {
+    let input = &input[0];
+
+    get_basement_position(input) + 1
 }
 
 fn get_level(input: &String) -> i32{
@@ -31,4 +33,15 @@ fn get_level(input: &String) -> i32{
         else if c == ')' { level -= 1 }
     }
     level
+}
+
+fn get_basement_position(input: &String) -> usize {
+    let mut level = 0;
+    for (index, c) in input.chars().enumerate() {
+        if c == '(' { level += 1 }
+        else if c == ')' { level -= 1 }
+
+        if level < 0 { return index }
+    }
+    panic!("No basement level")
 }

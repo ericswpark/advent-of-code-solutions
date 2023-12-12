@@ -1,4 +1,3 @@
-use std::fmt;
 use crate::Condition::{Damaged, Operational, Unknown};
 
 mod helpers;
@@ -63,25 +62,6 @@ impl Condition {
             '?' => Unknown,
             _ => panic!("Bad condition character!"),
         }
-    }
-
-    fn to_char(&self) -> char {
-        match &self {
-            Operational => { '.' }
-            Damaged => { '#' }
-            Unknown => { '?' }
-        }
-    }
-}
-
-impl fmt::Display for Condition {
-    // This trait requires `fmt` with this exact signature.
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // Write strictly the first element into the supplied output
-        // stream: `f`. Returns `fmt::Result` which indicates whether the
-        // operation succeeded or failed. Note that `write!` uses syntax which
-        // is very similar to `println!`.
-        write!(f, "{}", self.to_char())
     }
 }
 

@@ -1,3 +1,4 @@
+use memoize::memoize;
 use crate::Condition::{Damaged, Operational, Unknown};
 
 mod helpers;
@@ -41,14 +42,14 @@ fn part_2(input: &Vec<String>) -> i32 {
 }
 
 
-#[derive(PartialEq, Clone, Debug)]
+#[derive(PartialEq, Clone, Debug, Eq, Hash)]
 enum Condition {
     Operational,
     Damaged,
     Unknown,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 struct Row {
     springs: Vec<Condition>,
     damaged_spring_groups: Vec<i32>,
@@ -119,10 +120,11 @@ fn parse_folded_row(input: &String) -> Row {
 }
 
 fn get_arrangements(row: Row) -> i32 {
-    row_analyze(&row)
+    row_analyze(row)
 }
 
-fn row_analyze(row: &Row) -> i32 {
+#[memoize]
+fn row_analyze(row: Row) -> i32 {
     let mut row = row.clone();
 
     // No springs left
@@ -146,13 +148,13 @@ fn row_analyze(row: &Row) -> i32 {
     match row.springs[0] {
         Operational => {
             row.springs.remove(0);
-            row_analyze(&row)
+            row_analyze(row)
         },
         Unknown => {
             row.springs[0] = Operational;
-            let mut result = row_analyze(&row);
+            let mut result = row_analyze(row.clone());
             row.springs[0] = Damaged;
-            result += row_analyze(&row);
+            result += row_analyze(row);
             result
         },
         Damaged => {
@@ -179,7 +181,7 @@ fn row_analyze(row: &Row) -> i32 {
             row.springs.drain(0..row.damaged_spring_groups[0] as usize);
             row.damaged_spring_groups.remove(0);
 
-            row_analyze(&row)
+            row_analyze(row)
         },
     }
 }

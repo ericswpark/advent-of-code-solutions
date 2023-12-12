@@ -104,11 +104,11 @@ fn parse_folded_row(input: &String) -> Row {
     let mut unfolded_damaged_spring_groups: Vec<i32> = Vec::new();
     let damaged_spring_groups: Vec<i32> = parts[1].split(',').map(|s| s.parse::<i32>().unwrap()).collect();
 
-    for _ in 0..5 {
+    for i in 0..5 {
         for c in parts[0].chars() {
             springs.push(Condition::mapping(c));
         }
-        springs.push(Unknown);
+        if i != 4 { springs.push(Unknown); }
 
         for group in &damaged_spring_groups {
             unfolded_damaged_spring_groups.push(*group);

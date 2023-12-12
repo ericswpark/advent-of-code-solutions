@@ -15,7 +15,7 @@ fn main() {
 }
 
 
-fn part_1(input: &Vec<String>) -> i32 {
+fn part_1(input: &Vec<String>) -> i64 {
     let field = parse_field(input);
 
     let mut arrangement_sum = 0;
@@ -29,10 +29,10 @@ fn part_1(input: &Vec<String>) -> i32 {
 
 
 
-fn part_2(input: &Vec<String>) -> i32 {
+fn part_2(input: &Vec<String>) -> i64 {
     let field = parse_folded_field(input);
 
-    let mut arrangement_sum = 0;
+    let mut arrangement_sum: i64 = 0;
 
     for row in field {
         arrangement_sum += row_analyze(row);
@@ -120,7 +120,7 @@ fn parse_folded_row(input: &String) -> Row {
 }
 
 #[memoize]
-fn row_analyze(row: Row) -> i32 {
+fn row_analyze(row: Row) -> i64 {
     let mut row = row.clone();
 
     // No springs left

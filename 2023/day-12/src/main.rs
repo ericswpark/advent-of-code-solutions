@@ -21,7 +21,7 @@ fn part_1(input: &Vec<String>) -> i32 {
     let mut arrangement_sum = 0;
 
     for row in field {
-        arrangement_sum += get_arrangements(row);
+        arrangement_sum += row_analyze(row);
     }
 
     arrangement_sum
@@ -35,7 +35,7 @@ fn part_2(input: &Vec<String>) -> i32 {
     let mut arrangement_sum = 0;
 
     for row in field {
-        arrangement_sum += get_arrangements(row);
+        arrangement_sum += row_analyze(row);
     }
 
     arrangement_sum
@@ -117,10 +117,6 @@ fn parse_folded_row(input: &String) -> Row {
     }
 
     Row { springs, damaged_spring_groups: unfolded_damaged_spring_groups}
-}
-
-fn get_arrangements(row: Row) -> i32 {
-    row_analyze(row)
 }
 
 #[memoize]

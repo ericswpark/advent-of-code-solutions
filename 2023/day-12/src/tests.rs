@@ -7,54 +7,54 @@ mod tests {
     fn arrangement_test_1() {
         let input = &String::from("???.### 1,1,3");
         let row = parse_row(input);
-        assert_eq!(get_arrangements(row), 1);
+        assert_eq!(row_analyze(row), 1);
         let row = parse_folded_row(input);
-        assert_eq!(get_arrangements(row), 1);
+        assert_eq!(row_analyze(row), 1);
     }
 
     #[test]
     fn arrangement_test_2() {
         let input = &String::from(".??..??...?##. 1,1,3");
         let row = parse_row(input);
-        assert_eq!(get_arrangements(row), 4);
+        assert_eq!(row_analyze(row), 4);
         let row = parse_folded_row(input);
-        assert_eq!(get_arrangements(row), 16384);
+        assert_eq!(row_analyze(row), 16384);
     }
 
     #[test]
     fn arrangement_test_3() {
         let input = &String::from("?#?#?#?#?#?#?#? 1,3,1,6");
         let row = parse_row(input);
-        assert_eq!(get_arrangements(row), 1);
+        assert_eq!(row_analyze(row), 1);
         let row = parse_folded_row(input);
-        assert_eq!(get_arrangements(row), 1);
+        assert_eq!(row_analyze(row), 1);
     }
 
     #[test]
     fn arrangement_test_4() {
         let input = &String::from("????.#...#... 4,1,1");
         let row = parse_row(input);
-        assert_eq!(get_arrangements(row), 1);
+        assert_eq!(row_analyze(row), 1);
         let row = parse_folded_row(input);
-        assert_eq!(get_arrangements(row), 16);
+        assert_eq!(row_analyze(row), 16);
     }
 
     #[test]
     fn arrangement_test_5() {
         let input = &String::from("????.######..#####. 1,6,5");
         let row = parse_row(input);
-        assert_eq!(get_arrangements(row), 4);
+        assert_eq!(row_analyze(row), 4);
         let row = parse_folded_row(input);
-        assert_eq!(get_arrangements(row), 2500);
+        assert_eq!(row_analyze(row), 2500);
     }
 
     #[test]
     fn arrangement_test_6() {
         let input = &String::from("?###???????? 3,2,1");
         let row = parse_row(input);
-        assert_eq!(get_arrangements(row), 10);
+        assert_eq!(row_analyze(row), 10);
         let row = parse_folded_row(input);
-        assert_eq!(get_arrangements(row), 506250);
+        assert_eq!(row_analyze(row), 506250);
     }
 
     #[test]
@@ -69,7 +69,7 @@ mod tests {
         // Thanks to u/AnxiousMasterpiece23 for the test case!
         // https://www.reddit.com/r/adventofcode/comments/18gg5u3/2023_day_12_part_1_sigh/kd0jt2m/
         let row = parse_row(&String::from(".##.?#??.#.?# 2,1,1,1"));
-        assert_eq!(get_arrangements(row), 1);
+        assert_eq!(row_analyze(row), 1);
     }
 
 

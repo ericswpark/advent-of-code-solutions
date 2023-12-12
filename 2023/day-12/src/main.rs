@@ -29,8 +29,16 @@ fn part_1(input: &Vec<String>) -> i32 {
 
 
 
-fn part_2(input: &Vec<String>) -> i64 {
-    todo!()
+fn part_2(input: &Vec<String>) -> i32 {
+    let field = parse_folded_field(input);
+
+    let mut arrangement_sum = 0;
+
+    for row in field {
+        arrangement_sum += get_arrangements(row);
+    }
+
+    arrangement_sum
 }
 
 
@@ -77,21 +85,21 @@ impl fmt::Display for Condition {
     }
 }
 
-fn get_string_representation(input: &Vec<Condition>) -> String {
-    let mut str = String::new();
-
-    for condition in input {
-        str.push(condition.to_char());
-    }
-
-    str
-}
-
 fn parse_field(input: &Vec<String>) -> Vec<Row> {
     let mut rows = Vec::new();
 
     for line in input {
         rows.push(parse_row(line));
+    }
+
+    rows
+}
+
+fn parse_folded_field(input: &Vec<String>) -> Vec<Row> {
+    let mut rows = Vec::new();
+
+    for line in input {
+        rows.push(parse_folded_row(line));
     }
 
     rows
@@ -108,6 +116,26 @@ fn parse_row(input: &String) -> Row {
     let damaged_spring_groups: Vec<i32> = parts[1].split(',').map(|s| s.parse::<i32>().unwrap()).collect();
 
     Row { springs, damaged_spring_groups }
+}
+
+fn parse_folded_row(input: &String) -> Row {
+    let parts: Vec<String> = input.split(' ').map(|s| s.to_string()).collect();
+    let mut springs = Vec::new();
+    let mut unfolded_damaged_spring_groups: Vec<i32> = Vec::new();
+    let damaged_spring_groups: Vec<i32> = parts[1].split(',').map(|s| s.parse::<i32>().unwrap()).collect();
+
+    for _ in 0..5 {
+        for c in parts[0].chars() {
+            springs.push(Condition::mapping(c));
+        }
+        springs.push(Unknown);
+
+        for group in &damaged_spring_groups {
+            unfolded_damaged_spring_groups.push(*group);
+        }
+    }
+
+    Row { springs, damaged_spring_groups: unfolded_damaged_spring_groups}
 }
 
 fn get_arrangements(row: Row) -> i32 {

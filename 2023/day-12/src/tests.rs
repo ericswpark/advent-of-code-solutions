@@ -5,44 +5,63 @@ mod tests {
 
     #[test]
     fn arrangement_test_1() {
-        let row = parse_row(&String::from("???.### 1,1,3"));
+        let input = &String::from("???.### 1,1,3");
+        let row = parse_row(input);
+        assert_eq!(get_arrangements(row), 1);
+        let row = parse_folded_row(input);
         assert_eq!(get_arrangements(row), 1);
     }
 
     #[test]
     fn arrangement_test_2() {
-        let row = parse_row(&String::from(".??..??...?##. 1,1,3"));
+        let input = &String::from(".??..??...?##. 1,1,3");
+        let row = parse_row(input);
         assert_eq!(get_arrangements(row), 4);
+        let row = parse_folded_row(input);
+        assert_eq!(get_arrangements(row), 16384);
     }
 
     #[test]
     fn arrangement_test_3() {
-        let row = parse_row(&String::from("?#?#?#?#?#?#?#? 1,3,1,6"));
+        let input = &String::from("?#?#?#?#?#?#?#? 1,3,1,6");
+        let row = parse_row(input);
+        assert_eq!(get_arrangements(row), 1);
+        let row = parse_folded_row(input);
         assert_eq!(get_arrangements(row), 1);
     }
 
     #[test]
     fn arrangement_test_4() {
-        let row = parse_row(&String::from("????.#...#... 4,1,1"));
+        let input = &String::from("????.#...#... 4,1,1");
+        let row = parse_row(input);
         assert_eq!(get_arrangements(row), 1);
+        let row = parse_folded_row(input);
+        assert_eq!(get_arrangements(row), 16);
     }
 
     #[test]
     fn arrangement_test_5() {
-        let row = parse_row(&String::from("????.######..#####. 1,6,5"));
+        let input = &String::from("????.######..#####. 1,6,5");
+        let row = parse_row(input);
         assert_eq!(get_arrangements(row), 4);
+        let row = parse_folded_row(input);
+        assert_eq!(get_arrangements(row), 2500);
     }
 
     #[test]
     fn arrangement_test_6() {
-        let row = parse_row(&String::from("?###???????? 3,2,1"));
+        let input = &String::from("?###???????? 3,2,1");
+        let row = parse_row(input);
         assert_eq!(get_arrangements(row), 10);
+        let row = parse_folded_row(input);
+        assert_eq!(get_arrangements(row), 506250);
     }
 
     #[test]
     fn sample_input() {
         let input = get_input("sample-input.txt");
         assert_eq!(part_1(&input), 21);
+        assert_eq!(part_2(&input), 525152);
     }
 
     #[test]

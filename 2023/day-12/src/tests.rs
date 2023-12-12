@@ -45,11 +45,19 @@ mod tests {
         assert_eq!(part_1(&input), 21);
     }
 
+    #[test]
+    fn test_anxiousmasterpiece23() {
+        // Thanks to u/AnxiousMasterpiece23 for the test case!
+        // https://www.reddit.com/r/adventofcode/comments/18gg5u3/2023_day_12_part_1_sigh/kd0jt2m/
+        let row = parse_row(&String::from(".##.?#??.#.?# 2,1,1,1"));
+        assert_eq!(get_arrangements(row), 1);
+    }
+
 
     #[test]
     fn puzzle_input() {
         let input = get_input("puzzle-input.txt");
-        //assert_eq!(part_1(&input), 7975);
+        assert_eq!(part_1(&input), 7490);
         //assert_eq!(part_2(&input), 543018317006);
     }
 }

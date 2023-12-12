@@ -1,3 +1,4 @@
+use std::fmt;
 use crate::Condition::{Damaged, Operational, Unknown};
 
 mod helpers;
@@ -33,7 +34,7 @@ fn part_2(input: &Vec<String>) -> i64 {
 }
 
 
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Clone, Debug)]
 enum Condition {
     Operational,
     Damaged,
@@ -55,6 +56,35 @@ impl Condition {
             _ => panic!("Bad condition character!"),
         }
     }
+
+    fn to_char(&self) -> char {
+        match &self {
+            Operational => { '.' }
+            Damaged => { '#' }
+            Unknown => { '?' }
+        }
+    }
+}
+
+impl fmt::Display for Condition {
+    // This trait requires `fmt` with this exact signature.
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // Write strictly the first element into the supplied output
+        // stream: `f`. Returns `fmt::Result` which indicates whether the
+        // operation succeeded or failed. Note that `write!` uses syntax which
+        // is very similar to `println!`.
+        write!(f, "{}", self.to_char())
+    }
+}
+
+fn get_string_representation(input: &Vec<Condition>) -> String {
+    let mut str = String::new();
+
+    for condition in input {
+        str.push(condition.to_char());
+    }
+
+    str
 }
 
 fn parse_field(input: &Vec<String>) -> Vec<Row> {
@@ -94,7 +124,15 @@ fn row_analyze(row: &Row) -> i32 {
     }
 
     // No damaged blocks left
-    if row.damaged_spring_groups.len() == 0 { return 1; }
+    if row.damaged_spring_groups.len() == 0 {
+        // See if none of the springs are damaged
+        for spring in &row.springs {
+            if *spring == Damaged {
+                return 0;
+            }
+        }
+        return 1;
+    }
 
     // Match with the first spring
     match row.springs[0] {

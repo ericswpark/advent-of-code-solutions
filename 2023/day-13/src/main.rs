@@ -33,7 +33,37 @@ fn part_1(input: &Vec<String>) -> i64 {
 
 
 fn part_2(input: &Vec<String>) -> i64 {
-    todo!()
+    let patterns = parse_patterns(input);
+
+    let mut summary = 0;
+
+    for pattern in patterns {
+        // Get the original values to compare against
+        let original_vertical = get_vertical_reflection(&pattern);
+        let original_horizontal = get_horizontal_reflection(&pattern);
+
+        // Test different smudges
+        'outer_loop: for row in 0..pattern.len() {
+            for column in 0..pattern[row].len() {
+                let mut new_pattern = pattern.clone();
+                new_pattern[row][column].flip();
+
+                let new_vertical = get_vertical_reflection(&new_pattern);
+                let new_horizontal = get_horizontal_reflection(&new_pattern);
+
+                if new_vertical != -1 && new_vertical != original_vertical {
+                    summary += new_vertical;
+                    break 'outer_loop;
+                } else if new_horizontal != -1 && new_horizontal != original_horizontal {
+                    summary += 100 * new_horizontal;
+                    break 'outer_loop;
+                }
+
+            }
+        }
+    }
+
+    summary
 }
 
 
@@ -49,6 +79,14 @@ impl Item {
             '.' => Item::Ash,
             '#' => Item::Rock,
             _ => panic!("Bad condition character!"),
+        }
+    }
+
+    fn flip(&mut self) {
+        if *self == Item::Ash {
+            *self = Item::Rock;
+        } else {
+            *self = Item::Ash;
         }
     }
 }

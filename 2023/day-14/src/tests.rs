@@ -5,33 +5,53 @@ mod tests {
 
     #[test]
     fn roll_map_north_test() {
-        let input_string = String::from("O....#....
-O.OO#....#
-.....##...
-OO.#O....O
-.O.....O#.
-O.#..O.#.#
-..O..#O..O
-.......O..
-#....###..
-#OO..#....");
-        let input: Vec<String> = input_string.split("\n").map(|s| s.to_string()).collect();
+        let input = get_input("sample-input.txt");
         let map = parse_map(&input);
         let rolled_north_map = roll_map_north(map);
-
-        let output_string = String::from("OOOO.#.O..
-OO..#....#
-OO..O##..O
-O..#.OO...
-........#.
-..#....#.#
-..O..#.O.O
-..O.......
-#....###..
-#....#....");
-        let output: Vec<String> = output_string.split("\n").map(|s| s.to_string()).collect();
+        let output = get_input("sample-input-rolled-north.txt");
         let output_map = parse_map(&output);
         assert_eq!(rolled_north_map, output_map);
+    }
+
+    #[test]
+    fn roll_map_south_test() {
+        let input = get_input("sample-input.txt");
+        let map = parse_map(&input);
+        let rolled_south_map = roll_map_south(map);
+        let output = get_input("sample-input-rolled-south.txt");
+        let output_map = parse_map(&output);
+        assert_eq!(rolled_south_map, output_map);
+    }
+
+    #[test]
+    fn roll_map_west_test() {
+        let input = get_input("sample-input.txt");
+        let map = parse_map(&input);
+        let rolled_west_map = roll_map_west(map);
+        let output = get_input("sample-input-rolled-west.txt");
+        let output_map = parse_map(&output);
+        assert_eq!(rolled_west_map, output_map);
+    }
+
+    #[test]
+    fn roll_map_east_test() {
+        let input = get_input("sample-input.txt");
+        let map = parse_map(&input);
+        let rolled_east_map = roll_map_east(map);
+        let output = get_input("sample-input-rolled-east.txt");
+        let output_map = parse_map(&output);
+        assert_eq!(rolled_east_map, output_map);
+    }
+
+    #[test]
+    fn roll_map_cycle_test() {
+        let input = get_input("sample-input.txt");
+        let map = parse_map(&input);
+        let spinned_map = spin_cycle(map);
+        print_map(&spinned_map);
+        let output = get_input("sample-input-cycle.txt");
+        let output_map = parse_map(&output);
+        assert_eq!(spinned_map, output_map);
     }
 
 

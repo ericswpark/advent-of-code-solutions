@@ -33,7 +33,7 @@ fn part_2(input: &Vec<String>) -> i64 {
 fn spin_cycle(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
     let north_spin = roll_map_north(map);
     let west_spin = roll_map_west(north_spin);
-    let south_spin = roll_map_north(west_spin);
+    let south_spin = roll_map_south(west_spin);
     roll_map_east(south_spin)
 }
 
@@ -95,7 +95,7 @@ fn roll_map_north(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
                 Plot::Round => { round_rocks_encountered += 1; }
                 Plot::Fixed => {
                     // Starting from the start index, roll the rocks!
-                    for roll_row in start_index..row {
+                    for roll_row in start_index..=row {
                         if round_rocks_encountered > 0 {
                             map[roll_row][column] = Plot::Round;
                             round_rocks_encountered -= 1;
@@ -132,7 +132,7 @@ fn roll_map_south(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
     let mut map = map;
 
     for column in 0..map[0].len() {
-        let mut start_index = 0;
+        let mut start_index = map.len() - 1;
         let mut round_rocks_encountered = 0;
 
         // Start from the bottom and work way up
@@ -143,7 +143,7 @@ fn roll_map_south(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
                 Plot::Round => { round_rocks_encountered += 1; }
                 Plot::Fixed => {
                     // Starting from the start index, roll the rocks!
-                    for roll_row in (start_index..row).rev() {
+                    for roll_row in (row..=start_index).rev() {
                         if round_rocks_encountered > 0 {
                             map[roll_row][column] = Plot::Round;
                             round_rocks_encountered -= 1;
@@ -154,14 +154,14 @@ fn roll_map_south(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
                         }
                     }
                     // Reset start index to current
-                    start_index = row + 1;
+                    start_index = if row > 0 { row - 1 } else { 0 };
                 }
             }
 
             // Check if we're on the last item and we haven't encountered a fixed rock yet
-            if row == map.len() - 1 && map[row][column] != Plot::Fixed {
+            if row == 0 && map[row][column] != Plot::Fixed {
                 // Roll the rocks one last time
-                for roll_row in (start_index..=row).rev() {
+                for roll_row in (row..=start_index).rev() {
                     if round_rocks_encountered > 0 {
                         map[roll_row][column] = Plot::Round;
                         round_rocks_encountered -= 1;
@@ -190,7 +190,7 @@ fn roll_map_west(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
                 Plot::Round => { round_rocks_encountered += 1; }
                 Plot::Fixed => {
                     // Starting from the start index, roll the rocks!
-                    for roll_column in start_index..column {
+                    for roll_column in start_index..=column {
                         if round_rocks_encountered > 0 {
                             map[row][roll_column] = Plot::Round;
                             round_rocks_encountered -= 1;
@@ -201,7 +201,7 @@ fn roll_map_west(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
                         }
                     }
                     // Reset start index to current
-                    start_index = row + 1;
+                    start_index = column + 1;
                 }
             }
 
@@ -226,18 +226,18 @@ fn roll_map_west(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
 fn roll_map_east(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
     let mut map = map;
 
-    for row in (0..map.len()).rev() {
-        let mut start_index = 0;
+    for row in 0..map.len() {
+        let mut start_index = map[0].len() - 1;
         let mut round_rocks_encountered = 0;
 
-        // Start from the left and work way right
+        // Start from the right and work way left
         for column in (0..map[0].len()).rev() {
             match map[row][column] {
                 Plot::Empty => { }
                 Plot::Round => { round_rocks_encountered += 1; }
                 Plot::Fixed => {
                     // Starting from the start index, roll the rocks!
-                    for roll_column in start_index..column {
+                    for roll_column in (column..=start_index).rev() {
                         if round_rocks_encountered > 0 {
                             map[row][roll_column] = Plot::Round;
                             round_rocks_encountered -= 1;
@@ -248,14 +248,14 @@ fn roll_map_east(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
                         }
                     }
                     // Reset start index to current
-                    start_index = row + 1;
+                    start_index = if column > 0 { column - 1 } else { 0 };
                 }
             }
 
             // Check if we're on the last item and we haven't encountered a fixed rock yet
-            if column == map[row].len() - 1 && map[row][column] != Plot::Fixed {
+            if column == 0 && map[row][column] != Plot::Fixed {
                 // Roll the rocks one last time
-                for roll_column in (start_index..=column).rev() {
+                for roll_column in (column..=start_index).rev() {
                     if round_rocks_encountered > 0 {
                         map[row][roll_column] = Plot::Round;
                         round_rocks_encountered -= 1;

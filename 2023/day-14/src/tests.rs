@@ -48,7 +48,6 @@ mod tests {
         let input = get_input("sample-input.txt");
         let map = parse_map(&input);
         let spinned_map = spin_cycle(map);
-        print_map(&spinned_map);
         let output = get_input("sample-input-cycle.txt");
         let output_map = parse_map(&output);
         assert_eq!(spinned_map, output_map);
@@ -67,6 +66,6 @@ mod tests {
     fn puzzle_input() {
         let input = get_input("puzzle-input.txt");
         assert_eq!(part_1(&input), 111979);
-        //assert_eq!(part_2(&input), 27587);
+        assert_eq!(part_2(&input), 102055);
     }
 }

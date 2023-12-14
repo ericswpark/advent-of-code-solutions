@@ -23,8 +23,32 @@ fn part_1(input: &Vec<String>) -> i64 {
 fn part_2(input: &Vec<String>) -> i64 {
     let mut map = parse_map(input);
 
-    for _ in 0..1000000000 {
+    let mut spinned_maps: Vec<Vec<Vec<Plot>>> = Vec::new();
+
+    let mut i = 0;
+    let cycle_count = 1000000000;
+    let cycle_frequency;
+
+    'frequency_detection: loop {
         map = spin_cycle(map);
+
+        for (index, spinned_map) in spinned_maps.iter().enumerate() {
+            if map == *spinned_map {
+                cycle_frequency = (i - index) as i32;
+                break 'frequency_detection;
+            }
+        }
+
+        spinned_maps.push(map.clone());
+        i += 1;
+    }
+
+    i = cycle_count - ((cycle_count - i) % cycle_frequency as usize);
+    i += 1;
+
+    while i < cycle_count {
+        map = spin_cycle(map);
+        i += 1;
     }
 
     calculate_north_load(&map)

@@ -154,21 +154,6 @@ fn next_direction(x: i64, y: i64, direction: Direction) -> (i64, i64) {
 }
 
 fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x: i64, y: i64, direction: Direction, loop_detect: &mut HashSet<Iteration>) {
-    println!("Currently traversing {x}, {y}... energized count is {}", get_energized_sum(traverse_map));
-    for (row_index, row) in traverse_map.iter().enumerate() {
-        for (col_index, col) in row.iter().enumerate() {
-            if row_index == x as usize && col_index == y as usize {
-                print!("O");
-            }
-            else if *col {
-                print!("#");
-            } else {
-                print!(".");
-            }
-        }
-        println!();
-    }
-
     let mut x = x;
     let mut y = y;
 

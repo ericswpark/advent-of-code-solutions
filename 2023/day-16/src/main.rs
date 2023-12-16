@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 mod helpers;
 mod tests;
 
@@ -34,7 +36,7 @@ fn part_2(input: &Vec<String>) -> i64 {
     todo!()
 }
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq, Clone, Eq, Hash, Copy)]
 enum Direction {
     N,
     S,
@@ -83,7 +85,7 @@ fn parse_map(input: &Vec<String>) -> Vec<Vec<Item>>{
 fn traverse_map(map: &Vec<Vec<Item>>) -> Vec<Vec<bool>> {
     let mut traverse_map = vec![vec![false; map[0].len()]; map.len()];
 
-    traverse_map_next(map, &mut traverse_map, 0, 0, Direction::E, Vec::new());
+    traverse_map_next(map, &mut traverse_map, 0, 0, Direction::E, HashSet::new());
 
     traverse_map
 }
@@ -106,7 +108,7 @@ fn get_mirrored_direction(direction: Direction, mirror: &Item) -> Direction {
     } else { panic!("Not a mirror!") }
 }
 
-#[derive(PartialEq, Clone)]
+#[derive(Eq, Hash, PartialEq, Clone)]
 struct Iteration {
     x: usize,
     y: usize,
@@ -126,7 +128,7 @@ fn next_direction(x: i64, y: i64, direction: Direction) -> (i64, i64) {
     }
 }
 
-fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x: i64, y: i64, direction: Direction, mut loop_detect: Vec<Iteration>) {
+fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x: i64, y: i64, direction: Direction, mut loop_detect: HashSet<Iteration>) {
     println!("Currently traversing {x}, {y}... energized count is {}", get_energized_sum(traverse_map));
     for (row_index, row) in traverse_map.iter().enumerate() {
         for (col_index, col) in row.iter().enumerate() {
@@ -149,7 +151,7 @@ fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x:
     let current_coordinate = Iteration { x: x as usize, y: y as usize, direction };
     if loop_detect.contains(&current_coordinate) { return }
     else {
-        loop_detect.push(current_coordinate);
+        loop_detect.insert(current_coordinate);
     }
 
     // Set current position to energized

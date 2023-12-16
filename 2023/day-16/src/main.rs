@@ -17,7 +17,7 @@ fn main() {
 fn part_1(input: &Vec<String>) -> i64 {
     let map = parse_map(input);
 
-    let traversed_map = traverse_map(&map);
+    let traversed_map = traverse_map(&map, 0, 0, Direction::E);
 
     get_energized_sum(&traversed_map)
 }
@@ -33,6 +33,8 @@ fn get_energized_sum(traverse_map: &Vec<Vec<bool>>) -> i64 {
     energized_sum
 }
 fn part_2(input: &Vec<String>) -> i64 {
+    let map = parse_map(input);
+
     todo!()
 }
 
@@ -82,11 +84,11 @@ fn parse_map(input: &Vec<String>) -> Vec<Vec<Item>>{
     map
 }
 
-fn traverse_map(map: &Vec<Vec<Item>>) -> Vec<Vec<bool>> {
+fn traverse_map(map: &Vec<Vec<Item>>, x: i64, y: i64, direction: Direction) -> Vec<Vec<bool>> {
     let mut traverse_map = vec![vec![false; map[0].len()]; map.len()];
 
     let mut loop_detect = HashSet::new();
-    traverse_map_next(map, &mut traverse_map, 0, 0, Direction::E, &mut loop_detect);
+    traverse_map_next(map, &mut traverse_map, x, y, direction, &mut loop_detect);
 
     traverse_map
 }

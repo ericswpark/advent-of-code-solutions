@@ -15,7 +15,7 @@ fn main() {
 fn part_1(input: &Vec<String>) -> i64 {
     let map = parse_map(input);
 
-    let traversed_map = reverse_traverse_map(&map);
+    let traversed_map = traverse_map(&map);
 
     get_energized_sum(&traversed_map)
 }
@@ -88,38 +88,6 @@ fn traverse_map(map: &Vec<Vec<Item>>) -> Vec<Vec<bool>> {
     traverse_map
 }
 
-fn reverse_traverse_map(map: &Vec<Vec<Item>>) -> Vec<Vec<bool>> {
-    let mut traverse_map = vec![vec![false; map[0].len()]; map.len()];
-
-    for row in 0..map.len() {
-        for col in 0..map[row].len() {
-            let row = row as i64;
-            let col = col as i64;
-            traverse_map[row as usize][col as usize] = reverse_ray_tracing(map, row, col, Direction::N, Vec::new()) ||
-                reverse_ray_tracing(map, row, col, Direction::S, Vec::new()) ||
-                reverse_ray_tracing(map, row, col, Direction::W, Vec::new()) ||
-                reverse_ray_tracing(map, row, col, Direction::E, Vec::new());
-
-            for (row_p_index, row_p) in traverse_map.iter().enumerate() {
-                for (col_p_index, col_p) in row_p.iter().enumerate() {
-                    if row_p_index == row as usize && col_p_index == col as usize {
-                        print!("O");
-                    }
-                    else if *col_p {
-                        print!("#");
-                    } else {
-                        print!(".");
-                    }
-                }
-                println!();
-            }
-            println!();
-        }
-    }
-
-    traverse_map
-}
-
 fn get_mirrored_direction(direction: Direction, mirror: &Item) -> Direction {
     if *mirror == Item::ForwardMirror {
         return match direction {
@@ -174,7 +142,6 @@ fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x:
         println!();
     }
 
-
     let mut x = x;
     let mut y = y;
 
@@ -220,81 +187,5 @@ fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x:
                 if in_bounds(map, east_x, east_y) { traverse_map_next(map, traverse_map, east_x, east_y, Direction::E, loop_detect.clone()); }
             }
         }
-    }
-}
-
-fn reverse_ray_tracing(map: &Vec<Vec<Item>>, x: i64, y: i64, direction: Direction, mut loop_detect: Vec<Iteration>) -> bool {
-    let mut x: i64 = x;
-    let mut y: i64 = y;
-    let mut direction = direction;
-
-    if x == 0 && y == 0 && direction == Direction::W { return true; }
-
-    loop {
-        // Check if we're stuck in a loop and exit early if so
-        let current_coordinate = Iteration { x: x as usize, y: y as usize, direction };
-        if loop_detect.contains(&current_coordinate) { return false; }
-        else {
-            loop_detect.push(current_coordinate);
-        }
-
-        // Start walking until we either get to (0, 0), or fail to (false)
-        match map[x as usize][y as usize] {
-            Item::Empty => {
-                (x, y) = next_direction(x, y, direction);
-            }
-            Item::ForwardMirror | Item::BackMirror => {
-                direction = get_mirrored_direction(direction, &map[x as usize][y as usize]);
-                (x, y) = next_direction(x, y, direction);
-            }
-            Item::VerticalSplitter => {
-                if [Direction::E, Direction::W].contains(&direction) {
-                    return false;
-                } else {
-                    // Depending on where the beam came from, split
-                    let mut result = false;
-                    {
-                        let direction = Direction::W;
-                        let (x, y) = next_direction(x, y, direction);
-                        if in_bounds(map, x, y) { result |= reverse_ray_tracing(map, x, y, direction, loop_detect.clone());}
-                    }
-                    {
-                        let direction = Direction::E;
-                        let (x, y) = next_direction(x, y, direction);
-                        if in_bounds(map, x, y) { result |= reverse_ray_tracing(map, x, y, direction, loop_detect.clone());}
-                    }
-                    {
-                        let (x, y) = next_direction(x, y, direction);
-                        if in_bounds(map, x, y) { result |= reverse_ray_tracing(map, x, y, direction, loop_detect.clone());}
-                    }
-                    return result;
-                }
-            }
-            Item::HorizontalSplitter => {
-                if [Direction::N, Direction::S].contains(&direction) {
-                    return false;
-                } else {
-                    // Depending on where the beam came from, split
-                    let mut result = false;
-                    {
-                        let direction = Direction::N;
-                        let (x, y) = next_direction(x, y, direction);
-                        if in_bounds(map, x, y) { result |= reverse_ray_tracing(map, x, y, direction, loop_detect.clone());}
-                    }
-                    {
-                        let direction = Direction::S;
-                        let (x, y) = next_direction(x, y, direction);
-                        if in_bounds(map, x, y) { result |= reverse_ray_tracing(map, x, y, direction, loop_detect.clone());}
-                    }
-                    {
-                        let (x, y) = next_direction(x, y, direction);
-                        if in_bounds(map, x, y) { result |= reverse_ray_tracing(map, x, y, direction, loop_detect.clone());}
-                    }
-                    return result;
-                }
-            }
-        }
-
-        if !in_bounds(map, x, y) { return false; }
     }
 }

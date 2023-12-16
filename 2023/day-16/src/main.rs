@@ -85,7 +85,8 @@ fn parse_map(input: &Vec<String>) -> Vec<Vec<Item>>{
 fn traverse_map(map: &Vec<Vec<Item>>) -> Vec<Vec<bool>> {
     let mut traverse_map = vec![vec![false; map[0].len()]; map.len()];
 
-    traverse_map_next(map, &mut traverse_map, 0, 0, Direction::E, HashSet::new());
+    let mut loop_detect = HashSet::new();
+    traverse_map_next(map, &mut traverse_map, 0, 0, Direction::E, &mut loop_detect);
 
     traverse_map
 }
@@ -128,7 +129,7 @@ fn next_direction(x: i64, y: i64, direction: Direction) -> (i64, i64) {
     }
 }
 
-fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x: i64, y: i64, direction: Direction, mut loop_detect: HashSet<Iteration>) {
+fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x: i64, y: i64, direction: Direction, loop_detect: &mut HashSet<Iteration>) {
     println!("Currently traversing {x}, {y}... energized count is {}", get_energized_sum(traverse_map));
     for (row_index, row) in traverse_map.iter().enumerate() {
         for (col_index, col) in row.iter().enumerate() {
@@ -173,7 +174,7 @@ fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x:
                 if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, direction, loop_detect); }
             } else {
                 let (north_x, north_y) = next_direction(x, y, Direction::N);
-                if in_bounds(map, north_x, north_y) { traverse_map_next(map, traverse_map, north_x, north_y, Direction::N, loop_detect.clone()); }
+                if in_bounds(map, north_x, north_y) { traverse_map_next(map, traverse_map, north_x, north_y, Direction::N, loop_detect); }
                 let (south_x, south_y) = next_direction(x, y, Direction::S);
                 if in_bounds(map, south_x, south_y) { traverse_map_next(map, traverse_map, south_x, south_y, Direction::S, loop_detect); }
             }
@@ -184,7 +185,7 @@ fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x:
                 if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, direction, loop_detect); }
             } else {
                 let (west_x, west_y) = next_direction(x, y, Direction::W);
-                if in_bounds(map, west_x, west_y) { traverse_map_next(map, traverse_map, west_x, west_y, Direction::W, loop_detect.clone()); }
+                if in_bounds(map, west_x, west_y) { traverse_map_next(map, traverse_map, west_x, west_y, Direction::W, loop_detect); }
                 let (east_x, east_y) = next_direction(x, y, Direction::E);
                 if in_bounds(map, east_x, east_y) { traverse_map_next(map, traverse_map, east_x, east_y, Direction::E, loop_detect); }
             }

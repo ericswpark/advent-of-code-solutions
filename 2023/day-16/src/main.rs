@@ -160,33 +160,33 @@ fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x:
     match map[x as usize][y as usize] {
         Item::Empty => {
             (x, y) = next_direction(x, y, direction);
-            if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, direction, loop_detect.clone()); }
+            if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, direction, loop_detect); }
         }
         Item::ForwardMirror | Item::BackMirror => {
             let next_mirrored_direction = get_mirrored_direction(direction, &map[x as usize][y as usize]);
             (x, y) = next_direction(x, y, next_mirrored_direction);
-            if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, next_mirrored_direction, loop_detect.clone()); }
+            if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, next_mirrored_direction, loop_detect); }
         }
         Item::VerticalSplitter => {
             if direction == Direction::N || direction == Direction::S {
                 (x, y) = next_direction(x, y, direction);
-                if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, direction, loop_detect.clone()); }
+                if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, direction, loop_detect); }
             } else {
                 let (north_x, north_y) = next_direction(x, y, Direction::N);
                 if in_bounds(map, north_x, north_y) { traverse_map_next(map, traverse_map, north_x, north_y, Direction::N, loop_detect.clone()); }
                 let (south_x, south_y) = next_direction(x, y, Direction::S);
-                if in_bounds(map, south_x, south_y) { traverse_map_next(map, traverse_map, south_x, south_y, Direction::S, loop_detect.clone()); }
+                if in_bounds(map, south_x, south_y) { traverse_map_next(map, traverse_map, south_x, south_y, Direction::S, loop_detect); }
             }
         }
         Item::HorizontalSplitter => {
             if direction == Direction::E || direction == Direction::W {
                 (x, y) = next_direction(x, y, direction);
-                if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, direction, loop_detect.clone()); }
+                if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, direction, loop_detect); }
             } else {
                 let (west_x, west_y) = next_direction(x, y, Direction::W);
                 if in_bounds(map, west_x, west_y) { traverse_map_next(map, traverse_map, west_x, west_y, Direction::W, loop_detect.clone()); }
                 let (east_x, east_y) = next_direction(x, y, Direction::E);
-                if in_bounds(map, east_x, east_y) { traverse_map_next(map, traverse_map, east_x, east_y, Direction::E, loop_detect.clone()); }
+                if in_bounds(map, east_x, east_y) { traverse_map_next(map, traverse_map, east_x, east_y, Direction::E, loop_detect); }
             }
         }
     }

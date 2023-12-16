@@ -3,6 +3,8 @@ use std::collections::HashSet;
 mod helpers;
 mod tests;
 
+use rayon::prelude::*;
+
 fn main() {
     let input = helpers::get_input(&*helpers::get_path_from_arg());
 
@@ -35,7 +37,27 @@ fn get_energized_sum(traverse_map: &Vec<Vec<bool>>) -> i64 {
 fn part_2(input: &Vec<String>) -> i64 {
     let map = parse_map(input);
 
-    todo!()
+    // Four sides
+    let top_max = (0..map[0].len()).into_par_iter().map(|col| {
+        get_energized_sum(&traverse_map(&map, 0, col as i64, Direction::S))
+    }).max().unwrap();
+    let bottom_max = (0..map[map.len()-1].len()).into_par_iter().map(|col| {
+        get_energized_sum(&traverse_map(&map, (map.len() - 1) as i64, col as i64, Direction::N))
+    }).max().unwrap();
+    let left_max = (0..map.len()).into_par_iter().map(|row| {
+        get_energized_sum(&traverse_map(&map, row as i64, 0, Direction::E))
+    }).max().unwrap();
+    let right_max = (0..map.len()).into_par_iter().map(|row| {
+        get_energized_sum(&traverse_map(&map, row as i64, (map[0].len() - 1) as i64, Direction::W))
+    }).max().unwrap();
+
+    // Add cases for corners
+    let top_left = get_energized_sum(&traverse_map(&map, 0, 0, Direction::E));
+    let top_right = get_energized_sum(&traverse_map(&map, 0, (map[0].len() - 1) as i64, Direction::W));
+    let bottom_left = get_energized_sum(&traverse_map(&map, (map.len() - 1) as i64, 0, Direction::E));
+    let bottom_right = get_energized_sum(&traverse_map(&map, (map.len() - 1) as i64, (map[0].len() - 1) as i64, Direction::W));
+
+    *[top_max, bottom_max, left_max, right_max, top_left, top_right, bottom_left, bottom_right].iter().max().unwrap()
 }
 
 #[derive(PartialEq, Clone, Eq, Hash, Copy)]

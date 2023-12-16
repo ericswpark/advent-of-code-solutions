@@ -171,7 +171,7 @@ fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x:
             if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, next_mirrored_direction, loop_detect); }
         }
         Item::VerticalSplitter => {
-            if direction == Direction::N || direction == Direction::S {
+            if [Direction::N, Direction::S].contains(&direction) {
                 (x, y) = next_direction(x, y, direction);
                 if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, direction, loop_detect); }
             } else {
@@ -182,7 +182,7 @@ fn traverse_map_next(map: &Vec<Vec<Item>>, traverse_map: &mut Vec<Vec<bool>>, x:
             }
         }
         Item::HorizontalSplitter => {
-            if direction == Direction::E || direction == Direction::W {
+            if [Direction::E, Direction::W].contains(&direction) {
                 (x, y) = next_direction(x, y, direction);
                 if in_bounds(map, x, y) { traverse_map_next(map, traverse_map, x, y, direction, loop_detect); }
             } else {

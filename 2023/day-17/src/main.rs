@@ -1,6 +1,4 @@
-#![recursion_limit="100000000"]
-
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 
 mod helpers;
 mod tests;
@@ -31,15 +29,21 @@ fn part_1(input: &Vec<String>) -> i64 {
 
     let mut heat_losses: Vec<i64> = Vec::new();
 
-    // We call twice because there are two starting directions
-    recursive_traverse(&map, &mut heat_losses, START_COORD, end_coord, Direction::E, 3, 0, HashSet::new());
-    recursive_traverse(&map, &mut heat_losses, START_COORD, end_coord, Direction::S, 3, 0, HashSet::new());
+    let mut iteration_queue: VecDeque<(Iteration, HashSet<Iteration>)> = VecDeque::new();
+
+    iteration_queue.push_back((Iteration {coordinate: START_COORD, direction: Direction::E, moves_left: 3, heat_loss: 0}, HashSet::new()));
+    iteration_queue.push_back((Iteration {coordinate: START_COORD, direction: Direction::S, moves_left: 3, heat_loss: 0}, HashSet::new()));
+
+    while !iteration_queue.is_empty() {
+        let current = iteration_queue.pop_front().unwrap();
+        traverse(&map, &mut heat_losses, &mut iteration_queue, current.0, end_coord, current.1);
+    }
 
     *heat_losses.iter().min().unwrap()
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
-    let map = parse_map(input);
+    let _map = parse_map(input);
 
     todo!()
 }
@@ -66,7 +70,7 @@ struct Coordinate {
     y: usize,
 }
 
-#[derive(Copy, Clone, PartialEq, Hash, Eq)]
+#[derive(Copy, Clone, PartialEq, Hash, Eq, Debug)]
 enum Direction {
     N,
     S,
@@ -74,7 +78,7 @@ enum Direction {
     E,
 }
 
-fn get_new_coord(old_coord: Coordinate, direction: Direction) -> Option<Coordinate> {
+fn get_new_coord(max: Coordinate, old_coord: Coordinate, direction: Direction) -> Option<Coordinate> {
     match direction {
         Direction::N => {
             let new_x = old_coord.x.checked_sub(1);
@@ -82,7 +86,7 @@ fn get_new_coord(old_coord: Coordinate, direction: Direction) -> Option<Coordina
         }
         Direction::S => {
             let new_x = old_coord.x.checked_add(1);
-            if new_x.is_some() { Some(Coordinate { x: new_x.unwrap(), y: old_coord.y }) } else { None }
+            if new_x.is_some() && new_x.unwrap() < max.x { Some(Coordinate { x: new_x.unwrap(), y: old_coord.y }) } else { None }
         }
         Direction::W => {
             let new_y = old_coord.y.checked_sub(1);
@@ -90,7 +94,7 @@ fn get_new_coord(old_coord: Coordinate, direction: Direction) -> Option<Coordina
         }
         Direction::E => {
             let new_y = old_coord.y.checked_add(1);
-            if new_y.is_some() { Some(Coordinate { x: old_coord.x, y: new_y.unwrap() }) } else { None }
+            if new_y.is_some() && new_y.unwrap() < max.y { Some(Coordinate { x: old_coord.x, y: new_y.unwrap() }) } else { None }
         }
     }
 }
@@ -104,68 +108,51 @@ fn turn(left: bool, direction: Direction) -> Direction {
     }
 }
 
-#[derive(Clone, Hash, PartialEq, Eq)]
+#[derive(Copy, Clone, Hash, PartialEq, Eq)]
 struct Iteration {
     coordinate: Coordinate,
     direction: Direction,
+    moves_left: u8,
+    heat_loss: i64,
 }
 
-fn recursive_traverse(
+fn traverse(
     map: &Vec<Vec<u8>>,
     heat_losses: &mut Vec<i64>,
-    current: Coordinate,
+    iteration_queue: &mut VecDeque<(Iteration, HashSet<Iteration>)>,
+    current: Iteration,
     end: Coordinate,
-    previous_direction: Direction,
-    moves_left_in_direction: u8,
-    current_heat_loss: i64,
     mut loop_detect: HashSet<Iteration>,
 ) {
     // If we're on the end coordinate, add current heat loss to Vec and quit
-    if current == end {
-        heat_losses.push(current_heat_loss);
+    if current.coordinate == end {
+        heat_losses.push(current.heat_loss);
         return;
     }
 
     // Check if we are in a loop
-    let current_loop_iteration = Iteration { coordinate: current, direction: previous_direction };
-    if loop_detect.contains(&current_loop_iteration) {
+    if loop_detect.contains(&current) {
         return;
     } else {
-        loop_detect.insert(current_loop_iteration);
+        loop_detect.insert(current);
     }
 
     // Case: keep going
-    if moves_left_in_direction > 0 {
-        let new_coord = get_new_coord(current, previous_direction);
+    if current.moves_left > 0 {
+        let new_coord = get_new_coord(Coordinate { x: map.len(), y: map[0].len() }, current.coordinate, current.direction);
 
-        if new_coord.is_some() {
-            recursive_traverse(map,
-                               heat_losses,
-                               new_coord.unwrap(),
-                               end,
-                               previous_direction,
-                               moves_left_in_direction - 1,
-                               current_heat_loss,
-                               loop_detect.clone(),
-            )
+        if let Some(new_coord) = new_coord {
+            iteration_queue.push_back((Iteration {coordinate: new_coord, direction: current.direction, moves_left: current.moves_left - 1, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64}, loop_detect.clone()));
         }
     }
 
     // Case: Turn left or right
     for turn_dir in [true, false] {
-        let new_dir = turn(turn_dir, previous_direction);
-        let new_coord = get_new_coord(current, new_dir);
+        let new_dir = turn(turn_dir, current.direction);
+        let new_coord = get_new_coord(Coordinate { x: map.len(), y: map[0].len() },current.coordinate, new_dir);
 
-        if new_coord.is_some() {
-            recursive_traverse(map,
-                               heat_losses,
-                               new_coord.unwrap(),
-                               end,
-                               new_dir,
-                               3,
-                               current_heat_loss,
-                                loop_detect.clone()
-            )
+        if let Some(new_coord) = new_coord {
+            iteration_queue.push_back((Iteration {coordinate: new_coord, direction: current.direction, moves_left: 3, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64}, loop_detect.clone()));
         }
     }
 }

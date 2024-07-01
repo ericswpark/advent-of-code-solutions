@@ -1,14 +1,12 @@
 use std::collections::{HashSet, VecDeque};
 
+use enums::Direction;
+use structs::{Coordinate, Iteration};
+
 mod helpers;
 mod tests;
 mod structs;
 mod enums;
-
-use structs::Coordinate;
-use enums::Direction;
-use crate::structs::Iteration;
-
 
 const START_COORD: Coordinate = Coordinate {
     x: 0,
@@ -38,8 +36,8 @@ fn part_1(input: &Vec<String>) -> i64 {
 
     let mut iteration_queue: VecDeque<Iteration> = VecDeque::new();
 
-    iteration_queue.push_back(Iteration {coordinate: START_COORD, direction: Direction::E, moves_left: 3, heat_loss: 0, visited: HashSet::new()});
-    iteration_queue.push_back(Iteration {coordinate: START_COORD, direction: Direction::S, moves_left: 3, heat_loss: 0, visited: HashSet::new()});
+    iteration_queue.push_back(Iteration { coordinate: START_COORD, direction: Direction::E, moves_left: 3, heat_loss: 0, visited: HashSet::new() });
+    iteration_queue.push_back(Iteration { coordinate: START_COORD, direction: Direction::S, moves_left: 3, heat_loss: 0, visited: HashSet::new() });
 
     let mut max_count = iteration_queue.len();
     let mut traversal_count = 0;
@@ -72,7 +70,7 @@ fn parse_map(input: &Vec<String>) -> Vec<Vec<u8>> {
         let mut row = Vec::new();
 
         for raw_int in line.chars() {
-            if raw_int == '\r' { continue }
+            if raw_int == '\r' { continue; }
             row.push(raw_int.to_digit(10).unwrap() as u8);
         }
 
@@ -114,7 +112,6 @@ fn turn(left: bool, direction: Direction) -> Direction {
 }
 
 
-
 fn traverse(
     map: &Vec<Vec<u8>>,
     heat_losses: &mut Vec<i64>,
@@ -147,7 +144,7 @@ fn traverse(
         let new_coord = get_new_coord(get_max_coordinates(map), current.coordinate, current.direction);
 
         if let Some(new_coord) = new_coord {
-            iteration_queue.push_back(Iteration {coordinate: new_coord, direction: current.direction, moves_left: current.moves_left - 1, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64, visited: current.visited.clone()});
+            iteration_queue.push_back(Iteration { coordinate: new_coord, direction: current.direction, moves_left: current.moves_left - 1, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64, visited: current.visited.clone() });
         }
     }
 
@@ -157,11 +154,11 @@ fn traverse(
         let new_coord = get_new_coord(get_max_coordinates(map), current.coordinate, new_dir);
 
         if let Some(new_coord) = new_coord {
-            iteration_queue.push_back(Iteration {coordinate: new_coord, direction: current.direction, moves_left: 3, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64, visited: current.visited.clone()});
+            iteration_queue.push_back(Iteration { coordinate: new_coord, direction: current.direction, moves_left: 3, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64, visited: current.visited.clone() });
         }
     }
 }
 
 fn get_max_coordinates(map: &Vec<Vec<u8>>) -> Coordinate {
-    return Coordinate {x: map.len(), y: map[0].len() }
+    return Coordinate { x: map.len(), y: map[0].len() };
 }

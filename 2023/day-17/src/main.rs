@@ -36,8 +36,8 @@ fn part_1(input: &Vec<String>) -> i64 {
 
     let mut iteration_queue: VecDeque<Iteration> = VecDeque::new();
 
-    iteration_queue.push_back(Iteration { coordinate: START_COORD, direction: Direction::E, moves_left: 3, heat_loss: 0 });
-    iteration_queue.push_back(Iteration { coordinate: START_COORD, direction: Direction::S, moves_left: 3, heat_loss: 0 });
+    iteration_queue.push_back(Iteration { coordinate: START_COORD, direction: Direction::E, moves_left: 3, heat_loss: 0, path_map: Vec::new() });
+    iteration_queue.push_back(Iteration { coordinate: START_COORD, direction: Direction::S, moves_left: 3, heat_loss: 0, path_map: Vec::new() });
 
     let mut max_count = iteration_queue.len();
     let mut traversal_count = 0;
@@ -122,11 +122,12 @@ fn traverse(
         panic!("Iteration queue must not be empty!")
     }
 
-    let starting_iter = iteration_queue.pop_front().unwrap();
+    let mut starting_iter = iteration_queue.pop_front().unwrap();
 
     // Move based on indicated direction on iteration
     let new_coord = get_new_coord(get_max_coordinates(map), starting_iter.coordinate, starting_iter.direction).unwrap();
     let new_coord_node = &mut map[new_coord.x][new_coord.y];
+    starting_iter.path_map.push(starting_iter.direction);
     let new_heat_loss = starting_iter.heat_loss + (new_coord_node.value as i64);
     if new_heat_loss < new_coord_node.min_heat_loss {
         new_coord_node.min_heat_loss = new_heat_loss;
@@ -136,6 +137,8 @@ fn traverse(
 
     // Reached end coordinate
     if new_coord == end {
+        println!("Found path with heat loss {new_heat_loss}, the map is the following:");
+        print_path_map_overlay(map, starting_iter.path_map);
         heat_losses.push(new_heat_loss);
         return;
     }
@@ -147,7 +150,7 @@ fn traverse(
         let straight_dir = starting_iter.direction;
 
         if get_new_coord(get_max_coordinates(map), new_coord, straight_dir).is_some() {
-            iteration_queue.push_back(Iteration { coordinate: new_coord, direction: straight_dir, moves_left: straight_moves_left - 1, heat_loss: new_heat_loss });
+            iteration_queue.push_back(Iteration { coordinate: new_coord, direction: straight_dir, moves_left: straight_moves_left - 1, heat_loss: new_heat_loss, path_map: starting_iter.path_map.clone() });
         }
     }
 
@@ -156,11 +159,80 @@ fn traverse(
         let turn_dir = turn(turn_left, starting_iter.direction);
 
         if get_new_coord(get_max_coordinates(map), starting_iter.coordinate, turn_dir).is_some() {
-            iteration_queue.push_back(Iteration { coordinate: new_coord, direction: turn_dir, moves_left: 3, heat_loss: new_heat_loss });
+            iteration_queue.push_back(Iteration { coordinate: new_coord, direction: turn_dir, moves_left: 3, heat_loss: new_heat_loss, path_map: starting_iter.path_map.clone() });
         }
     }
 }
 
 fn get_max_coordinates<T>(map: &Vec<Vec<T>>) -> Coordinate {
     return Coordinate { x: map.len(), y: map[0].len() };
+}
+
+fn print_path_map_overlay(map: &Vec<Vec<Node>>, path_map: Vec<Direction>) {
+    // Initialize board
+    let mut print_board: Vec<Vec<char>> = Vec::new();
+    let mut curr_line: Vec<char> = Vec::new();
+
+    // Draw border top
+    for _ in 0..map[0].len() + 2 {
+        curr_line.push('-');
+    }
+    print_board.push(curr_line);
+    curr_line = Vec::new();
+
+    // Draw actual map
+    for row in 0..map.len() {
+        for column in 0..map[row].len() {
+            if column == 0 {
+                curr_line.push('|');
+            }
+            curr_line.push(char::from_digit(map[row][column].value as u32, 10).unwrap());
+            if column == map[row].len() - 1 {
+                curr_line.push('|');
+            }
+        }
+
+        print_board.push(curr_line);
+        curr_line = Vec::new();
+    }
+
+    // Draw border bottom
+    for _ in 0..map[0].len() + 2 {
+        curr_line.push('-');
+    }
+    print_board.push(curr_line);
+
+    // Start overlaying path map
+    // Start at (1, 1) to avoid border
+    let mut curr_pos = Coordinate { x: 1, y: 1 };
+    for step in path_map {
+        let dir_char: char;
+        match step {
+            Direction::N => {
+                curr_pos.x -= 1;
+                dir_char = '^';
+            }
+            Direction::S => {
+                curr_pos.x += 1;
+                dir_char = 'v';
+            }
+            Direction::W => {
+                curr_pos.y -= 1;
+                dir_char = '<';
+            }
+            Direction::E => {
+                curr_pos.y += 1;
+                dir_char = '>';
+            }
+        }
+        print_board[curr_pos.x][curr_pos.y] = dir_char;
+    }
+
+    for row in print_board {
+        for column in row {
+            print!("{}", column);
+        }
+        println!();
+    }
+
 }

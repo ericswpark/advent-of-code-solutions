@@ -61,6 +61,7 @@ fn parse_map(input: &Vec<String>) -> Vec<Vec<u8>> {
         let mut row = Vec::new();
 
         for raw_int in line.chars() {
+            if raw_int == '\r' { continue }
             row.push(raw_int.to_digit(10).unwrap() as u8);
         }
 

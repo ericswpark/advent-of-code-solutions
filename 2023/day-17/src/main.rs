@@ -2,6 +2,13 @@ use std::collections::{HashSet, VecDeque};
 
 mod helpers;
 mod tests;
+mod structs;
+mod enums;
+
+use structs::Coordinate;
+use enums::Direction;
+use crate::structs::Iteration;
+
 
 const START_COORD: Coordinate = Coordinate {
     x: 0,
@@ -64,19 +71,6 @@ fn parse_map(input: &Vec<String>) -> Vec<Vec<u8>> {
     map
 }
 
-#[derive(Copy, Clone, PartialEq, Hash, Eq)]
-struct Coordinate {
-    x: usize,
-    y: usize,
-}
-
-#[derive(Copy, Clone, PartialEq, Hash, Eq, Debug)]
-enum Direction {
-    N,
-    S,
-    W,
-    E,
-}
 
 fn get_new_coord(max: Coordinate, old_coord: Coordinate, direction: Direction) -> Option<Coordinate> {
     match direction {
@@ -108,13 +102,7 @@ fn turn(left: bool, direction: Direction) -> Direction {
     }
 }
 
-#[derive(Copy, Clone, Hash, PartialEq, Eq)]
-struct Iteration {
-    coordinate: Coordinate,
-    direction: Direction,
-    moves_left: u8,
-    heat_loss: i64,
-}
+
 
 fn traverse(
     map: &Vec<Vec<u8>>,

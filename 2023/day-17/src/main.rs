@@ -36,8 +36,8 @@ fn part_1(input: &Vec<String>) -> i64 {
 
     let mut iteration_queue: VecDeque<Iteration> = VecDeque::new();
 
-    iteration_queue.push_back(Iteration { coordinate: START_COORD, direction: Direction::E, moves_left: 3, heat_loss: 0, path_map: Vec::new() });
-    iteration_queue.push_back(Iteration { coordinate: START_COORD, direction: Direction::S, moves_left: 3, heat_loss: 0, path_map: Vec::new() });
+    iteration_queue.push_back(Iteration { coordinate: START_COORD, direction: Direction::E, moves_left: 2, heat_loss: 0, path_map: Vec::new() });
+    iteration_queue.push_back(Iteration { coordinate: START_COORD, direction: Direction::S, moves_left: 2, heat_loss: 0, path_map: Vec::new() });
 
     let mut max_count = iteration_queue.len();
     let mut traversal_count = 0;
@@ -159,7 +159,7 @@ fn traverse(
         let turn_dir = turn(turn_left, starting_iter.direction);
 
         if get_new_coord(get_max_coordinates(map), starting_iter.coordinate, turn_dir).is_some() {
-            iteration_queue.push_back(Iteration { coordinate: new_coord, direction: turn_dir, moves_left: 3, heat_loss: new_heat_loss, path_map: starting_iter.path_map.clone() });
+            iteration_queue.push_back(Iteration { coordinate: new_coord, direction: turn_dir, moves_left: 2, heat_loss: new_heat_loss, path_map: starting_iter.path_map.clone() });
         }
     }
 }

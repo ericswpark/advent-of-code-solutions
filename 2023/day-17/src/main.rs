@@ -124,6 +124,15 @@ fn traverse(
 
     let mut current = iteration_queue.pop_front().unwrap();
 
+    // Early return if the current path is too expensive
+    if !heat_losses.is_empty() {
+        let min_heat_loss = heat_losses.iter().min().unwrap();
+
+        if current.heat_loss >= *min_heat_loss {
+            return;
+        }
+    }
+
     // If we're on the end coordinate, add current heat loss to Vec and quit
     if current.coordinate == end {
         heat_losses.push(current.heat_loss);

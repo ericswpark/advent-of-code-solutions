@@ -36,14 +36,13 @@ fn part_1(input: &Vec<String>) -> i64 {
 
     let mut heat_losses: Vec<i64> = Vec::new();
 
-    let mut iteration_queue: VecDeque<(Iteration, HashSet<Iteration>)> = VecDeque::new();
+    let mut iteration_queue: VecDeque<Iteration> = VecDeque::new();
 
-    iteration_queue.push_back((Iteration {coordinate: START_COORD, direction: Direction::E, moves_left: 3, heat_loss: 0}, HashSet::new()));
-    iteration_queue.push_back((Iteration {coordinate: START_COORD, direction: Direction::S, moves_left: 3, heat_loss: 0}, HashSet::new()));
+    iteration_queue.push_back(Iteration {coordinate: START_COORD, direction: Direction::E, moves_left: 3, heat_loss: 0, visited: HashSet::new()});
+    iteration_queue.push_back(Iteration {coordinate: START_COORD, direction: Direction::S, moves_left: 3, heat_loss: 0, visited: HashSet::new()});
 
     while !iteration_queue.is_empty() {
-        let current = iteration_queue.pop_front().unwrap();
-        traverse(&map, &mut heat_losses, &mut iteration_queue, current.0, end_coord, current.1);
+        traverse(&map, &mut heat_losses, &mut iteration_queue, end_coord);
     }
 
     *heat_losses.iter().min().unwrap()
@@ -107,22 +106,28 @@ fn turn(left: bool, direction: Direction) -> Direction {
 fn traverse(
     map: &Vec<Vec<u8>>,
     heat_losses: &mut Vec<i64>,
-    iteration_queue: &mut VecDeque<(Iteration, HashSet<Iteration>)>,
-    current: Iteration,
+    iteration_queue: &mut VecDeque<Iteration>,
     end: Coordinate,
-    mut loop_detect: HashSet<Iteration>,
 ) {
+    if iteration_queue.is_empty() {
+        panic!("Iteration queue must not be empty!")
+    }
+
+    let mut current = iteration_queue.pop_front().unwrap();
+
     // If we're on the end coordinate, add current heat loss to Vec and quit
     if current.coordinate == end {
         heat_losses.push(current.heat_loss);
         return;
     }
 
-    // Check if we are in a loop
-    if loop_detect.contains(&current) {
+    // If our current coordinate is in the set of past coordinates, we've looped and should return early
+    if current.visited.contains(&current.coordinate) {
+        let visited_count = current.visited.len();
+        println!("Detected loop after {visited_count} moves.");
         return;
     } else {
-        loop_detect.insert(current);
+        current.visited.insert(current.coordinate);
     }
 
     // Case: keep going
@@ -130,7 +135,7 @@ fn traverse(
         let new_coord = get_new_coord(Coordinate { x: map.len(), y: map[0].len() }, current.coordinate, current.direction);
 
         if let Some(new_coord) = new_coord {
-            iteration_queue.push_back((Iteration {coordinate: new_coord, direction: current.direction, moves_left: current.moves_left - 1, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64}, loop_detect.clone()));
+            iteration_queue.push_back(Iteration {coordinate: new_coord, direction: current.direction, moves_left: current.moves_left - 1, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64, visited: current.visited.clone()});
         }
     }
 
@@ -140,7 +145,7 @@ fn traverse(
         let new_coord = get_new_coord(Coordinate { x: map.len(), y: map[0].len() },current.coordinate, new_dir);
 
         if let Some(new_coord) = new_coord {
-            iteration_queue.push_back((Iteration {coordinate: new_coord, direction: current.direction, moves_left: 3, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64}, loop_detect.clone()));
+            iteration_queue.push_back(Iteration {coordinate: new_coord, direction: current.direction, moves_left: 3, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64, visited: current.visited.clone()});
         }
     }
 }

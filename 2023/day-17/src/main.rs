@@ -41,9 +41,20 @@ fn part_1(input: &Vec<String>) -> i64 {
     iteration_queue.push_back(Iteration {coordinate: START_COORD, direction: Direction::E, moves_left: 3, heat_loss: 0, visited: HashSet::new()});
     iteration_queue.push_back(Iteration {coordinate: START_COORD, direction: Direction::S, moves_left: 3, heat_loss: 0, visited: HashSet::new()});
 
+    let mut max_count = iteration_queue.len();
+    let mut traversal_count = 0;
+
     while !iteration_queue.is_empty() {
         traverse(&map, &mut heat_losses, &mut iteration_queue, end_coord);
+        traversal_count += 1;
+        let queue_len = iteration_queue.len();
+        println!("After traversal, {queue_len} items remaining.");
+        if queue_len > max_count {
+            max_count = queue_len;
+        }
     }
+
+    println!("Maximum iteration count was {max_count}, and we traversed the map {traversal_count} times.");
 
     *heat_losses.iter().min().unwrap()
 }

@@ -144,7 +144,7 @@ fn traverse(
 
     // Case: keep going
     if current.moves_left > 0 {
-        let new_coord = get_new_coord(Coordinate { x: map.len(), y: map[0].len() }, current.coordinate, current.direction);
+        let new_coord = get_new_coord(get_max_coordinates(map), current.coordinate, current.direction);
 
         if let Some(new_coord) = new_coord {
             iteration_queue.push_back(Iteration {coordinate: new_coord, direction: current.direction, moves_left: current.moves_left - 1, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64, visited: current.visited.clone()});
@@ -152,12 +152,16 @@ fn traverse(
     }
 
     // Case: Turn left or right
-    for turn_dir in [true, false] {
-        let new_dir = turn(turn_dir, current.direction);
-        let new_coord = get_new_coord(Coordinate { x: map.len(), y: map[0].len() },current.coordinate, new_dir);
+    for turn_left in [true, false] {
+        let new_dir = turn(turn_left, current.direction);
+        let new_coord = get_new_coord(get_max_coordinates(map), current.coordinate, new_dir);
 
         if let Some(new_coord) = new_coord {
             iteration_queue.push_back(Iteration {coordinate: new_coord, direction: current.direction, moves_left: 3, heat_loss: current.heat_loss + map[new_coord.x][new_coord.y] as i64, visited: current.visited.clone()});
         }
     }
+}
+
+fn get_max_coordinates(map: &Vec<Vec<u8>>) -> Coordinate {
+    return Coordinate {x: map.len(), y: map[0].len() }
 }

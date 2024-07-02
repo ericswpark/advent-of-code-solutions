@@ -38,14 +38,14 @@ fn part_1(input: &Vec<String>) -> i64 {
     iteration_heap.push(Iteration {
         coordinate: START_COORD,
         direction: Direction::E,
-        moves_left: 2,
+        straight_moves: 1,
         heat_loss: 0,
         path_map: Vec::new(),
     });
     iteration_heap.push(Iteration {
         coordinate: START_COORD,
         direction: Direction::S,
-        moves_left: 2,
+        straight_moves: 1,
         heat_loss: 0,
         path_map: Vec::new(),
     });
@@ -140,7 +140,6 @@ fn traverse(
 ) -> i64 {
     let mut visited = HashSet::new();
 
-
     loop {
         let starting_iter = iteration_queue.pop();
 
@@ -158,7 +157,7 @@ fn traverse(
         )
         .unwrap();
 
-        let visited_item = (new_coord, starting_iter.direction, starting_iter.moves_left);
+        let visited_item = (new_coord, starting_iter.direction, starting_iter.straight_moves);
 
         if visited.contains(&visited_item) {
             continue;
@@ -177,15 +176,14 @@ fn traverse(
 
         // Queue up new iterations
         // Case: keep going
-        let straight_moves_left = starting_iter.moves_left;
-        if straight_moves_left > 0 {
+        if starting_iter.straight_moves < 3 {
             let straight_dir = starting_iter.direction;
 
             if get_new_coord(get_max_coordinates(map), new_coord, straight_dir).is_some() {
                 iteration_queue.push(Iteration {
                     coordinate: new_coord,
                     direction: straight_dir,
-                    moves_left: straight_moves_left - 1,
+                    straight_moves: starting_iter.straight_moves + 1 ,
                     heat_loss: new_heat_loss,
                     path_map: starting_iter.path_map.clone(),
                 });
@@ -203,7 +201,7 @@ fn traverse(
                 iteration_queue.push(Iteration {
                     coordinate: new_coord,
                     direction: turn_dir,
-                    moves_left: 2,
+                    straight_moves: 1,
                     heat_loss: new_heat_loss,
                     path_map: starting_iter.path_map.clone(),
                 });

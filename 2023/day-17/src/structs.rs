@@ -16,10 +16,11 @@ pub(crate) struct Node {
 pub(crate) struct Iteration {
     pub(crate) coordinate: Coordinate,
     pub(crate) direction: Direction,
-    pub(crate) moves_left: u8,
+    pub(crate) straight_moves: u8,
     pub(crate) heat_loss: i64,
     pub(crate) path_map: Vec<Direction>,
 }
+
 
 impl Ord for Coordinate {
     fn cmp(&self, other: &Self) -> Ordering {

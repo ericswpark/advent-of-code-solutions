@@ -154,39 +154,6 @@ fn get_new_coord(
     }
 }
 
-fn turn(left: bool, direction: Direction) -> Direction {
-    match direction {
-        Direction::N => {
-            if left {
-                Direction::W
-            } else {
-                Direction::E
-            }
-        }
-        Direction::S => {
-            if left {
-                Direction::E
-            } else {
-                Direction::W
-            }
-        }
-        Direction::W => {
-            if left {
-                Direction::S
-            } else {
-                Direction::N
-            }
-        }
-        Direction::E => {
-            if left {
-                Direction::N
-            } else {
-                Direction::S
-            }
-        }
-    }
-}
-
 fn traverse(
     map: &mut Vec<Vec<Node>>,
     min_heat_loss: &mut i64,
@@ -247,9 +214,8 @@ fn traverse(
     }
 
     // Case: Turn left or right
-    for turn_left in [true, false] {
-        let turn_dir = turn(turn_left, starting_iter.direction);
-
+    let starting_iter_direction = starting_iter.direction;
+    for turn_dir in [starting_iter_direction.left(), starting_iter_direction.right()]{
         let turn_coord = get_new_coord(get_max_coordinates(map), starting_iter.coordinate, turn_dir);
 
         if let Some(turn_coord) = turn_coord {

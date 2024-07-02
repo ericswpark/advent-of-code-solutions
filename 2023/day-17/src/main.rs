@@ -206,12 +206,17 @@ fn traverse(
     starting_iter.visited.insert(new_coord);
     starting_iter.path_map.push(starting_iter.direction);
     let new_heat_loss = starting_iter.heat_loss + (new_coord_node.value as i64);
+    if new_heat_loss >= *min_heat_loss {
+        return;
+    }
 
     // Reached end coordinate
-    if new_coord == end && new_heat_loss < *min_heat_loss {
-        println!("Found path with heat loss {new_heat_loss}, the map is the following:");
-        print_path_map_overlay(map, starting_iter.path_map);
-        *min_heat_loss = new_heat_loss;
+    if new_coord == end {
+        if new_heat_loss < *min_heat_loss {
+            println!("Found path with heat loss {new_heat_loss}, the map is the following:");
+            print_path_map_overlay(map, &starting_iter.path_map);
+            *min_heat_loss = new_heat_loss;
+        }
         return;
     }
 

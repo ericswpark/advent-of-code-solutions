@@ -1,4 +1,5 @@
 use std::collections::{BinaryHeap, HashSet};
+use std::time::Instant;
 
 use enums::Direction;
 use structs::{Coordinate, Iteration, Node};
@@ -11,6 +12,7 @@ mod tests;
 const START_COORD: Coordinate = Coordinate { x: 0, y: 0 };
 
 fn main() {
+    let start_time = Instant::now();
     let input = helpers::get_input(&*helpers::get_path_from_arg());
 
     let part_1_answer = part_1(&input);
@@ -18,6 +20,9 @@ fn main() {
 
     let part_2_answer = part_2(&input);
     println!("Part 2 answer: {part_2_answer}");
+
+    let elapsed_time = start_time.elapsed();
+    println!("Time: {:.2?}", elapsed_time);
 }
 
 fn part_1(input: &Vec<String>) -> i64 {

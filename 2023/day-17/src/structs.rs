@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
-use crate::enums::Direction;
 use std::collections::HashSet;
+
+use crate::enums::Direction;
 
 #[derive(Copy, Clone, PartialEq, Hash, Eq, PartialOrd)]
 pub(crate) struct Coordinate {
@@ -24,14 +25,15 @@ pub(crate) struct Iteration {
 
 impl Ord for Coordinate {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.x.cmp(&other.x)
-            .then_with(|| self.y.cmp(&other.y))
+        self.x.cmp(&other.x).then_with(|| self.y.cmp(&other.y))
     }
 }
 
 impl Ord for Iteration {
     fn cmp(&self, other: &Self) -> Ordering {
-        other.heat_loss.cmp(&self.heat_loss)
+        other
+            .heat_loss
+            .cmp(&self.heat_loss)
             .then_with(|| self.coordinate.cmp(&other.coordinate))
     }
 }

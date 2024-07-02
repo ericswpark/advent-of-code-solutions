@@ -270,7 +270,7 @@ fn get_max_coordinates<T>(map: &Vec<Vec<T>>) -> Coordinate {
     };
 }
 
-fn print_path_map_overlay(map: &Vec<Vec<Node>>, path_map: Vec<Direction>) {
+fn print_path_map_overlay(map: &Vec<Vec<Node>>, path_map: &Vec<Direction>) {
     // Initialize board
     let mut print_board: Vec<Vec<char>> = Vec::new();
     let mut curr_line: Vec<char> = Vec::new();

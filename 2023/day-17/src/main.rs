@@ -92,7 +92,6 @@ fn parse_map(input: &Vec<String>) -> Vec<Vec<Node>> {
             }
             row.push(Node {
                 value: raw_int.to_digit(10).unwrap() as u8,
-                min_heat_loss: i64::MAX,
             });
         }
 

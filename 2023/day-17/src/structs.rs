@@ -1,4 +1,5 @@
 use crate::enums::Direction;
+use std::collections::HashSet;
 
 #[derive(Copy, Clone, PartialEq, Hash, Eq)]
 pub(crate) struct Coordinate {
@@ -17,5 +18,6 @@ pub(crate) struct Iteration {
     pub(crate) direction: Direction,
     pub(crate) moves_left: u8,
     pub(crate) heat_loss: i64,
-    pub(crate) path_map: Vec<Direction>
+    pub(crate) visited: HashSet<Coordinate>,
+    pub(crate) path_map: Vec<Direction>,
 }

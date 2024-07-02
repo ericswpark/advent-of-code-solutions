@@ -11,6 +11,13 @@ mod tests {
     }
 
     #[test]
+    fn reddit_leftylink() {
+        let input = get_input("reddit-test-cases/leftylink.txt");
+        assert_eq!(part_1(&input), 62);
+        assert_eq!(part_2(&input), 18);
+    }
+
+    #[test]
     fn sample_input() {
         let input = get_input("sample-input.txt");
         assert_eq!(part_1(&input), 102);

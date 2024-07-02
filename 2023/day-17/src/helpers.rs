@@ -1,5 +1,5 @@
-use std::{env, fs};
 use std::io::{stdin, stdout, Write};
+use std::{env, fs};
 
 pub fn get_path_from_arg() -> String {
     let mut args: Vec<String> = env::args().collect();
@@ -11,10 +11,10 @@ pub fn get_path_from_arg() -> String {
         stdout().flush().expect("Cannot flush buffer");
 
         stdin().read_line(path).expect("Cannot process input");
-        if let Some('\n')=path.chars().next_back() {
+        if let Some('\n') = path.chars().next_back() {
             path.pop();
         }
-        if let Some('\r')=path.chars().next_back() {
+        if let Some('\r') = path.chars().next_back() {
             path.pop();
         }
     } else {
@@ -26,7 +26,10 @@ pub fn get_path_from_arg() -> String {
 
 pub fn get_input(path: &str) -> Vec<String> {
     fs::read_to_string(path)
-        .expect("Couldn't read input file").split('\n').map(|s| s.to_string()).collect()
+        .expect("Couldn't read input file")
+        .split('\n')
+        .map(|s| s.to_string())
+        .collect()
 }
 
 trait BoolExt {

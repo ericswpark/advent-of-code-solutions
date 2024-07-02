@@ -8,7 +8,7 @@ pub(crate) struct Coordinate {
 
 pub(crate) struct Node {
     pub(crate) value: u8,
-    pub(crate) min_heat_loss: i64
+    pub(crate) min_heat_loss: i64,
 }
 
 #[derive(Clone, PartialEq, Eq)]

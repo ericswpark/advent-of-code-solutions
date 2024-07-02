@@ -1,17 +1,14 @@
-use std::collections::VecDeque;
+use std::collections::{HashSet, VecDeque};
 
 use enums::Direction;
 use structs::{Coordinate, Iteration, Node};
 
-mod helpers;
-mod tests;
-mod structs;
 mod enums;
+mod helpers;
+mod structs;
+mod tests;
 
-const START_COORD: Coordinate = Coordinate {
-    x: 0,
-    y: 0,
-};
+const START_COORD: Coordinate = Coordinate { x: 0, y: 0 };
 
 fn main() {
     let input = helpers::get_input(&*helpers::get_path_from_arg());
@@ -22,7 +19,6 @@ fn main() {
     let part_2_answer = part_2(&input);
     println!("Part 2 answer: {part_2_answer}");
 }
-
 
 fn part_1(input: &Vec<String>) -> i64 {
     let mut map = parse_map(input);
@@ -70,8 +66,13 @@ fn parse_map(input: &Vec<String>) -> Vec<Vec<Node>> {
         let mut row = Vec::new();
 
         for raw_int in line.chars() {
-            if raw_int == '\r' { continue; }
-            row.push(Node{ value: raw_int.to_digit(10).unwrap() as u8, min_heat_loss: i64::MAX});
+            if raw_int == '\r' {
+                continue;
+            }
+            row.push(Node {
+                value: raw_int.to_digit(10).unwrap() as u8,
+                min_heat_loss: i64::MAX,
+            });
         }
 
         map.push(row);
@@ -80,37 +81,91 @@ fn parse_map(input: &Vec<String>) -> Vec<Vec<Node>> {
     map
 }
 
-
-fn get_new_coord(max: Coordinate, old_coord: Coordinate, direction: Direction) -> Option<Coordinate> {
+fn get_new_coord(
+    max: Coordinate,
+    old_coord: Coordinate,
+    direction: Direction,
+) -> Option<Coordinate> {
     match direction {
         Direction::N => {
             let new_x = old_coord.x.checked_sub(1);
-            if new_x.is_some() { Some(Coordinate { x: new_x.unwrap(), y: old_coord.y }) } else { None }
+            if new_x.is_some() {
+                Some(Coordinate {
+                    x: new_x.unwrap(),
+                    y: old_coord.y,
+                })
+            } else {
+                None
+            }
         }
         Direction::S => {
             let new_x = old_coord.x.checked_add(1);
-            if new_x.is_some() && new_x.unwrap() < max.x { Some(Coordinate { x: new_x.unwrap(), y: old_coord.y }) } else { None }
+            if new_x.is_some() && new_x.unwrap() < max.x {
+                Some(Coordinate {
+                    x: new_x.unwrap(),
+                    y: old_coord.y,
+                })
+            } else {
+                None
+            }
         }
         Direction::W => {
             let new_y = old_coord.y.checked_sub(1);
-            if new_y.is_some() { Some(Coordinate { x: old_coord.x, y: new_y.unwrap() }) } else { None }
+            if new_y.is_some() {
+                Some(Coordinate {
+                    x: old_coord.x,
+                    y: new_y.unwrap(),
+                })
+            } else {
+                None
+            }
         }
         Direction::E => {
             let new_y = old_coord.y.checked_add(1);
-            if new_y.is_some() && new_y.unwrap() < max.y { Some(Coordinate { x: old_coord.x, y: new_y.unwrap() }) } else { None }
+            if new_y.is_some() && new_y.unwrap() < max.y {
+                Some(Coordinate {
+                    x: old_coord.x,
+                    y: new_y.unwrap(),
+                })
+            } else {
+                None
+            }
         }
     }
 }
 
 fn turn(left: bool, direction: Direction) -> Direction {
     match direction {
-        Direction::N => { if left { Direction::W } else { Direction::E } }
-        Direction::S => { if left { Direction::E } else { Direction::W } }
-        Direction::W => { if left { Direction::S } else { Direction::N } }
-        Direction::E => { if left { Direction::N } else { Direction::S } }
+        Direction::N => {
+            if left {
+                Direction::W
+            } else {
+                Direction::E
+            }
+        }
+        Direction::S => {
+            if left {
+                Direction::E
+            } else {
+                Direction::W
+            }
+        }
+        Direction::W => {
+            if left {
+                Direction::S
+            } else {
+                Direction::N
+            }
+        }
+        Direction::E => {
+            if left {
+                Direction::N
+            } else {
+                Direction::S
+            }
+        }
     }
 }
-
 
 fn traverse(
     map: &mut Vec<Vec<Node>>,
@@ -125,7 +180,12 @@ fn traverse(
     let mut starting_iter = iteration_queue.pop_front().unwrap();
 
     // Move based on indicated direction on iteration
-    let new_coord = get_new_coord(get_max_coordinates(map), starting_iter.coordinate, starting_iter.direction).unwrap();
+    let new_coord = get_new_coord(
+        get_max_coordinates(map),
+        starting_iter.coordinate,
+        starting_iter.direction,
+    )
+    .unwrap();
     let new_coord_node = &mut map[new_coord.x][new_coord.y];
     starting_iter.path_map.push(starting_iter.direction);
     let new_heat_loss = starting_iter.heat_loss + (new_coord_node.value as i64);
@@ -150,7 +210,13 @@ fn traverse(
         let straight_dir = starting_iter.direction;
 
         if get_new_coord(get_max_coordinates(map), new_coord, straight_dir).is_some() {
-            iteration_queue.push_back(Iteration { coordinate: new_coord, direction: straight_dir, moves_left: straight_moves_left - 1, heat_loss: new_heat_loss, path_map: starting_iter.path_map.clone() });
+            iteration_queue.push_back(Iteration {
+                coordinate: new_coord,
+                direction: straight_dir,
+                moves_left: straight_moves_left - 1,
+                heat_loss: new_heat_loss,
+                path_map: starting_iter.path_map.clone(),
+            });
         }
     }
 
@@ -159,13 +225,22 @@ fn traverse(
         let turn_dir = turn(turn_left, starting_iter.direction);
 
         if get_new_coord(get_max_coordinates(map), starting_iter.coordinate, turn_dir).is_some() {
-            iteration_queue.push_back(Iteration { coordinate: new_coord, direction: turn_dir, moves_left: 2, heat_loss: new_heat_loss, path_map: starting_iter.path_map.clone() });
+            iteration_queue.push_back(Iteration {
+                coordinate: new_coord,
+                direction: turn_dir,
+                moves_left: 2,
+                heat_loss: new_heat_loss,
+                path_map: starting_iter.path_map.clone(),
+            });
         }
     }
 }
 
 fn get_max_coordinates<T>(map: &Vec<Vec<T>>) -> Coordinate {
-    return Coordinate { x: map.len(), y: map[0].len() };
+    return Coordinate {
+        x: map.len(),
+        y: map[0].len(),
+    };
 }
 
 fn print_path_map_overlay(map: &Vec<Vec<Node>>, path_map: Vec<Direction>) {
@@ -234,5 +309,4 @@ fn print_path_map_overlay(map: &Vec<Vec<Node>>, path_map: Vec<Direction>) {
         }
         println!();
     }
-
 }

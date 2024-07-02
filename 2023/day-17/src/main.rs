@@ -1,4 +1,4 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::{BinaryHeap, HashSet};
 
 use enums::Direction;
 use structs::{Coordinate, Iteration, Node};
@@ -30,11 +30,11 @@ fn part_1(input: &Vec<String>) -> i64 {
 
     let mut min_heat_loss: i64 = i64::MAX;
 
-    let mut iteration_queue: VecDeque<Iteration> = VecDeque::new();
+    let mut iteration_heap: BinaryHeap<Iteration> = BinaryHeap::new();
     let mut starting_visited = HashSet::new();
     starting_visited.insert(START_COORD);
 
-    iteration_queue.push_back(Iteration {
+    iteration_heap.push(Iteration {
         coordinate: START_COORD,
         direction: Direction::E,
         moves_left: 2,
@@ -42,7 +42,7 @@ fn part_1(input: &Vec<String>) -> i64 {
         visited: starting_visited.clone(),
         path_map: Vec::new(),
     });
-    iteration_queue.push_back(Iteration {
+    iteration_heap.push(Iteration {
         coordinate: START_COORD,
         direction: Direction::S,
         moves_left: 2,
@@ -51,13 +51,13 @@ fn part_1(input: &Vec<String>) -> i64 {
         path_map: Vec::new(),
     });
 
-    let mut max_count = iteration_queue.len();
+    let mut max_count = iteration_heap.len();
     let mut traversal_count = 0;
 
-    while !iteration_queue.is_empty() {
-        traverse(&mut map, &mut min_heat_loss, &mut iteration_queue, end_coord);
+    while !iteration_heap.is_empty() {
+        traverse(&mut map, &mut min_heat_loss, &mut iteration_heap, end_coord);
         traversal_count += 1;
-        let queue_len = iteration_queue.len();
+        let queue_len = iteration_heap.len();
         println!("After traversal, {queue_len} items remaining.");
         if queue_len > max_count {
             max_count = queue_len;
@@ -186,14 +186,14 @@ fn turn(left: bool, direction: Direction) -> Direction {
 fn traverse(
     map: &mut Vec<Vec<Node>>,
     min_heat_loss: &mut i64,
-    iteration_queue: &mut VecDeque<Iteration>,
+    iteration_queue: &mut BinaryHeap<Iteration>,
     end: Coordinate,
 ) {
     if iteration_queue.is_empty() {
         panic!("Iteration queue must not be empty!")
     }
 
-    let mut starting_iter = iteration_queue.pop_front().unwrap();
+    let mut starting_iter = iteration_queue.pop().unwrap();
 
     // Move based on indicated direction on iteration
     let new_coord = get_new_coord(
@@ -225,7 +225,7 @@ fn traverse(
 
         if let Some(straight_coord) = straight_coord {
             if !starting_iter.visited.contains(&straight_coord) {
-                iteration_queue.push_back(Iteration {
+                iteration_queue.push(Iteration {
                     coordinate: new_coord,
                     direction: straight_dir,
                     moves_left: straight_moves_left - 1,
@@ -245,7 +245,7 @@ fn traverse(
 
         if let Some(turn_coord) = turn_coord {
             if !starting_iter.visited.contains(&turn_coord) {
-                iteration_queue.push_back(Iteration {
+                iteration_queue.push(Iteration {
                     coordinate: new_coord,
                     direction: turn_dir,
                     moves_left: 2,

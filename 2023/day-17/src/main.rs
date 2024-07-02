@@ -209,7 +209,7 @@ fn traverse(
         }
     }
 
-    0
+    panic!("No route to map end, this isn't possible!")
 }
 
 fn get_max_coordinates<T>(map: &Vec<Vec<T>>) -> Coordinate {

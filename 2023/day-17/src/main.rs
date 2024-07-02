@@ -33,18 +33,13 @@ fn part_1(input: &Vec<String>) -> i64 {
         y: map[map.len() - 1].len() - 1,
     };
 
-    let mut min_heat_loss: i64 = i64::MAX;
-
     let mut iteration_heap: BinaryHeap<Iteration> = BinaryHeap::new();
-    let mut starting_visited = HashSet::new();
-    starting_visited.insert(START_COORD);
 
     iteration_heap.push(Iteration {
         coordinate: START_COORD,
         direction: Direction::E,
         moves_left: 2,
         heat_loss: 0,
-        visited: starting_visited.clone(),
         path_map: Vec::new(),
     });
     iteration_heap.push(Iteration {
@@ -52,26 +47,10 @@ fn part_1(input: &Vec<String>) -> i64 {
         direction: Direction::S,
         moves_left: 2,
         heat_loss: 0,
-        visited: starting_visited.clone(),
         path_map: Vec::new(),
     });
 
-    let mut max_count = iteration_heap.len();
-    let mut traversal_count = 0;
-
-    while !iteration_heap.is_empty() {
-        traverse(&mut map, &mut min_heat_loss, &mut iteration_heap, end_coord);
-        traversal_count += 1;
-        let queue_len = iteration_heap.len();
-        println!("After traversal, {queue_len} items remaining.");
-        if queue_len > max_count {
-            max_count = queue_len;
-        }
-    }
-
-    println!("Maximum iteration count was {max_count}, and we traversed the map {traversal_count} times.");
-
-    min_heat_loss
+    traverse(&mut map, &mut iteration_heap, end_coord)
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
@@ -156,81 +135,83 @@ fn get_new_coord(
 
 fn traverse(
     map: &mut Vec<Vec<Node>>,
-    min_heat_loss: &mut i64,
     iteration_queue: &mut BinaryHeap<Iteration>,
     end: Coordinate,
-) {
-    if iteration_queue.is_empty() {
-        panic!("Iteration queue must not be empty!")
-    }
+) -> i64 {
+    let mut visited = HashSet::new();
 
-    let mut starting_iter = iteration_queue.pop().unwrap();
 
-    // Move based on indicated direction on iteration
-    let new_coord = get_new_coord(
-        get_max_coordinates(map),
-        starting_iter.coordinate,
-        starting_iter.direction,
-    )
-    .unwrap();
-    let new_coord_node = &mut map[new_coord.x][new_coord.y];
-    starting_iter.visited.insert(new_coord);
-    starting_iter.path_map.push(starting_iter.direction);
-    let new_heat_loss = starting_iter.heat_loss + (new_coord_node.value as i64);
-    if new_heat_loss >= *min_heat_loss {
-        return;
-    }
+    loop {
+        let starting_iter = iteration_queue.pop();
 
-    // Reached end coordinate
-    if new_coord == end {
-        if new_heat_loss < *min_heat_loss {
+        if starting_iter.is_none() {
+            break;
+        }
+
+        let mut starting_iter = starting_iter.unwrap();
+
+        // Move based on indicated direction on iteration
+        let new_coord = get_new_coord(
+            get_max_coordinates(map),
+            starting_iter.coordinate,
+            starting_iter.direction,
+        )
+        .unwrap();
+
+        let visited_item = (new_coord, starting_iter.direction, starting_iter.moves_left);
+
+        if visited.contains(&visited_item) {
+            continue;
+        }
+        visited.insert(visited_item);
+        starting_iter.path_map.push(starting_iter.direction);
+        let new_coord_node = &mut map[new_coord.x][new_coord.y];
+        let new_heat_loss = starting_iter.heat_loss + (new_coord_node.value as i64);
+
+        // Reached end coordinate
+        if new_coord == end {
             println!("Found path with heat loss {new_heat_loss}, the map is the following:");
             print_path_map_overlay(map, &starting_iter.path_map);
-            *min_heat_loss = new_heat_loss;
+            return new_heat_loss;
         }
-        return;
-    }
 
-    // Queue up new iterations
-    // Case: keep going
-    let straight_moves_left = starting_iter.moves_left;
-    if straight_moves_left > 0 {
-        let straight_dir = starting_iter.direction;
+        // Queue up new iterations
+        // Case: keep going
+        let straight_moves_left = starting_iter.moves_left;
+        if straight_moves_left > 0 {
+            let straight_dir = starting_iter.direction;
 
-        let straight_coord = get_new_coord(get_max_coordinates(map), new_coord, straight_dir);
-
-        if let Some(straight_coord) = straight_coord {
-            if !starting_iter.visited.contains(&straight_coord) {
+            if get_new_coord(get_max_coordinates(map), new_coord, straight_dir).is_some() {
                 iteration_queue.push(Iteration {
                     coordinate: new_coord,
                     direction: straight_dir,
                     moves_left: straight_moves_left - 1,
                     heat_loss: new_heat_loss,
-                    visited: starting_iter.visited.clone(),
                     path_map: starting_iter.path_map.clone(),
                 });
             }
         }
-    }
 
-    // Case: Turn left or right
-    let starting_iter_direction = starting_iter.direction;
-    for turn_dir in [starting_iter_direction.left(), starting_iter_direction.right()]{
-        let turn_coord = get_new_coord(get_max_coordinates(map), starting_iter.coordinate, turn_dir);
-
-        if let Some(turn_coord) = turn_coord {
-            if !starting_iter.visited.contains(&turn_coord) {
+        // Case: Turn left or right
+        let starting_iter_direction = starting_iter.direction;
+        for turn_dir in [
+            starting_iter_direction.left(),
+            starting_iter_direction.right(),
+        ] {
+            if get_new_coord(get_max_coordinates(map), starting_iter.coordinate, turn_dir).is_some()
+            {
                 iteration_queue.push(Iteration {
                     coordinate: new_coord,
                     direction: turn_dir,
                     moves_left: 2,
                     heat_loss: new_heat_loss,
-                    visited: starting_iter.visited.clone(),
                     path_map: starting_iter.path_map.clone(),
                 });
             }
         }
     }
+
+    0
 }
 
 fn get_max_coordinates<T>(map: &Vec<Vec<T>>) -> Coordinate {

@@ -31,13 +31,3 @@ pub fn get_input(path: &str) -> Vec<String> {
         .map(|s| s.to_string())
         .collect()
 }
-
-trait BoolExt {
-    fn flip(&mut self);
-}
-
-impl BoolExt for bool {
-    fn flip(&mut self) {
-        *self = !*self;
-    }
-}

@@ -54,9 +54,31 @@ fn part_1(input: &Vec<String>) -> i64 {
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
-    let _map = parse_map(input);
+    let mut map = parse_map(input);
 
-    todo!()
+    let end_coord = Coordinate {
+        x: map.len() - 1,
+        y: map[map.len() - 1].len() - 1,
+    };
+
+    let mut iteration_heap: BinaryHeap<Iteration> = BinaryHeap::new();
+
+    iteration_heap.push(Iteration {
+        coordinate: START_COORD,
+        direction: Direction::E,
+        straight_moves: 1,
+        heat_loss: 0,
+        path_map: Vec::new(),
+    });
+    iteration_heap.push(Iteration {
+        coordinate: START_COORD,
+        direction: Direction::S,
+        straight_moves: 1,
+        heat_loss: 0,
+        path_map: Vec::new(),
+    });
+
+    traverse_ultra(&mut map, &mut iteration_heap, end_coord)
 }
 
 fn parse_map(input: &Vec<String>) -> Vec<Vec<Node>> {
@@ -84,10 +106,13 @@ fn get_new_coord(
     max: Coordinate,
     old_coord: Coordinate,
     direction: Direction,
+    move_by: Option<usize>,
 ) -> Option<Coordinate> {
+    let move_by = move_by.unwrap_or(1);
+
     match direction {
         Direction::N => {
-            let new_x = old_coord.x.checked_sub(1);
+            let new_x = old_coord.x.checked_sub(move_by);
             if new_x.is_some() {
                 Some(Coordinate {
                     x: new_x.unwrap(),
@@ -98,7 +123,7 @@ fn get_new_coord(
             }
         }
         Direction::S => {
-            let new_x = old_coord.x.checked_add(1);
+            let new_x = old_coord.x.checked_add(move_by);
             if new_x.is_some() && new_x.unwrap() < max.x {
                 Some(Coordinate {
                     x: new_x.unwrap(),
@@ -109,7 +134,7 @@ fn get_new_coord(
             }
         }
         Direction::W => {
-            let new_y = old_coord.y.checked_sub(1);
+            let new_y = old_coord.y.checked_sub(move_by);
             if new_y.is_some() {
                 Some(Coordinate {
                     x: old_coord.x,
@@ -120,7 +145,7 @@ fn get_new_coord(
             }
         }
         Direction::E => {
-            let new_y = old_coord.y.checked_add(1);
+            let new_y = old_coord.y.checked_add(move_by);
             if new_y.is_some() && new_y.unwrap() < max.y {
                 Some(Coordinate {
                     x: old_coord.x,
@@ -141,23 +166,22 @@ fn traverse(
     let mut visited = HashSet::new();
 
     loop {
-        let starting_iter = iteration_queue.pop();
-
-        if starting_iter.is_none() {
-            break;
-        }
-
-        let mut starting_iter = starting_iter.unwrap();
+        let mut starting_iter = iteration_queue.pop().unwrap();
 
         // Move based on indicated direction on iteration
         let new_coord = get_new_coord(
             get_max_coordinates(map),
             starting_iter.coordinate,
             starting_iter.direction,
+            None,
         )
         .unwrap();
 
-        let visited_item = (new_coord, starting_iter.direction, starting_iter.straight_moves);
+        let visited_item = (
+            new_coord,
+            starting_iter.direction,
+            starting_iter.straight_moves,
+        );
 
         if visited.contains(&visited_item) {
             continue;
@@ -179,11 +203,11 @@ fn traverse(
         if starting_iter.straight_moves < 3 {
             let straight_dir = starting_iter.direction;
 
-            if get_new_coord(get_max_coordinates(map), new_coord, straight_dir).is_some() {
+            if get_new_coord(get_max_coordinates(map), new_coord, straight_dir, None).is_some() {
                 iteration_queue.push(Iteration {
                     coordinate: new_coord,
                     direction: straight_dir,
-                    straight_moves: starting_iter.straight_moves + 1 ,
+                    straight_moves: starting_iter.straight_moves + 1,
                     heat_loss: new_heat_loss,
                     path_map: starting_iter.path_map.clone(),
                 });
@@ -196,7 +220,13 @@ fn traverse(
             starting_iter_direction.left(),
             starting_iter_direction.right(),
         ] {
-            if get_new_coord(get_max_coordinates(map), starting_iter.coordinate, turn_dir).is_some()
+            if get_new_coord(
+                get_max_coordinates(map),
+                starting_iter.coordinate,
+                turn_dir,
+                None,
+            )
+            .is_some()
             {
                 iteration_queue.push(Iteration {
                     coordinate: new_coord,
@@ -208,8 +238,90 @@ fn traverse(
             }
         }
     }
+}
 
-    panic!("No route to map end, this isn't possible!")
+fn traverse_ultra(
+    map: &mut Vec<Vec<Node>>,
+    iteration_queue: &mut BinaryHeap<Iteration>,
+    end: Coordinate,
+) -> i64 {
+    let mut visited = HashSet::new();
+
+    loop {
+        let mut starting_iter = iteration_queue.pop().unwrap();
+
+        // Move based on indicated direction on iteration
+        let new_coord = get_new_coord(
+            get_max_coordinates(map),
+            starting_iter.coordinate,
+            starting_iter.direction,
+            None,
+        )
+        .unwrap();
+
+        let visited_item = (
+            new_coord,
+            starting_iter.direction,
+            starting_iter.straight_moves,
+        );
+
+        if visited.contains(&visited_item) {
+            continue;
+        }
+        visited.insert(visited_item);
+        starting_iter.path_map.push(starting_iter.direction);
+        let new_coord_node = &mut map[new_coord.x][new_coord.y];
+        let new_heat_loss = starting_iter.heat_loss + (new_coord_node.value as i64);
+
+        // Reached end coordinate
+        if new_coord == end && starting_iter.straight_moves >= 4 {
+            println!("Found path with heat loss {new_heat_loss}, the map is the following:");
+            print_path_map_overlay(map, &starting_iter.path_map);
+            return new_heat_loss;
+        }
+
+        // Queue up new iterations
+        // Case: keep going
+        if starting_iter.straight_moves < 10 {
+            let straight_dir = starting_iter.direction;
+
+            if get_new_coord(get_max_coordinates(map), new_coord, straight_dir, None).is_some() {
+                iteration_queue.push(Iteration {
+                    coordinate: new_coord,
+                    direction: straight_dir,
+                    straight_moves: starting_iter.straight_moves + 1,
+                    heat_loss: new_heat_loss,
+                    path_map: starting_iter.path_map.clone(),
+                });
+            }
+        }
+
+        // Case: Turn left or right
+        if starting_iter.straight_moves >= 4 {
+            let starting_iter_direction = starting_iter.direction;
+            for turn_dir in [
+                starting_iter_direction.left(),
+                starting_iter_direction.right(),
+            ] {
+                if get_new_coord(
+                    get_max_coordinates(map),
+                    starting_iter.coordinate,
+                    turn_dir,
+                    None,
+                )
+                .is_some()
+                {
+                    iteration_queue.push(Iteration {
+                        coordinate: new_coord,
+                        direction: turn_dir,
+                        straight_moves: 1,
+                        heat_loss: new_heat_loss,
+                        path_map: starting_iter.path_map.clone(),
+                    });
+                }
+            }
+        }
+    }
 }
 
 fn get_max_coordinates<T>(map: &Vec<Vec<T>>) -> Coordinate {

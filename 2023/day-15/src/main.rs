@@ -1,8 +1,11 @@
-mod helpers;
+mod custom_helper;
 mod tests;
 
+use custom_helper::get_input;
+use helpers::get_path_from_arg;
+
 fn main() {
-    let input = helpers::get_input(&*helpers::get_path_from_arg());
+    let input = get_input(&get_path_from_arg());
 
     let part_1_answer = part_1(&input);
     println!("Part 1 answer: {part_1_answer}");

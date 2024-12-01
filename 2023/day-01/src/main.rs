@@ -1,6 +1,5 @@
 mod tests;
 
-
 use helpers::*;
 
 use phf::phf_map;
@@ -44,14 +43,17 @@ fn part_2(input: &[String]) -> i32 {
     get_sum(input, true)
 }
 
-
 fn get_sum(input: &[String], replace_num: bool) -> i32 {
     let mut sum = 0;
 
     for line in input {
         let mut first: i32 = -1;
-        let mut last: i32= -1;
-        let line: String = if !replace_num {line.to_string()} else {replace_numbers_in(line.to_string())};
+        let mut last: i32 = -1;
+        let line: String = if !replace_num {
+            line.to_string()
+        } else {
+            replace_numbers_in(line.to_string())
+        };
 
         // Iterate over each character
         for c in line.chars() {

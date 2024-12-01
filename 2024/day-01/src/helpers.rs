@@ -28,6 +28,6 @@ pub fn get_input(path: &str) -> Vec<String> {
     fs::read_to_string(path)
         .expect("Couldn't read input file")
         .split('\n')
-        .map(|s| s.to_string())
+        .map(|s| s.strip_suffix("\r").unwrap_or(s).to_string())
         .collect()
 }

@@ -1,7 +1,8 @@
 
 #[cfg(test)]
 mod tests {
-    use crate::{calculate_distance, get_input, part_1, part_2};
+    use crate::{calculate_distance, part_1, part_2};
+    use helpers::get_input;
 
     #[test]
     fn calculate_distance_test() {

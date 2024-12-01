@@ -3,26 +3,26 @@ mod tests;
 use helpers::*;
 
 enum Color {
-    RED,
-    GREEN,
-    BLUE,
+    Red,
+    Green,
+    Blue,
 }
 
 impl Color {
     fn minimums(&self) -> i32 {
         match *self {
-            Color::RED => 12,
-            Color::GREEN => 13,
-            Color::BLUE => 14,
+            Color::Red => 12,
+            Color::Green => 13,
+            Color::Blue => 14,
         }
     }
 }
 
 fn get_color_mapping(s: &str) -> Color {
     match s {
-        "red" => Color::RED,
-        "green" => Color::GREEN,
-        "blue" => Color::BLUE,
+        "red" => Color::Red,
+        "green" => Color::Green,
+        "blue" => Color::Blue,
         _ => panic!("Invalid color mapping"),
     }
 }
@@ -85,17 +85,17 @@ fn part_2(input: &[String]) -> u32 {
                 let color: Color = get_color_mapping(data[1]);
 
                 match color {
-                    Color::RED => {
+                    Color::Red => {
                         if count > required_red {
                             required_red = count
                         }
                     }
-                    Color::GREEN => {
+                    Color::Green => {
                         if count > required_green {
                             required_green = count
                         }
                     }
-                    Color::BLUE => {
+                    Color::Blue => {
                         if count > required_blue {
                             required_blue = count
                         }

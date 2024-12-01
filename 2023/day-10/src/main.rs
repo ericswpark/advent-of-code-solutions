@@ -65,13 +65,11 @@ fn part_2(input: &Vec<String>) -> i32 {
                     }
                     _ => {}
                 }
+            } else if inside_loop {
+                inside_count += 1;
+                map[x][y] = '*';
             } else {
-                if inside_loop {
-                    inside_count += 1;
-                    map[x][y] = '*';
-                } else {
-                    map[x][y] = ' ';
-                }
+                map[x][y] = ' ';
             }
         }
     }
@@ -79,11 +77,11 @@ fn part_2(input: &Vec<String>) -> i32 {
     inside_count
 }
 
-fn get_solved_map(map: &Vec<Vec<char>>, distance_map: &Vec<Vec<Option<usize>>>) -> Vec<Vec<char>> {
-    let mut solved_map = map.clone();
+fn get_solved_map(map: &[Vec<char>], distance_map: &[Vec<Option<usize>>]) -> Vec<Vec<char>> {
+    let mut solved_map = map.to_owned();
 
     // Find position of starting block
-    let start_pos = get_starting_position(&map);
+    let start_pos = get_starting_position(map);
 
     // Left-up configuration
     if start_pos.x > 0
@@ -149,11 +147,11 @@ fn get_solved_map(map: &Vec<Vec<char>>, distance_map: &Vec<Vec<Option<usize>>>) 
     solved_map
 }
 
-fn _print_distance_map(input: &Vec<Vec<Option<usize>>>) {
-    for x in 0..input.len() {
-        for y in 0..input[x].len() {
-            if input[x][y].is_some() {
-                print!("{:0>2} ", input[x][y].unwrap());
+fn _print_distance_map(input: &[Vec<Option<usize>>]) {
+    for row in input {
+        for item in row {
+            if item.is_some() {
+                print!("{:0>2} ", item.unwrap());
             } else {
                 print!("__ ");
             }
@@ -162,10 +160,10 @@ fn _print_distance_map(input: &Vec<Vec<Option<usize>>>) {
     }
 }
 
-fn _print_map(input: &Vec<Vec<char>>) {
-    for x in 0..input.len() {
-        for y in 0..input[x].len() {
-            print!("{}", input[x][y]);
+fn _print_map(input: &[Vec<char>]) {
+    for row in input {
+        for item in row {
+            print!("{}", item);
         }
         println!();
     }
@@ -179,10 +177,10 @@ fn get_map(input: &Vec<String>) -> Vec<Vec<char>> {
     map
 }
 
-fn get_starting_position(map: &Vec<Vec<char>>) -> Position {
-    for x in 0..map.len() {
-        for y in 0..map[x].len() {
-            if map[x][y] == 'S' {
+fn get_starting_position(map: &[Vec<char>]) -> Position {
+    for (x, row) in map.iter().enumerate() {
+        for (y, item) in row.iter().enumerate() {
+            if *item == 'S' {
                 return Position { x, y };
             }
         }
@@ -190,11 +188,11 @@ fn get_starting_position(map: &Vec<Vec<char>>) -> Position {
     panic!("Bad map!")
 }
 
-fn get_all_positions(distance_map: &Vec<Vec<Option<usize>>>, distance: usize) -> Vec<Position> {
+fn get_all_positions(distance_map: &[Vec<Option<usize>>], distance: usize) -> Vec<Position> {
     let mut positions = Vec::new();
-    for x in 0..distance_map.len() {
-        for y in 0..distance_map[x].len() {
-            if distance_map[x][y] == Some(distance) {
+    for (x, row) in distance_map.iter().enumerate() {
+        for (y, item) in row.iter().enumerate() {
+            if *item == Some(distance) {
                 positions.push(Position { x, y })
             }
         }
@@ -203,7 +201,7 @@ fn get_all_positions(distance_map: &Vec<Vec<Option<usize>>>, distance: usize) ->
     positions
 }
 
-fn calculate_distance_map(map: &Vec<Vec<char>>) -> (Vec<Vec<Option<usize>>>, usize) {
+fn calculate_distance_map(map: &[Vec<char>]) -> (Vec<Vec<Option<usize>>>, usize) {
     let start = get_starting_position(map);
 
     let mut distance_map: Vec<Vec<Option<usize>>> = vec![vec![None; map[0].len()]; map.len()];
@@ -261,7 +259,7 @@ fn calculate_distance_map(map: &Vec<Vec<char>>) -> (Vec<Vec<Option<usize>>>, usi
             // Left
             if search_left
                 && position.y > 0
-                && distance_map[position.x][position.y - 1] == None
+                && distance_map[position.x][position.y - 1].is_none()
                 && ['-', 'L', 'F'].contains(&map[position.x][position.y - 1])
             {
                 has_walked_next = true;
@@ -270,7 +268,7 @@ fn calculate_distance_map(map: &Vec<Vec<char>>) -> (Vec<Vec<Option<usize>>>, usi
             // Up
             if search_up
                 && position.x > 0
-                && distance_map[position.x - 1][position.y] == None
+                && distance_map[position.x - 1][position.y].is_none()
                 && ['|', '7', 'F'].contains(&map[position.x - 1][position.y])
             {
                 has_walked_next = true;
@@ -279,7 +277,7 @@ fn calculate_distance_map(map: &Vec<Vec<char>>) -> (Vec<Vec<Option<usize>>>, usi
             // Right
             if search_right
                 && position.y + 1 < map[position.x].len()
-                && distance_map[position.x][position.y + 1] == None
+                && distance_map[position.x][position.y + 1].is_none()
                 && ['-', '7', 'J'].contains(&map[position.x][position.y + 1])
             {
                 has_walked_next = true;
@@ -288,7 +286,7 @@ fn calculate_distance_map(map: &Vec<Vec<char>>) -> (Vec<Vec<Option<usize>>>, usi
             // Down
             if search_down
                 && position.x + 1 < map.len()
-                && distance_map[position.x + 1][position.y] == None
+                && distance_map[position.x + 1][position.y].is_none()
                 && ['|', 'L', 'J'].contains(&map[position.x + 1][position.y])
             {
                 has_walked_next = true;

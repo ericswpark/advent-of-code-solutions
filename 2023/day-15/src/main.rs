@@ -94,13 +94,9 @@ enum Operation {
     Remove,
 }
 
-fn parse_step(input: &String) -> (String, Operation, u8) {
+fn parse_step(input: &str) -> (String, Operation, u8) {
     return if !input.chars().nth(input.len() - 1).unwrap().is_numeric() {
-        (
-            (&input[0..input.len() - 1]).to_string(),
-            Operation::Remove,
-            0,
-        )
+        (input[0..input.len() - 1].to_string(), Operation::Remove, 0)
     } else {
         let focal_length: u8 = input
             .chars()
@@ -109,14 +105,14 @@ fn parse_step(input: &String) -> (String, Operation, u8) {
             .to_digit(10)
             .unwrap() as u8;
         (
-            (&input[0..input.len() - 2]).to_string(),
+            input[0..input.len() - 2].to_string(),
             Operation::Set,
             focal_length,
         )
     };
 }
 
-fn hash_algo(input: &String) -> u32 {
+fn hash_algo(input: &str) -> u32 {
     let mut value = 0;
 
     for c in input.chars() {

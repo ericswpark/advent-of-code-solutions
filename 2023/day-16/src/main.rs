@@ -1,12 +1,12 @@
 use std::collections::HashSet;
 
-mod helpers;
 mod tests;
 
+use helpers::*;
 use rayon::prelude::*;
 
 fn main() {
-    let input = helpers::get_input(&*helpers::get_path_from_arg());
+    let input = get_input(&get_path_from_arg());
 
     let part_1_answer = part_1(&input);
     println!("Part 1 answer: {part_1_answer}");

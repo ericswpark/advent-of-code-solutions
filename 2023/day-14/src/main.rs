@@ -75,14 +75,6 @@ impl Plot {
             _ => panic!("Bad plot character!"),
         }
     }
-
-    fn char(&self) -> char {
-        match *self {
-            Plot::Round => 'O',
-            Plot::Empty => '.',
-            Plot::Fixed => '#',
-        }
-    }
 }
 
 fn parse_map(input: &Vec<String>) -> Vec<Vec<Plot>> {
@@ -304,13 +296,4 @@ fn calculate_north_load(map: &[Vec<Plot>]) -> i64 {
     }
 
     load
-}
-
-fn print_map(map: &[Vec<Plot>]) {
-    for row in map {
-        for item in row {
-            print!("{}", item.char());
-        }
-        println!();
-    }
 }

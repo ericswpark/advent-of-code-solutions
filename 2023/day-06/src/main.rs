@@ -17,7 +17,7 @@ fn main() {
     println!("Time: {:.2?}", elapsed_time);
 }
 
-fn part_1(input: &Vec<String>) -> i64 {
+fn part_1(input: &[String]) -> i64 {
     let times = get_parsed_number_array(&input[0][5..]);
     let distances = get_parsed_number_array(&input[1][9..]);
 
@@ -32,7 +32,7 @@ fn part_1(input: &Vec<String>) -> i64 {
     ways_to_win_multiple
 }
 
-fn part_2(input: &Vec<String>) -> i64 {
+fn part_2(input: &[String]) -> i64 {
     let bad_kerning_time = get_parsed_number(&input[0][5..]);
     let bad_kerning_distance = get_parsed_number(&input[1][9..]);
 

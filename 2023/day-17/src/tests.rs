@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::helpers::get_input;
+    use helpers::get_input;
     use crate::*;
 
     //noinspection SpellCheckingInspection

@@ -5,15 +5,16 @@ use enums::Direction;
 use structs::{Coordinate, Iteration, Node};
 
 mod enums;
-mod helpers;
 mod structs;
 mod tests;
+
+use helpers::*;
 
 const START_COORD: Coordinate = Coordinate { x: 0, y: 0 };
 
 fn main() {
     let start_time = Instant::now();
-    let input = helpers::get_input(&*helpers::get_path_from_arg());
+    let input = get_input(&get_path_from_arg());
 
     let part_1_answer = part_1(&input);
     println!("Part 1 answer: {part_1_answer}");

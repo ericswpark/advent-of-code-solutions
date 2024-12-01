@@ -1,7 +1,10 @@
+mod custom_helper;
+
 use rayon::prelude::*;
 use std::time::Instant;
 
-use helpers::*;
+use helpers::get_path_from_arg;
+use custom_helper::get_input;
 
 struct RangeItem {
     dest_start: i64,

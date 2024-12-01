@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::helpers::get_input;
+    use custom_helper::get_input;
     use crate::*;
 
     #[test]

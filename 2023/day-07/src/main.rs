@@ -104,7 +104,7 @@ fn part_1(input: &Vec<String>) -> i64 {
             get_card_value_mapping(a.hands[4 - i]).cmp(&get_card_value_mapping(b.hands[4 - i]))
         })
     }
-    rounds.sort_by(|a, b| a.hand_type().value().cmp(&b.hand_type().value()));
+    rounds.sort_by_key(|a| a.hand_type().value());
 
     let mut total_winnings: i64 = 0;
 

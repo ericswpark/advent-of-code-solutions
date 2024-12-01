@@ -21,7 +21,6 @@ pub(crate) struct Iteration {
     pub(crate) path_map: Vec<Direction>,
 }
 
-
 impl Ord for Coordinate {
     fn cmp(&self, other: &Self) -> Ordering {
         self.x.cmp(&other.x).then_with(|| self.y.cmp(&other.y))

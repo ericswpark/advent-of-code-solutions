@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::time::Instant;
 
 mod helpers;
@@ -35,7 +36,22 @@ fn part_1(input: &Vec<String>) -> i64 {
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
-    todo!()
+    let (left_list, right_list) = get_lists(&input);
+
+    let mut total_similarity = 0;
+
+    let mut lookup = HashMap::new();
+
+    for (index, left_num) in left_list.iter().enumerate() {
+        if !lookup.contains_key(left_num) {
+            let sim_count = right_list.iter().filter(|&n| *n == *left_num).count();
+            lookup.insert(left_num, sim_count as i64 * left_num);
+        }
+
+        total_similarity += lookup.get(left_num).unwrap();
+    }
+
+    total_similarity
 }
 
 

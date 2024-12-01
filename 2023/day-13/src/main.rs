@@ -3,8 +3,8 @@ use std::cmp;
 mod custom_helper;
 mod tests;
 
-use helpers::get_path_from_arg;
 use custom_helper::get_input;
+use helpers::get_path_from_arg;
 
 fn main() {
     let input = get_input(&get_path_from_arg());
@@ -15,7 +15,6 @@ fn main() {
     let part_2_answer = part_2(&input);
     println!("Part 2 answer: {part_2_answer}");
 }
-
 
 fn part_1(input: &Vec<String>) -> i64 {
     let patterns = parse_patterns(input);
@@ -36,8 +35,6 @@ fn part_1(input: &Vec<String>) -> i64 {
     summary
 }
 
-
-
 fn part_2(input: &Vec<String>) -> i64 {
     let patterns = parse_patterns(input);
 
@@ -55,7 +52,8 @@ fn part_2(input: &Vec<String>) -> i64 {
                 new_pattern[row][column].flip();
 
                 let new_vertical = get_vertical_reflection(&new_pattern, Some(original_vertical));
-                let new_horizontal = get_horizontal_reflection(&new_pattern, Some(original_horizontal));
+                let new_horizontal =
+                    get_horizontal_reflection(&new_pattern, Some(original_horizontal));
 
                 if new_vertical != -1 {
                     summary += new_vertical;
@@ -64,7 +62,6 @@ fn part_2(input: &Vec<String>) -> i64 {
                     summary += 100 * new_horizontal;
                     break 'outer_loop;
                 }
-
             }
         }
     }
@@ -72,11 +69,10 @@ fn part_2(input: &Vec<String>) -> i64 {
     summary
 }
 
-
 #[derive(PartialEq, Clone, Debug, Eq, Hash)]
 enum Item {
     Rock,
-    Ash
+    Ash,
 }
 
 impl Item {
@@ -142,7 +138,9 @@ fn get_vertical_reflection(pattern: &Vec<Vec<Item>>, ignore: Option<i64>) -> i64
         }
 
         if matches {
-            if ignore.is_none() || ignore.unwrap() != (column + 1) as i64 { return (column + 1) as i64 }
+            if ignore.is_none() || ignore.unwrap() != (column + 1) as i64 {
+                return (column + 1) as i64;
+            }
         }
     }
 
@@ -166,10 +164,11 @@ fn get_horizontal_reflection(pattern: &Vec<Vec<Item>>, ignore: Option<i64>) -> i
         }
 
         if matches {
-            if ignore.is_none() || ignore.unwrap() != (row + 1) as i64 { return (row + 1) as i64 }
+            if ignore.is_none() || ignore.unwrap() != (row + 1) as i64 {
+                return (row + 1) as i64;
+            }
         }
     }
 
     -1
 }
-

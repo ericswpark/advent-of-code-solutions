@@ -53,11 +53,19 @@ fn main() {
     let input = get_input(&get_path_from_arg());
 
     let start_time = Instant::now();
+    let part_1_answer = part_1(&input);
+    println!("Part 1 answer: {part_1_answer}");
 
-    let seeds_part_1 = get_seeds(&input[0]);
+    let part_2_answer = part_2(&input);
+    println!("Part 2 answer: {part_2_answer}");
 
-    let seeds_part_2 = get_range_seeds(&seeds_part_1);
+    let elapsed_time = start_time.elapsed();
+    println!("Time: {:.2?}", elapsed_time);
+}
 
+
+fn part_1(input: &[String]) -> i64 {
+    let seeds = get_seeds(&input[0]);
     let soil_mapping = get_mapping(&input[1]);
     let fertilizer_mapping = get_mapping(&input[2]);
     let water_mapping = get_mapping(&input[3]);
@@ -68,16 +76,25 @@ fn main() {
 
     let mut lowest = i64::MAX;
 
-    for seed in seeds_part_1 {
+    for seed in seeds {
         let location = get_location_of_seed(&soil_mapping, &fertilizer_mapping, &water_mapping, &light_mapping, &temperature_mapping, &humidity_mapping, &location_mapping, seed);
-
         if location < lowest { lowest = location }
     }
 
-    println!("Part 1: The lowest location number is {lowest}.");
-    println!("Time for part 1: {:.2?}", start_time.elapsed());
+    lowest
+}
 
-    let lowest = seeds_part_2.par_iter().map( | seed_range | {
+fn part_2(input: &[String]) -> i64 {
+    let seeds = get_range_seeds(&get_seeds(&input[0]));
+    let soil_mapping = get_mapping(&input[1]);
+    let fertilizer_mapping = get_mapping(&input[2]);
+    let water_mapping = get_mapping(&input[3]);
+    let light_mapping = get_mapping(&input[4]);
+    let temperature_mapping = get_mapping(&input[5]);
+    let humidity_mapping = get_mapping(&input[6]);
+    let location_mapping = get_mapping(&input[7]);
+
+    let lowest = seeds.par_iter().map( | seed_range | {
         let lowest: i64 = (0..seed_range.range).into_par_iter().map( | i | {
             let seed = seed_range.start + i;
 
@@ -89,8 +106,7 @@ fn main() {
         lowest
     }).min().unwrap();
 
-    println!("Part 2: The lowest location number is {lowest}.");
-    println!("Time: {:.2?}", start_time.elapsed());
+    lowest
 }
 
 fn get_location_of_seed(soil_mapping: &RangeVec, fertilizer_mapping: &RangeVec, water_mapping: &RangeVec, light_mapping: &RangeVec, temperature_mapping: &RangeVec, humidity_mapping: &RangeVec, location_mapping: &RangeVec, seed: i64) -> i64 {

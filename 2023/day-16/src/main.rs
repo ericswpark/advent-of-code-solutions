@@ -23,7 +23,7 @@ fn part_1(input: &Vec<String>) -> i64 {
     get_energized_sum(&traversed_map)
 }
 
-fn get_energized_sum(traverse_map: &Vec<Vec<bool>>) -> i64 {
+fn get_energized_sum(traverse_map: &[Vec<bool>]) -> i64 {
     let mut energized_sum = 0;
 
     for tile in traverse_map.iter().flatten() {
@@ -162,19 +162,19 @@ fn traverse_map(map: &Vec<Vec<Item>>, x: i64, y: i64, direction: Direction) -> V
 
 fn get_mirrored_direction(direction: Direction, mirror: &Item) -> Direction {
     if *mirror == Item::ForwardMirror {
-        return match direction {
+        match direction {
             Direction::E => Direction::N,
             Direction::N => Direction::E,
             Direction::S => Direction::W,
             Direction::W => Direction::S,
-        };
+        }
     } else if *mirror == Item::BackMirror {
-        return match direction {
+        match direction {
             Direction::E => Direction::S,
             Direction::N => Direction::W,
             Direction::S => Direction::E,
             Direction::W => Direction::N,
-        };
+        }
     } else {
         panic!("Not a mirror!")
     }
@@ -187,7 +187,7 @@ struct Iteration {
     direction: Direction,
 }
 
-fn in_bounds(map: &Vec<Vec<Item>>, x: i64, y: i64) -> bool {
+fn in_bounds(map: &[Vec<Item>], x: i64, y: i64) -> bool {
     x >= 0 && x < map.len() as i64 && y >= 0 && y < map[x as usize].len() as i64
 }
 

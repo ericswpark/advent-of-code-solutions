@@ -2,6 +2,7 @@ use std::env;
 use std::fs;
 use std::io::{stdin, stdout, Write};
 use rayon::prelude::*;
+use std::time::Instant;
 
 struct RangeItem {
     dest_start: i64,
@@ -52,6 +53,8 @@ struct RangeSeed {
 fn main() {
     let input = get_input();
 
+    let start_time = Instant::now();
+
     let seeds_part_1 = get_seeds(&input[0]);
 
     let seeds_part_2 = get_range_seeds(&seeds_part_1);
@@ -73,6 +76,7 @@ fn main() {
     }
 
     println!("Part 1: The lowest location number is {lowest}.");
+    println!("Time for part 1: {:.2?}", start_time.elapsed());
 
     let lowest = seeds_part_2.par_iter().map( | seed_range | {
         let lowest: i64 = (0..seed_range.range).into_par_iter().map( | i | {
@@ -87,6 +91,7 @@ fn main() {
     }).min().unwrap();
 
     println!("Part 2: The lowest location number is {lowest}.");
+    println!("Time: {:.2?}", start_time.elapsed());
 }
 
 fn get_location_of_seed(soil_mapping: &RangeVec, fertilizer_mapping: &RangeVec, water_mapping: &RangeVec, light_mapping: &RangeVec, temperature_mapping: &RangeVec, humidity_mapping: &RangeVec, location_mapping: &RangeVec, seed: i64) -> i64 {

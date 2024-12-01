@@ -23,7 +23,11 @@ fn part_1(input: &Vec<String>) -> i32 {
         // Get number of matches
         let match_count = get_match_count(winning_numbers, elf_numbers);
 
-        points_sum += if match_count >= 1 { 2_i32.checked_pow((match_count - 1) as u32).unwrap() } else { 0 };
+        points_sum += if match_count >= 1 {
+            2_i32.checked_pow((match_count - 1) as u32).unwrap()
+        } else {
+            0
+        };
     }
     points_sum
 }
@@ -70,7 +74,10 @@ fn get_match_count(winning_numbers: Vec<i32>, elf_numbers: Vec<i32>) -> usize {
 fn get_card_count(input: &Vec<String>) -> i32 {
     let mut last_card_id = 0;
     for line in input {
-        let card_id = line.split(": ").collect::<Vec<_>>()[0][5..].trim().parse::<i32>().unwrap();
+        let card_id = line.split(": ").collect::<Vec<_>>()[0][5..]
+            .trim()
+            .parse::<i32>()
+            .unwrap();
         last_card_id = card_id;
     }
 
@@ -78,5 +85,9 @@ fn get_card_count(input: &Vec<String>) -> i32 {
 }
 
 fn parse_input_to_scratchcard_numbers(input: &str) -> Vec<i32> {
-    input.split(' ').filter(|&x| !x.is_empty()).map(|s: &str| s.parse::<i32>().unwrap() ).collect()
+    input
+        .split(' ')
+        .filter(|&x| !x.is_empty())
+        .map(|s: &str| s.parse::<i32>().unwrap())
+        .collect()
 }

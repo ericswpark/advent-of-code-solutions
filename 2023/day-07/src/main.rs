@@ -2,7 +2,6 @@ mod tests;
 
 use helpers::*;
 
-
 #[derive(PartialEq)]
 enum HandType {
     FiveKind,
@@ -11,7 +10,7 @@ enum HandType {
     ThreeKind,
     TwoPair,
     OnePair,
-    HighCard
+    HighCard,
 }
 
 impl HandType {
@@ -23,14 +22,14 @@ impl HandType {
             HandType::ThreeKind => 3,
             HandType::TwoPair => 2,
             HandType::OnePair => 1,
-            HandType::HighCard => 0
+            HandType::HighCard => 0,
         }
     }
 }
 
 struct Round {
     hands: Vec<char>,
-    bid: i32
+    bid: i32,
 }
 
 impl Round {
@@ -70,22 +69,18 @@ fn card_count_to_hand_type(first: i16, second: i16) -> HandType {
     match first {
         5 => HandType::FiveKind,
         4 => HandType::FourKind,
-        3 => {
-            match second {
-                2 => HandType::FullHouse,
-                1 => HandType::ThreeKind,
-                _ => panic!("Impossible three-card mapping. The input is wrong!")
-            }
+        3 => match second {
+            2 => HandType::FullHouse,
+            1 => HandType::ThreeKind,
+            _ => panic!("Impossible three-card mapping. The input is wrong!"),
         },
-        2 => {
-            match second {
-                2 => HandType::TwoPair,
-                1 => HandType::OnePair,
-                _ => panic!("Impossible two-card mapping. The input is wrong!")
-            }
+        2 => match second {
+            2 => HandType::TwoPair,
+            1 => HandType::OnePair,
+            _ => panic!("Impossible two-card mapping. The input is wrong!"),
         },
         1 => HandType::HighCard,
-        _ => panic!("Bad hand type mapping. The input is wrong!")
+        _ => panic!("Bad hand type mapping. The input is wrong!"),
     }
 }
 
@@ -105,9 +100,11 @@ fn part_1(input: &Vec<String>) -> i64 {
     // Sort rounds based on their rank
     // If two rounds have the same rank, then use the individual card values
     for i in 0..=4 {
-        rounds.sort_by(|a, b| get_card_value_mapping(a.hands[4-i]).cmp(&get_card_value_mapping(b.hands[4 - i])))
+        rounds.sort_by(|a, b| {
+            get_card_value_mapping(a.hands[4 - i]).cmp(&get_card_value_mapping(b.hands[4 - i]))
+        })
     }
-    rounds.sort_by(|a, b | a.hand_type().value().cmp(&b.hand_type().value()));
+    rounds.sort_by(|a, b| a.hand_type().value().cmp(&b.hand_type().value()));
 
     let mut total_winnings: i64 = 0;
 
@@ -124,15 +121,16 @@ fn part_2(input: &Vec<String>) -> i64 {
     // Sort rounds based on their rank
     // If two rounds have the same rank, then use the individual card values
     for i in 0..=4 {
-        rounds.sort_by(|a, b|
-            get_card_value_mapping_with_joker(a.hands[4-i])
+        rounds.sort_by(|a, b| {
+            get_card_value_mapping_with_joker(a.hands[4 - i])
                 .cmp(&get_card_value_mapping_with_joker(b.hands[4 - i]))
-        )
+        })
     }
-    rounds.sort_by(|a, b |
-        a.hand_type_with_joker().value()
+    rounds.sort_by(|a, b| {
+        a.hand_type_with_joker()
+            .value()
             .cmp(&b.hand_type_with_joker().value())
-    );
+    });
 
     let mut total_winnings: i64 = 0;
 
@@ -156,9 +154,8 @@ fn get_card_rounds(input: &Vec<String>) -> Vec<Round> {
 
         ret.push(Round {
             hands: cards,
-            bid: parts[1].parse::<i32>().unwrap()
+            bid: parts[1].parse::<i32>().unwrap(),
         })
-
     }
 
     ret
@@ -179,7 +176,9 @@ fn get_card_value_mapping(c: char) -> i16 {
         '4' => 2,
         '3' => 1,
         '2' => 0,
-        _ => { panic!("Bad card mapping!") }
+        _ => {
+            panic!("Bad card mapping!")
+        }
     }
 }
 
@@ -198,6 +197,8 @@ fn get_card_value_mapping_with_joker(c: char) -> i16 {
         '3' => 2,
         '2' => 1,
         'J' => 0,
-        _ => { panic!("Bad card mapping!") }
+        _ => {
+            panic!("Bad card mapping!")
+        }
     }
 }

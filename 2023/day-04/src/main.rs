@@ -1,43 +1,17 @@
-use std::env;
-use std::fs;
-use std::io::{stdin, stdout, Write};
+use helpers::*;
+
 
 fn main() {
-    let input = get_input();
+    let input = get_input(&get_path_from_arg());
 
-    let points_worth = get_points_worth(&input);
-    let card_instances_sum = get_card_instances_sum(&input);
+    let part_1_answer = part_1(&input);
+    println!("Part 1 answer: {part_1_answer}");
 
-    println!("The cards are worth {points_worth} points.");
-    println!("There are {card_instances_sum} scratchcards.");
+    let part_2_answer = part_2(&input);
+    println!("Part 2 answer: {part_2_answer}");
 }
 
-fn get_input() -> Vec<String> {
-    let mut args: Vec<String> = env::args().collect();
-
-    let mut path: &mut String = &mut String::new();
-
-    if args.len() < 2 {
-        print!("Enter path to file: ");
-        stdout().flush().expect("Cannot flush buffer");
-
-        stdin().read_line(path).expect("Cannot process input");
-        if let Some('\n')=path.chars().next_back() {
-            path.pop();
-        }
-        if let Some('\r')=path.chars().next_back() {
-            path.pop();
-        }
-    } else {
-        path = &mut args[1];
-    }
-
-    fs::read_to_string(path)
-        .expect("Couldn't read input file").split('\n').map(|s| s.to_string()).collect()
-}
-
-
-fn get_points_worth(input: &Vec<String>) -> i32 {
+fn part_1(input: &Vec<String>) -> i32 {
     let mut points_sum: i32 = 0;
     for line in input {
         let parts: Vec<_> = line.split(": ").collect();
@@ -53,7 +27,7 @@ fn get_points_worth(input: &Vec<String>) -> i32 {
     points_sum
 }
 
-fn get_card_instances_sum(input: &Vec<String>) -> i32 {
+fn part_2(input: &Vec<String>) -> i32 {
     let mut cards_count_by_id: Vec<i32> = vec![0; get_card_count(input) as usize];
 
     for line in input {

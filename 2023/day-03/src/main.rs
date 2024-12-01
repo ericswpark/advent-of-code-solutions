@@ -14,7 +14,7 @@ fn main() {
     println!("Part 2 answer: {part_2_answer}");
 }
 
-fn part_1(input: &Vec<Vec<char>>) -> i32 {
+fn part_1(input: &[Vec<char>]) -> i32 {
     let mut sum = 0;
     for (line_index, line) in input.iter().enumerate() {
         let mut parsed_num = String::new();
@@ -109,7 +109,7 @@ fn part_1(input: &Vec<Vec<char>>) -> i32 {
     sum
 }
 
-fn part_2(input: &Vec<Vec<char>>) -> i32 {
+fn part_2(input: &[Vec<char>]) -> i32 {
     let mut sum = 0;
     for (line_index, line) in input.iter().enumerate() {
         for (char_index, char) in line.iter().enumerate() {
@@ -172,7 +172,7 @@ fn check_char(is_part: &mut bool, target: char) {
     }
 }
 
-fn get_number_from_line(line: &Vec<char>, index: i32) -> Option<Vec<i32>> {
+fn get_number_from_line(line: &[char], index: i32) -> Option<Vec<i32>> {
     let mut numbers: Vec<i32> = Vec::new();
 
     if index > 0 && line[index as usize - 1].is_numeric() {
@@ -200,7 +200,7 @@ fn get_number_from_line(line: &Vec<char>, index: i32) -> Option<Vec<i32>> {
     }
 }
 
-fn get_whole_number(line: &Vec<char>, index: i32) -> i32 {
+fn get_whole_number(line: &[char], index: i32) -> i32 {
     let mut start_index = index;
     let mut end_index = index;
 

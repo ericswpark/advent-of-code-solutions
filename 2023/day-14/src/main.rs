@@ -117,14 +117,12 @@ fn roll_map_north(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
                 }
                 Plot::Fixed => {
                     // Starting from the start index, roll the rocks!
-                    for roll_row in start_index..=row {
+                    for roll_row in map.iter_mut().take(row + 1).skip(start_index) {
                         if round_rocks_encountered > 0 {
-                            map[roll_row][column] = Plot::Round;
+                            roll_row[column] = Plot::Round;
                             round_rocks_encountered -= 1;
-                        } else {
-                            if map[roll_row][column] != Plot::Fixed {
-                                map[roll_row][column] = Plot::Empty;
-                            }
+                        } else if roll_row[column] != Plot::Fixed {
+                            roll_row[column] = Plot::Empty;
                         }
                     }
                     // Reset start index to current
@@ -135,12 +133,12 @@ fn roll_map_north(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
             // Check if we're on the last item and we haven't encountered a fixed rock yet
             if row == map.len() - 1 && map[row][column] != Plot::Fixed {
                 // Roll the rocks one last time
-                for roll_row in start_index..=row {
+                for roll_row in map.iter_mut().take(row + 1).skip(start_index) {
                     if round_rocks_encountered > 0 {
-                        map[roll_row][column] = Plot::Round;
+                        roll_row[column] = Plot::Round;
                         round_rocks_encountered -= 1;
                     } else {
-                        map[roll_row][column] = Plot::Empty;
+                        roll_row[column] = Plot::Empty;
                     }
                 }
             }
@@ -170,10 +168,8 @@ fn roll_map_south(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
                         if round_rocks_encountered > 0 {
                             map[roll_row][column] = Plot::Round;
                             round_rocks_encountered -= 1;
-                        } else {
-                            if map[roll_row][column] != Plot::Fixed {
-                                map[roll_row][column] = Plot::Empty;
-                            }
+                        } else if map[roll_row][column] != Plot::Fixed {
+                            map[roll_row][column] = Plot::Empty;
                         }
                     }
                     // Reset start index to current
@@ -219,10 +215,8 @@ fn roll_map_west(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
                         if round_rocks_encountered > 0 {
                             map[row][roll_column] = Plot::Round;
                             round_rocks_encountered -= 1;
-                        } else {
-                            if map[row][roll_column] != Plot::Fixed {
-                                map[row][roll_column] = Plot::Empty;
-                            }
+                        } else if map[row][roll_column] != Plot::Fixed {
+                            map[row][roll_column] = Plot::Empty;
                         }
                     }
                     // Reset start index to current
@@ -268,10 +262,8 @@ fn roll_map_east(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
                         if round_rocks_encountered > 0 {
                             map[row][roll_column] = Plot::Round;
                             round_rocks_encountered -= 1;
-                        } else {
-                            if map[row][roll_column] != Plot::Fixed {
-                                map[row][roll_column] = Plot::Empty;
-                            }
+                        } else if map[row][roll_column] != Plot::Fixed {
+                            map[row][roll_column] = Plot::Empty;
                         }
                     }
                     // Reset start index to current
@@ -297,7 +289,7 @@ fn roll_map_east(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
     map
 }
 
-fn calculate_north_load(map: &Vec<Vec<Plot>>) -> i64 {
+fn calculate_north_load(map: &[Vec<Plot>]) -> i64 {
     let mut load: i64 = 0;
     for row in 0..map.len() {
         let mut rock_count = 0;
@@ -314,10 +306,10 @@ fn calculate_north_load(map: &Vec<Vec<Plot>>) -> i64 {
     load
 }
 
-fn print_map(map: &Vec<Vec<Plot>>) {
-    for row in 0..map.len() {
-        for col in 0..map[row].len() {
-            print!("{}", map[row][col].char());
+fn print_map(map: &[Vec<Plot>]) {
+    for row in map {
+        for item in row {
+            print!("{}", item.char());
         }
         println!();
     }

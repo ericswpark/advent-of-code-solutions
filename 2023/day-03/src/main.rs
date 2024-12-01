@@ -1,8 +1,8 @@
-mod tests;
 mod helper_wrappers;
+mod tests;
 
-use helpers::get_path_from_arg;
 use helper_wrappers::get_input;
+use helpers::get_path_from_arg;
 
 fn main() {
     let input = get_input(&get_path_from_arg());
@@ -24,26 +24,42 @@ fn part_1(input: &Vec<Vec<char>>) -> i32 {
             }
 
             if char_index + 1 == line.len() || !char.is_numeric() {
-                if parsed_num.is_empty() { continue }
+                if parsed_num.is_empty() {
+                    continue;
+                }
                 // End of number, see if it is adjacent to a symbol
                 let mut is_part = false;
                 // Temporarily reassign indexes
-                let char_index: i32 = if char.is_numeric() { char_index as i32 } else { char_index as i32 - 1 };
+                let char_index: i32 = if char.is_numeric() {
+                    char_index as i32
+                } else {
+                    char_index as i32 - 1
+                };
                 let line_index: i32 = line_index as i32;
 
                 // Check previous line (if it exists)
                 if line_index > 0 {
                     // Check diagonal left
                     if char_index - parsed_num.len() as i32 >= 0 {
-                        check_char(&mut is_part, input[line_index as usize - 1][char_index as usize - parsed_num.len()]);
+                        check_char(
+                            &mut is_part,
+                            input[line_index as usize - 1][char_index as usize - parsed_num.len()],
+                        );
                     }
                     // Check characters on top
                     for i in 0..parsed_num.len() {
-                        check_char(&mut is_part, input[line_index as usize - 1][char_index as usize + 1 + i - parsed_num.len()]);
+                        check_char(
+                            &mut is_part,
+                            input[line_index as usize - 1]
+                                [char_index as usize + 1 + i - parsed_num.len()],
+                        );
                     }
                     // Check diagonal right
                     if char_index + 1 < line.len() as i32 {
-                        check_char(&mut is_part, input[line_index as usize - 1][char_index as usize + 1]);
+                        check_char(
+                            &mut is_part,
+                            input[line_index as usize - 1][char_index as usize + 1],
+                        );
                     }
                 }
                 // Check left of number (if it exists)
@@ -58,15 +74,25 @@ fn part_1(input: &Vec<Vec<char>>) -> i32 {
                 if line_index + 1 < input.len() as i32 {
                     // Check diagonal left
                     if char_index - parsed_num.len() as i32 >= 0 {
-                        check_char(&mut is_part, input[line_index as usize + 1][char_index as usize - parsed_num.len()]);
+                        check_char(
+                            &mut is_part,
+                            input[line_index as usize + 1][char_index as usize - parsed_num.len()],
+                        );
                     }
                     // Check characters below
                     for i in 0..parsed_num.len() {
-                        check_char(&mut is_part, input[line_index as usize + 1][char_index as usize + 1 + i - parsed_num.len()]);
+                        check_char(
+                            &mut is_part,
+                            input[line_index as usize + 1]
+                                [char_index as usize + 1 + i - parsed_num.len()],
+                        );
                     }
                     // Check diagonal right
                     if char_index + 1 < line.len() as i32 {
-                        check_char(&mut is_part, input[line_index as usize + 1][char_index as usize + 1]);
+                        check_char(
+                            &mut is_part,
+                            input[line_index as usize + 1][char_index as usize + 1],
+                        );
                     }
                 }
 
@@ -93,11 +119,14 @@ fn part_2(input: &Vec<Vec<char>>) -> i32 {
 
                 // Check previous line (if it exists)
                 if line_index > 0 {
-                    let numbers_from_target_line = get_number_from_line(&input[line_index - 1], char_index as i32);
+                    let numbers_from_target_line =
+                        get_number_from_line(&input[line_index - 1], char_index as i32);
                     match numbers_from_target_line {
                         None => {}
                         Some(val) => {
-                            for n in val { numbers.push(n) }
+                            for n in val {
+                                numbers.push(n)
+                            }
                         }
                     }
                 }
@@ -111,11 +140,14 @@ fn part_2(input: &Vec<Vec<char>>) -> i32 {
                 }
 
                 if line_index + 1 < input.len() {
-                    let numbers_from_target_line = get_number_from_line(&input[line_index + 1], char_index as i32);
+                    let numbers_from_target_line =
+                        get_number_from_line(&input[line_index + 1], char_index as i32);
                     match numbers_from_target_line {
                         None => {}
                         Some(val) => {
-                            for n in val { numbers.push(n) }
+                            for n in val {
+                                numbers.push(n)
+                            }
                         }
                     }
                 }
@@ -126,7 +158,7 @@ fn part_2(input: &Vec<Vec<char>>) -> i32 {
                     sum += gear_ratio;
                 }
             } else {
-                continue
+                continue;
             }
         }
     }
@@ -152,11 +184,20 @@ fn get_number_from_line(line: &Vec<char>, index: i32) -> Option<Vec<i32>> {
     }
 
     // It's possible that there are two numbers, separated by a middle character
-    if index > 0 && line[index as usize - 1].is_numeric() && !line[index as usize].is_numeric() && index + 1 < line.len() as i32 && line[index as usize + 1].is_numeric() {
+    if index > 0
+        && line[index as usize - 1].is_numeric()
+        && !line[index as usize].is_numeric()
+        && index + 1 < line.len() as i32
+        && line[index as usize + 1].is_numeric()
+    {
         numbers.push(get_whole_number(line, index + 1));
     }
 
-    if numbers.is_empty() { None } else { Some(numbers) }
+    if numbers.is_empty() {
+        None
+    } else {
+        Some(numbers)
+    }
 }
 
 fn get_whole_number(line: &Vec<char>, index: i32) -> i32 {
@@ -171,7 +212,9 @@ fn get_whole_number(line: &Vec<char>, index: i32) -> i32 {
         end_index += 1;
     }
 
-    let result_string: String = line[start_index as usize..=end_index as usize].iter().collect();
+    let result_string: String = line[start_index as usize..=end_index as usize]
+        .iter()
+        .collect();
 
     result_string.parse::<i32>().unwrap()
 }

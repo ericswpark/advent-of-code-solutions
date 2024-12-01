@@ -40,7 +40,7 @@ fn get_sequence(input: &Vec<String>) -> Vec<Vec<i32>> {
     let mut histories = Vec::new();
     for line in input {
         // Construct new history item
-        let history: Vec<i32> = line.split(' ').map(|s| s.parse::<i32>().unwrap() ).collect();
+        let history: Vec<i32> = line.split(' ').map(|s| s.parse::<i32>().unwrap()).collect();
         histories.push(history);
     }
 
@@ -48,7 +48,9 @@ fn get_sequence(input: &Vec<String>) -> Vec<Vec<i32>> {
 }
 
 fn get_extrapolated_number(input: &Vec<i32>) -> i32 {
-    if check_all_zero(input) { return 0 }
+    if check_all_zero(input) {
+        return 0;
+    }
 
     // Otherwise, create a new vector with the differences
     let mut differences: Vec<i32> = Vec::new();
@@ -61,7 +63,9 @@ fn get_extrapolated_number(input: &Vec<i32>) -> i32 {
 }
 
 fn get_backwards_extrapolated_number(input: &Vec<i32>) -> i32 {
-    if check_all_zero(input) { return 0 }
+    if check_all_zero(input) {
+        return 0;
+    }
 
     // Otherwise, create a new vector with the differences
     let mut differences: Vec<i32> = Vec::new();
@@ -76,7 +80,9 @@ fn get_backwards_extrapolated_number(input: &Vec<i32>) -> i32 {
 fn check_all_zero(input: &Vec<i32>) -> bool {
     let mut is_all_zeros = true;
     for &num in input {
-        if num != 0 { is_all_zeros = false }
+        if num != 0 {
+            is_all_zeros = false
+        }
     }
     is_all_zeros
 }

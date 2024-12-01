@@ -1,6 +1,4 @@
-use std::env;
-use std::fs;
-use std::io::{stdin, stdout, Write};
+use helpers::*;
 
 enum Color {
     RED,
@@ -29,30 +27,12 @@ fn get_color_mapping(s: &str) -> Color {
 
 
 fn main() {
-    let mut args: Vec<String> = env::args().collect();
-
-    let mut path: &mut String = &mut String::new();
-
-    if args.len() < 2 {
-        print!("Enter path to file: ");
-        stdout().flush().expect("Cannot flush buffer");
-
-        stdin().read_line(path).expect("Cannot process input");
-        if let Some('\n')=path.chars().next_back() {
-            path.pop();
-        }
-        if let Some('\r')=path.chars().next_back() {
-            path.pop();
-        }
-    } else {
-        path = &mut args[1];
-    }
-    let input: String = fs::read_to_string(path).expect("Couldn't read input file");
+    let input = get_input(&get_path_from_arg());
 
     let mut game_id_sum: u32 = 0;
     let mut power_sum = 0;
 
-    for line in input.lines() {
+    for line in input {
         let parts: Vec<_> = line.split(": ").collect();
 
         let game_id: u32 = parts[0][5..].parse().unwrap();

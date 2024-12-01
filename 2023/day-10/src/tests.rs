@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use helpers::get_input;
     use crate::{part_1, part_2};
+    use helpers::get_input;
 
     #[test]
     fn sample_complex_loop() {

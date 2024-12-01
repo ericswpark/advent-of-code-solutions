@@ -49,15 +49,19 @@ fn part_2(input: &Vec<String>) -> i32 {
                 let pipe = map[x][y];
 
                 match pipe {
-                    '|' => { inside_loop.flip() }
+                    '|' => inside_loop.flip(),
                     'F' | 'L' => {
                         prev_char = pipe;
                     }
                     'J' => {
-                        if prev_char == 'F' { inside_loop.flip() }
+                        if prev_char == 'F' {
+                            inside_loop.flip()
+                        }
                     }
                     '7' => {
-                        if prev_char == 'L' { inside_loop.flip() }
+                        if prev_char == 'L' {
+                            inside_loop.flip()
+                        }
                     }
                     _ => {}
                 }
@@ -69,7 +73,6 @@ fn part_2(input: &Vec<String>) -> i32 {
                     map[x][y] = ' ';
                 }
             }
-
         }
     }
 
@@ -83,51 +86,63 @@ fn get_solved_map(map: &Vec<Vec<char>>, distance_map: &Vec<Vec<Option<usize>>>) 
     let start_pos = get_starting_position(&map);
 
     // Left-up configuration
-    if start_pos.x > 0 && start_pos.y > 0 &&
-        distance_map[start_pos.x - 1][start_pos.y].is_some() &&
-        distance_map[start_pos.x][start_pos.y - 1].is_some() &&
-        ['|', 'F', '7'].contains(&map[start_pos.x - 1][start_pos.y]) &&
-        ['-', 'F', 'L'].contains(&map[start_pos.x][start_pos.y - 1]) {
+    if start_pos.x > 0
+        && start_pos.y > 0
+        && distance_map[start_pos.x - 1][start_pos.y].is_some()
+        && distance_map[start_pos.x][start_pos.y - 1].is_some()
+        && ['|', 'F', '7'].contains(&map[start_pos.x - 1][start_pos.y])
+        && ['-', 'F', 'L'].contains(&map[start_pos.x][start_pos.y - 1])
+    {
         solved_map[start_pos.x][start_pos.y] = 'J';
     }
     // Right-up configuration
-    else if start_pos.x > 0 && start_pos.y + 1 < map[start_pos.x].len() &&
-        distance_map[start_pos.x - 1][start_pos.y].is_some() &&
-        distance_map[start_pos.x][start_pos.y + 1].is_some() &&
-        ['|', 'F', '7'].contains(&map[start_pos.x - 1][start_pos.y]) &&
-        ['-', 'J', '7'].contains(&map[start_pos.x][start_pos.y - 1]) {
+    else if start_pos.x > 0
+        && start_pos.y + 1 < map[start_pos.x].len()
+        && distance_map[start_pos.x - 1][start_pos.y].is_some()
+        && distance_map[start_pos.x][start_pos.y + 1].is_some()
+        && ['|', 'F', '7'].contains(&map[start_pos.x - 1][start_pos.y])
+        && ['-', 'J', '7'].contains(&map[start_pos.x][start_pos.y - 1])
+    {
         solved_map[start_pos.x][start_pos.y] = 'L';
     }
     // Right-down configuration
-    else if start_pos.x + 1 < map.len() && start_pos.y + 1 < map[start_pos.x].len() &&
-        distance_map[start_pos.x + 1][start_pos.y].is_some() &&
-        distance_map[start_pos.x][start_pos.y + 1].is_some() &&
-        ['|', 'J', 'L'].contains(&map[start_pos.x + 1][start_pos.y]) &&
-        ['-', 'J', '7'].contains(&map[start_pos.x][start_pos.y + 1]) {
+    else if start_pos.x + 1 < map.len()
+        && start_pos.y + 1 < map[start_pos.x].len()
+        && distance_map[start_pos.x + 1][start_pos.y].is_some()
+        && distance_map[start_pos.x][start_pos.y + 1].is_some()
+        && ['|', 'J', 'L'].contains(&map[start_pos.x + 1][start_pos.y])
+        && ['-', 'J', '7'].contains(&map[start_pos.x][start_pos.y + 1])
+    {
         solved_map[start_pos.x][start_pos.y] = 'F';
     }
     // Left-down configuration
-    else if start_pos.x + 1 < map.len() && start_pos.y > 0 &&
-        distance_map[start_pos.x + 1][start_pos.y].is_some() &&
-        distance_map[start_pos.x][start_pos.y - 1].is_some() &&
-        ['|', 'J', 'L'].contains(&map[start_pos.x + 1][start_pos.y]) &&
-        ['-', 'L', 'F'].contains(&map[start_pos.x][start_pos.y - 1]) {
+    else if start_pos.x + 1 < map.len()
+        && start_pos.y > 0
+        && distance_map[start_pos.x + 1][start_pos.y].is_some()
+        && distance_map[start_pos.x][start_pos.y - 1].is_some()
+        && ['|', 'J', 'L'].contains(&map[start_pos.x + 1][start_pos.y])
+        && ['-', 'L', 'F'].contains(&map[start_pos.x][start_pos.y - 1])
+    {
         solved_map[start_pos.x][start_pos.y] = '7';
     }
     // Left-right configuration
-    else if start_pos.y > 0 && start_pos.y + 1 < map[start_pos.x].len() &&
-        distance_map[start_pos.x][start_pos.y - 1].is_some() &&
-        distance_map[start_pos.x][start_pos.y + 1].is_some() &&
-        ['-', 'L', 'F'].contains(&map[start_pos.x][start_pos.y - 1]) &&
-        ['-', '7', 'J'].contains(&map[start_pos.x][start_pos.y + 1]) {
+    else if start_pos.y > 0
+        && start_pos.y + 1 < map[start_pos.x].len()
+        && distance_map[start_pos.x][start_pos.y - 1].is_some()
+        && distance_map[start_pos.x][start_pos.y + 1].is_some()
+        && ['-', 'L', 'F'].contains(&map[start_pos.x][start_pos.y - 1])
+        && ['-', '7', 'J'].contains(&map[start_pos.x][start_pos.y + 1])
+    {
         solved_map[start_pos.x][start_pos.y] = '-';
     }
     // Up-down configuration
-    else if start_pos.x > 0 && start_pos.x + 1 < map.len() &&
-        distance_map[start_pos.x - 1][start_pos.y].is_some() &&
-        distance_map[start_pos.x + 1][start_pos.y].is_some() &&
-        ['|', '7', 'F'].contains(&map[start_pos.x - 1][start_pos.y]) &&
-        ['-', 'L', 'J'].contains(&map[start_pos.x + 1][start_pos.y]) {
+    else if start_pos.x > 0
+        && start_pos.x + 1 < map.len()
+        && distance_map[start_pos.x - 1][start_pos.y].is_some()
+        && distance_map[start_pos.x + 1][start_pos.y].is_some()
+        && ['|', '7', 'F'].contains(&map[start_pos.x - 1][start_pos.y])
+        && ['-', 'L', 'J'].contains(&map[start_pos.x + 1][start_pos.y])
+    {
         solved_map[start_pos.x][start_pos.y] = '|';
     }
 
@@ -142,7 +157,6 @@ fn _print_distance_map(input: &Vec<Vec<Option<usize>>>) {
             } else {
                 print!("__ ");
             }
-
         }
         println!()
     }
@@ -168,7 +182,9 @@ fn get_map(input: &Vec<String>) -> Vec<Vec<char>> {
 fn get_starting_position(map: &Vec<Vec<char>>) -> Position {
     for x in 0..map.len() {
         for y in 0..map[x].len() {
-            if map[x][y] == 'S' { return Position { x, y } }
+            if map[x][y] == 'S' {
+                return Position { x, y };
+            }
         }
     }
     panic!("Bad map!")
@@ -178,7 +194,9 @@ fn get_all_positions(distance_map: &Vec<Vec<Option<usize>>>, distance: usize) ->
     let mut positions = Vec::new();
     for x in 0..distance_map.len() {
         for y in 0..distance_map[x].len() {
-            if distance_map[x][y] == Some(distance) { positions.push(Position {x, y}) }
+            if distance_map[x][y] == Some(distance) {
+                positions.push(Position { x, y })
+            }
         }
     }
 
@@ -208,27 +226,27 @@ fn calculate_distance_map(map: &Vec<Vec<char>>) -> (Vec<Vec<Option<usize>>>, usi
                 '-' => {
                     search_left = true;
                     search_right = true;
-                },
+                }
                 '|' => {
                     search_up = true;
                     search_down = true;
-                },
+                }
                 'F' => {
                     search_right = true;
                     search_down = true;
-                },
+                }
                 'L' => {
                     search_up = true;
                     search_right = true;
-                },
+                }
                 '7' => {
                     search_left = true;
                     search_down = true;
-                },
+                }
                 'J' => {
                     search_up = true;
                     search_left = true;
-                },
+                }
                 'S' => {
                     // Starting point, search everywhere
                     search_left = true;
@@ -241,30 +259,38 @@ fn calculate_distance_map(map: &Vec<Vec<char>>) -> (Vec<Vec<Option<usize>>>, usi
 
             // Search in a circle for None values and see if they connect
             // Left
-            if search_left && position.y > 0 &&
-                distance_map[position.x][position.y - 1] == None &&
-                ['-', 'L', 'F'].contains(&map[position.x][position.y - 1])  {
+            if search_left
+                && position.y > 0
+                && distance_map[position.x][position.y - 1] == None
+                && ['-', 'L', 'F'].contains(&map[position.x][position.y - 1])
+            {
                 has_walked_next = true;
                 distance_map[position.x][position.y - 1] = Some(max_walk + 1);
             }
             // Up
-            if search_up && position.x > 0 &&
-                distance_map[position.x - 1][position.y] == None &&
-                ['|', '7', 'F'].contains(&map[position.x - 1][position.y])  {
+            if search_up
+                && position.x > 0
+                && distance_map[position.x - 1][position.y] == None
+                && ['|', '7', 'F'].contains(&map[position.x - 1][position.y])
+            {
                 has_walked_next = true;
                 distance_map[position.x - 1][position.y] = Some(max_walk + 1);
             }
             // Right
-            if search_right && position.y + 1 < map[position.x].len() &&
-                distance_map[position.x][position.y + 1] == None &&
-                ['-', '7', 'J'].contains(&map[position.x][position.y + 1])  {
+            if search_right
+                && position.y + 1 < map[position.x].len()
+                && distance_map[position.x][position.y + 1] == None
+                && ['-', '7', 'J'].contains(&map[position.x][position.y + 1])
+            {
                 has_walked_next = true;
                 distance_map[position.x][position.y + 1] = Some(max_walk + 1);
             }
             // Down
-            if search_down && position.x + 1 < map.len() &&
-                distance_map[position.x + 1][position.y] == None &&
-                ['|', 'L', 'J'].contains(&map[position.x + 1][position.y])  {
+            if search_down
+                && position.x + 1 < map.len()
+                && distance_map[position.x + 1][position.y] == None
+                && ['|', 'L', 'J'].contains(&map[position.x + 1][position.y])
+            {
                 has_walked_next = true;
                 distance_map[position.x + 1][position.y] = Some(max_walk + 1);
             }
@@ -272,7 +298,9 @@ fn calculate_distance_map(map: &Vec<Vec<char>>) -> (Vec<Vec<Option<usize>>>, usi
 
         if has_walked_next {
             max_walk += 1
-        } else { break }
+        } else {
+            break;
+        }
     }
 
     (distance_map, max_walk)

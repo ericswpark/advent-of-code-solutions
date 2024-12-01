@@ -83,7 +83,7 @@ fn parse_folded_field(input: &Vec<String>) -> Vec<Row> {
     rows
 }
 
-fn parse_row(input: &String) -> Row {
+fn parse_row(input: &str) -> Row {
     let parts: Vec<String> = input.split(' ').map(|s| s.to_string()).collect();
     let mut springs = Vec::new();
 
@@ -102,7 +102,7 @@ fn parse_row(input: &String) -> Row {
     }
 }
 
-fn parse_folded_row(input: &String) -> Row {
+fn parse_folded_row(input: &str) -> Row {
     let parts: Vec<String> = input.split(' ').map(|s| s.to_string()).collect();
     let mut springs = Vec::new();
     let mut unfolded_damaged_spring_groups: Vec<i32> = Vec::new();
@@ -135,9 +135,9 @@ fn row_analyze(row: Row) -> i64 {
     let mut row = row.clone();
 
     // No springs left
-    if row.springs.len() == 0 {
+    if row.springs.is_empty() {
         // Check if we used up all the damaged spring groups as well
-        return if row.damaged_spring_groups.len() != 0 {
+        return if !row.damaged_spring_groups.is_empty() {
             0
         } else {
             1
@@ -145,7 +145,7 @@ fn row_analyze(row: Row) -> i64 {
     }
 
     // No damaged blocks left
-    if row.damaged_spring_groups.len() == 0 {
+    if row.damaged_spring_groups.is_empty() {
         // See if none of the springs are damaged
         for spring in &row.springs {
             if *spring == Damaged {

@@ -6,9 +6,9 @@ mod helpers;
 mod tests;
 
 fn main() {
-    let start_time = Instant::now();
     let input = get_input(&get_path_from_arg());
 
+    let start_time = Instant::now();
     let part_1_answer = part_1(&input);
     println!("Part 1 answer: {part_1_answer}");
 

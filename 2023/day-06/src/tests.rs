@@ -1,4 +1,3 @@
-
 #[cfg(test)]
 mod tests {
     use crate::{calculate_distance, part_1, part_2};

@@ -1,8 +1,7 @@
 mod tests;
 
-use std::time::Instant;
 use helpers::*;
-
+use std::time::Instant;
 
 fn main() {
     let input = get_input(&get_path_from_arg());
@@ -41,20 +40,28 @@ fn part_2(input: &Vec<String>) -> i64 {
 }
 
 fn get_parsed_number(s: &str) -> i64 {
-    s.split_whitespace().collect::<String>().parse::<i64>().unwrap()
+    s.split_whitespace()
+        .collect::<String>()
+        .parse::<i64>()
+        .unwrap()
 }
 
 fn get_winning_ways_for_time(time: &i64, target_distance: i64) -> i64 {
     let mut ways = 0;
     for i in 0..=*time {
         let distance = calculate_distance(*time, i);
-        if distance > target_distance { ways += 1 }
+        if distance > target_distance {
+            ways += 1
+        }
     }
     ways
 }
 
 fn get_parsed_number_array(input: &str) -> Vec<i64> {
-    input.split_whitespace().map(|s: &str| s.parse::<i64>().unwrap()).collect()
+    input
+        .split_whitespace()
+        .map(|s: &str| s.parse::<i64>().unwrap())
+        .collect()
 }
 
 fn calculate_distance(total: i64, charge_up: i64) -> i64 {

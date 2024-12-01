@@ -1,3 +1,4 @@
+mod tests;
 mod custom_helper;
 
 use rayon::prelude::*;

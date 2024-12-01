@@ -31,3 +31,14 @@ pub fn get_input(path: &str) -> Vec<String> {
         .map(|s| s.strip_suffix("\r").unwrap_or(s).to_string())
         .collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_input() {
+        let result = get_input("test.txt");
+        assert_eq!(result[0], String::from("Some sample text"));
+    }
+}

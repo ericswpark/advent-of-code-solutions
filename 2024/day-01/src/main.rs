@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 use std::time::Instant;
-use crate::helpers::*;
 
-mod helpers;
+use helpers::*;
 mod tests;
 
 fn main() {

@@ -5,7 +5,7 @@ use helpers::*;
 enum Color {
     RED,
     GREEN,
-    BLUE
+    BLUE,
 }
 
 impl Color {
@@ -23,10 +23,9 @@ fn get_color_mapping(s: &str) -> Color {
         "red" => Color::RED,
         "green" => Color::GREEN,
         "blue" => Color::BLUE,
-        _ => panic!("Invalid color mapping")
+        _ => panic!("Invalid color mapping"),
     }
 }
-
 
 fn main() {
     let input = get_input(&get_path_from_arg());
@@ -54,10 +53,14 @@ fn part_1(input: &[String]) -> u32 {
                 let count: u32 = data[0].parse().unwrap();
                 let color: Color = get_color_mapping(data[1]);
 
-                if count > color.minimums() as u32 { is_possible = false }
+                if count > color.minimums() as u32 {
+                    is_possible = false
+                }
             }
         }
-        if is_possible { game_id_sum += game_id }
+        if is_possible {
+            game_id_sum += game_id
+        }
     }
     game_id_sum
 }
@@ -83,18 +86,22 @@ fn part_2(input: &[String]) -> u32 {
 
                 match color {
                     Color::RED => {
-                        if count > required_red { required_red = count }
+                        if count > required_red {
+                            required_red = count
+                        }
                     }
                     Color::GREEN => {
-                        if count > required_green { required_green = count }
+                        if count > required_green {
+                            required_green = count
+                        }
                     }
                     Color::BLUE => {
-                        if count > required_blue { required_blue = count }
+                        if count > required_blue {
+                            required_blue = count
+                        }
                     }
                 }
             }
-
-
         }
         power_sum += required_red * required_green * required_blue;
     }

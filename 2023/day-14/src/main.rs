@@ -12,14 +12,11 @@ fn main() {
     println!("Part 2 answer: {part_2_answer}");
 }
 
-
 fn part_1(input: &Vec<String>) -> i64 {
     let map = parse_map(input);
     let rolled_north_map = roll_map_north(map);
     calculate_north_load(&rolled_north_map)
 }
-
-
 
 fn part_2(input: &Vec<String>) -> i64 {
     let mut map = parse_map(input);
@@ -61,7 +58,6 @@ fn spin_cycle(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
     let south_spin = roll_map_south(west_spin);
     roll_map_east(south_spin)
 }
-
 
 #[derive(PartialEq, Clone, Debug, Eq, Hash)]
 enum Plot {
@@ -114,10 +110,11 @@ fn roll_map_north(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
 
         // Start from the top and work way down
         for row in 0..map.len() {
-
             match map[row][column] {
-                Plot::Empty => { }
-                Plot::Round => { round_rocks_encountered += 1; }
+                Plot::Empty => {}
+                Plot::Round => {
+                    round_rocks_encountered += 1;
+                }
                 Plot::Fixed => {
                     // Starting from the start index, roll the rocks!
                     for roll_row in start_index..=row {
@@ -162,10 +159,11 @@ fn roll_map_south(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
 
         // Start from the bottom and work way up
         for row in (0..map.len()).rev() {
-
             match map[row][column] {
-                Plot::Empty => { }
-                Plot::Round => { round_rocks_encountered += 1; }
+                Plot::Empty => {}
+                Plot::Round => {
+                    round_rocks_encountered += 1;
+                }
                 Plot::Fixed => {
                     // Starting from the start index, roll the rocks!
                     for roll_row in (row..=start_index).rev() {
@@ -211,8 +209,10 @@ fn roll_map_west(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
         // Start from the left and work way right
         for column in 0..map[0].len() {
             match map[row][column] {
-                Plot::Empty => { }
-                Plot::Round => { round_rocks_encountered += 1; }
+                Plot::Empty => {}
+                Plot::Round => {
+                    round_rocks_encountered += 1;
+                }
                 Plot::Fixed => {
                     // Starting from the start index, roll the rocks!
                     for roll_column in start_index..=column {
@@ -258,8 +258,10 @@ fn roll_map_east(map: Vec<Vec<Plot>>) -> Vec<Vec<Plot>> {
         // Start from the right and work way left
         for column in (0..map[0].len()).rev() {
             match map[row][column] {
-                Plot::Empty => { }
-                Plot::Round => { round_rocks_encountered += 1; }
+                Plot::Empty => {}
+                Plot::Round => {
+                    round_rocks_encountered += 1;
+                }
                 Plot::Fixed => {
                     // Starting from the start index, roll the rocks!
                     for roll_column in (column..=start_index).rev() {
@@ -301,7 +303,9 @@ fn calculate_north_load(map: &Vec<Vec<Plot>>) -> i64 {
         let mut rock_count = 0;
 
         for rock in &map[row] {
-            if *rock == Plot::Round { rock_count += 1; }
+            if *rock == Plot::Round {
+                rock_count += 1;
+            }
         }
 
         load += (map.len() - row) as i64 * rock_count;

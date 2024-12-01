@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use helpers::get_input;
     use crate::*;
+    use helpers::get_input;
 
     #[test]
     fn roll_map_north_test() {
@@ -53,14 +53,12 @@ mod tests {
         assert_eq!(spinned_map, output_map);
     }
 
-
     #[test]
     fn sample_input() {
         let input = get_input("sample-input.txt");
         assert_eq!(part_1(&input), 136);
         assert_eq!(part_2(&input), 64);
     }
-
 
     #[test]
     fn puzzle_input() {

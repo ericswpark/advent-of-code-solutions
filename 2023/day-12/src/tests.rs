@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use helpers::get_input;
     use crate::*;
+    use helpers::get_input;
 
     #[test]
     fn arrangement_test_1() {
@@ -71,7 +71,6 @@ mod tests {
         let row = parse_row(&String::from(".##.?#??.#.?# 2,1,1,1"));
         assert_eq!(row_analyze(row), 1);
     }
-
 
     #[test]
     fn puzzle_input() {

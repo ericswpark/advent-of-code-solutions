@@ -1,5 +1,6 @@
-use helpers::*;
+mod tests;
 
+use helpers::*;
 
 fn main() {
     let input = get_input(&get_path_from_arg());

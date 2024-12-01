@@ -12,7 +12,6 @@ fn main() {
     println!("Part 2 answer: {part_2_answer}");
 }
 
-
 fn part_1(input: &Vec<String>) -> i32 {
     let (galaxy_positions, map_size) = parse_map(input);
     let empty_map = find_empties(&galaxy_positions, map_size);
@@ -30,8 +29,6 @@ fn part_1(input: &Vec<String>) -> i32 {
     distance_sum
 }
 
-
-
 fn part_2(input: &Vec<String>) -> i64 {
     let (galaxy_positions, map_size) = parse_map(input);
     let empty_map = find_empties(&galaxy_positions, map_size);
@@ -42,7 +39,8 @@ fn part_2(input: &Vec<String>) -> i64 {
     for start_galaxy_index in 0..galaxy_positions.len() {
         for end_galaxy_index in start_galaxy_index + 1..galaxy_positions.len() {
             // Find distance between the two galaxies
-            distance_sum += get_distance(&galaxy_positions, start_galaxy_index, end_galaxy_index) as i64;
+            distance_sum +=
+                get_distance(&galaxy_positions, start_galaxy_index, end_galaxy_index) as i64;
         }
     }
 
@@ -66,7 +64,7 @@ fn parse_map(input: &Vec<String>) -> (Vec<Position>, Position) {
         for char in line.chars() {
             if char == '#' {
                 // Found a new galaxy
-                positions.push(Position{ row, column: col })
+                positions.push(Position { row, column: col })
             }
 
             col += 1;
@@ -77,7 +75,13 @@ fn parse_map(input: &Vec<String>) -> (Vec<Position>, Position) {
         row += 1;
     }
 
-    (positions, Position { row, column: max_col })
+    (
+        positions,
+        Position {
+            row,
+            column: max_col,
+        },
+    )
 }
 
 struct EmptyMap {
@@ -95,10 +99,17 @@ fn find_empties(galaxy_positions: &Vec<Position>, map_size: Position) -> EmptyMa
         col_empties[position.column as usize] = false;
     }
 
-    EmptyMap { row_empties, col_empties }
+    EmptyMap {
+        row_empties,
+        col_empties,
+    }
 }
 
-fn find_new_galaxy_positions(galaxy_positions: &Vec<Position>, empty_map: EmptyMap, offset: i32) -> Vec<Position> {
+fn find_new_galaxy_positions(
+    galaxy_positions: &Vec<Position>,
+    empty_map: EmptyMap,
+    offset: i32,
+) -> Vec<Position> {
     let mut new_galaxy_positions = Vec::new();
 
     for galaxy in galaxy_positions {
@@ -107,14 +118,25 @@ fn find_new_galaxy_positions(galaxy_positions: &Vec<Position>, empty_map: EmptyM
         let mut new_col = 0;
 
         for i in 0..=galaxy.row {
-            new_row += if empty_map.row_empties[i as usize] { offset } else { 1 }
+            new_row += if empty_map.row_empties[i as usize] {
+                offset
+            } else {
+                1
+            }
         }
 
         for i in 0..=galaxy.column {
-            new_col += if empty_map.col_empties[i as usize] { offset } else { 1 }
+            new_col += if empty_map.col_empties[i as usize] {
+                offset
+            } else {
+                1
+            }
         }
 
-        new_galaxy_positions.push(Position { row: new_row, column: new_col })
+        new_galaxy_positions.push(Position {
+            row: new_row,
+            column: new_col,
+        })
     }
 
     new_galaxy_positions

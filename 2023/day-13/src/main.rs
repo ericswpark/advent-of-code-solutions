@@ -112,7 +112,7 @@ fn parse_patterns(input: &Vec<String>) -> Vec<Vec<Vec<Item>>> {
     patterns
 }
 
-fn parse_row(input: &String) -> Vec<Item> {
+fn parse_row(input: &str) -> Vec<Item> {
     let mut row = Vec::new();
     for c in input.chars() {
         row.push(Item::mapping(c));
@@ -121,7 +121,7 @@ fn parse_row(input: &String) -> Vec<Item> {
     row
 }
 
-fn get_vertical_reflection(pattern: &Vec<Vec<Item>>, ignore: Option<i64>) -> i64 {
+fn get_vertical_reflection(pattern: &[Vec<Item>], ignore: Option<i64>) -> i64 {
     for column in 0..pattern[0].len() - 1 {
         // Start comparing
         // Get number of columns we need to compare
@@ -130,24 +130,22 @@ fn get_vertical_reflection(pattern: &Vec<Vec<Item>>, ignore: Option<i64>) -> i64
         let mut matches = true;
         for columns_away in 0..max_compare_column_length {
             // Compare against columns across mirror
-            for row in 0..pattern.len() {
-                if pattern[row][column - columns_away] != pattern[row][column + 1 + columns_away] {
+            for row in pattern {
+                if row[column - columns_away] != row[column + 1 + columns_away] {
                     matches = false
                 }
             }
         }
 
-        if matches {
-            if ignore.is_none() || ignore.unwrap() != (column + 1) as i64 {
-                return (column + 1) as i64;
-            }
+        if matches && (ignore.is_none() || ignore.unwrap() != (column + 1) as i64) {
+            return (column + 1) as i64;
         }
     }
 
     -1
 }
 
-fn get_horizontal_reflection(pattern: &Vec<Vec<Item>>, ignore: Option<i64>) -> i64 {
+fn get_horizontal_reflection(pattern: &[Vec<Item>], ignore: Option<i64>) -> i64 {
     for row in 0..pattern.len() - 1 {
         // Start comparing
         // Get number of rows we need to compare
@@ -163,10 +161,8 @@ fn get_horizontal_reflection(pattern: &Vec<Vec<Item>>, ignore: Option<i64>) -> i
             }
         }
 
-        if matches {
-            if ignore.is_none() || ignore.unwrap() != (row + 1) as i64 {
-                return (row + 1) as i64;
-            }
+        if matches && (ignore.is_none() || ignore.unwrap() != (row + 1) as i64) {
+            return (row + 1) as i64;
         }
     }
 

@@ -15,7 +15,7 @@ struct RangeItem {
 
 impl RangeItem {
     fn is_in_range(&self, source: i64) -> bool {
-        source >= self.source_start && source <= self.source_start + self.range - 1
+        source >= self.source_start && source < self.source_start + self.range
     }
 
     fn get_mapping(&self, source: i64) -> Option<i64> {
@@ -158,11 +158,11 @@ fn get_location_of_seed(
     let light = light_mapping.get(water).unwrap();
     let temperature = temperature_mapping.get(light).unwrap();
     let humidity = humidity_mapping.get(temperature).unwrap();
-    let location = location_mapping.get(humidity).unwrap();
-    location
+    
+    location_mapping.get(humidity).unwrap()
 }
 
-fn get_range_seeds(input: &Vec<i64>) -> Vec<RangeSeed> {
+fn get_range_seeds(input: &[i64]) -> Vec<RangeSeed> {
     let mut seeds = Vec::new();
 
     for i in 0..input.len() {
@@ -177,14 +177,14 @@ fn get_range_seeds(input: &Vec<i64>) -> Vec<RangeSeed> {
     seeds
 }
 
-fn get_seeds(input: &String) -> Vec<i64> {
+fn get_seeds(input: &str) -> Vec<i64> {
     input[7..]
         .split(' ')
         .map(|s: &str| s.parse::<i64>().unwrap())
         .collect()
 }
 
-fn get_mapping(input: &String) -> RangeVec {
+fn get_mapping(input: &str) -> RangeVec {
     let mut map: RangeVec = RangeVec::new();
 
     for (index, line) in input.split('\n').enumerate() {

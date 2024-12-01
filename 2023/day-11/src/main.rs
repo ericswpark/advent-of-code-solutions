@@ -142,7 +142,7 @@ fn find_new_galaxy_positions(
     new_galaxy_positions
 }
 
-fn get_distance(galaxy_positions: &Vec<Position>, start: usize, end: usize) -> i32 {
+fn get_distance(galaxy_positions: &[Position], start: usize, end: usize) -> i32 {
     let start_galaxy = &galaxy_positions[start];
     let end_galaxy = &galaxy_positions[end];
 

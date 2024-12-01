@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 use std::time::Instant;
+use crate::helpers::*;
 
 mod helpers;
 mod tests;
 
-
 fn main() {
     let start_time = Instant::now();
-    let input = helpers::get_input(&*helpers::get_path_from_arg());
+    let input = get_input(&get_path_from_arg());
 
     let part_1_answer = part_1(&input);
     println!("Part 1 answer: {part_1_answer}");
@@ -20,7 +20,7 @@ fn main() {
 }
 
 fn part_1(input: &Vec<String>) -> i64 {
-    let (mut left_list, mut right_list) = get_lists(&input);
+    let (mut left_list, mut right_list) = get_lists(input);
 
     left_list.sort();
     right_list.sort();
@@ -36,24 +36,23 @@ fn part_1(input: &Vec<String>) -> i64 {
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
-    let (left_list, right_list) = get_lists(&input);
+    let (left_list, right_list) = get_lists(input);
 
     let mut total_similarity = 0;
 
     let mut lookup = HashMap::new();
 
-    for (index, left_num) in left_list.iter().enumerate() {
-        if !lookup.contains_key(left_num) {
-            let sim_count = right_list.iter().filter(|&n| *n == *left_num).count();
-            lookup.insert(left_num, sim_count as i64 * left_num);
-        }
+    for left_num in left_list {
+        lookup.entry(left_num).or_insert_with(|| {
+            let sim_count = right_list.iter().filter(|&n| *n == left_num).count();
+            sim_count as i64 * left_num
+        });
 
-        total_similarity += lookup.get(left_num).unwrap();
+        total_similarity += lookup.get(&left_num).unwrap();
     }
 
     total_similarity
 }
-
 
 fn get_lists(input: &Vec<String>) -> (Vec<i64>, Vec<i64>) {
     let mut left = Vec::new();

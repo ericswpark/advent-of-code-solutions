@@ -1,5 +1,6 @@
-use std::env;
-use std::fs;
+
+use helpers::*;
+
 use phf::phf_map;
 
 static NUMBERS: phf::Map<&'static str, &'static str> = phf_map! {
@@ -24,23 +25,31 @@ fn replace_numbers_in(s: String) -> String {
 }
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let input = get_input(&get_path_from_arg());
 
-    if args.len() < 3 {
-        println!("Not enough arguments given.");
-        return;
-    }
+    let part_1_answer = part_1(&input);
+    println!("Part 1 answer: {part_1_answer}");
 
-    let part: u32 = args[1].to_string().parse().unwrap();
-    let path: &String = &args[2];
-    let input: String = fs::read_to_string(path).expect("Couldn't read input file");
+    let part_2_answer = part_2(&input);
+    println!("Part 2 answer: {part_2_answer}");
+}
 
-    let mut sum: i32 = 0;
+fn part_1(input: &[String]) -> i32 {
+    get_sum(input, false)
+}
 
-    for line in input.lines() {
+fn part_2(input: &[String]) -> i32 {
+    get_sum(input, true)
+}
+
+
+fn get_sum(input: &[String], replace_num: bool) -> i32 {
+    let mut sum = 0;
+
+    for line in input {
         let mut first: i32 = -1;
         let mut last: i32= -1;
-        let line: String = if part == 1 {line.to_string()} else {replace_numbers_in(line.to_string())};
+        let line: String = if !replace_num {line.to_string()} else {replace_numbers_in(line.to_string())};
 
         println!("Got line {line}");
         // Iterate over each character
@@ -59,5 +68,5 @@ fn main() {
         sum += first * 10 + last;
     }
 
-    println!("Sum is {sum}");
+    sum
 }

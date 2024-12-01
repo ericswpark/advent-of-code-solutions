@@ -114,44 +114,44 @@ fn get_new_coord(
     match direction {
         Direction::N => {
             let new_x = old_coord.x.checked_sub(move_by);
-            if new_x.is_some() {
-                Some(Coordinate {
-                    x: new_x.unwrap(),
-                    y: old_coord.y,
-                })
-            } else {
-                None
-            }
+            new_x.map(|new_x| Coordinate {
+                x: new_x,
+                y: old_coord.y,
+            })
         }
         Direction::S => {
             let new_x = old_coord.x.checked_add(move_by);
-            if new_x.is_some() && new_x.unwrap() < max.x {
-                Some(Coordinate {
-                    x: new_x.unwrap(),
-                    y: old_coord.y,
-                })
+            if let Some(new_x) = new_x {
+                if new_x < max.x {
+                    Some(Coordinate {
+                        x: new_x,
+                        y: old_coord.y,
+                    })
+                } else {
+                    None
+                }
             } else {
                 None
             }
         }
         Direction::W => {
             let new_y = old_coord.y.checked_sub(move_by);
-            if new_y.is_some() {
-                Some(Coordinate {
-                    x: old_coord.x,
-                    y: new_y.unwrap(),
-                })
-            } else {
-                None
-            }
+            new_y.map(|new_y| Coordinate {
+                x: old_coord.x,
+                y: new_y,
+            })
         }
         Direction::E => {
             let new_y = old_coord.y.checked_add(move_by);
-            if new_y.is_some() && new_y.unwrap() < max.y {
-                Some(Coordinate {
-                    x: old_coord.x,
-                    y: new_y.unwrap(),
-                })
+            if let Some(new_y) = new_y {
+                if new_y < max.y {
+                    Some(Coordinate {
+                        x: old_coord.x,
+                        y: new_y,
+                    })
+                } else {
+                    None
+                }
             } else {
                 None
             }
@@ -160,7 +160,7 @@ fn get_new_coord(
 }
 
 fn traverse(
-    map: &mut Vec<Vec<Node>>,
+    map: &mut [Vec<Node>],
     iteration_queue: &mut BinaryHeap<Iteration>,
     end: Coordinate,
 ) -> i64 {
@@ -242,7 +242,7 @@ fn traverse(
 }
 
 fn traverse_ultra(
-    map: &mut Vec<Vec<Node>>,
+    map: &mut [Vec<Node>],
     iteration_queue: &mut BinaryHeap<Iteration>,
     end: Coordinate,
 ) -> i64 {
@@ -325,33 +325,31 @@ fn traverse_ultra(
     }
 }
 
-fn get_max_coordinates<T>(map: &Vec<Vec<T>>) -> Coordinate {
-    return Coordinate {
+fn get_max_coordinates<T>(map: &[Vec<T>]) -> Coordinate {
+    Coordinate {
         x: map.len(),
         y: map[0].len(),
-    };
+    }
 }
 
-fn print_path_map_overlay(map: &Vec<Vec<Node>>, path_map: &Vec<Direction>) {
+fn print_path_map_overlay(map: &[Vec<Node>], path_map: &Vec<Direction>) {
     // Initialize board
     let mut print_board: Vec<Vec<char>> = Vec::new();
     let mut curr_line: Vec<char> = Vec::new();
 
     // Draw border top
-    for _ in 0..map[0].len() + 2 {
-        curr_line.push('-');
-    }
+    curr_line.resize(curr_line.len() + map[0].len() + 2, '-');
     print_board.push(curr_line);
     curr_line = Vec::new();
 
     // Draw actual map
-    for row in 0..map.len() {
-        for column in 0..map[row].len() {
+    for row in map {
+        for column in 0..row.len() {
             if column == 0 {
                 curr_line.push('|');
             }
-            curr_line.push(char::from_digit(map[row][column].value as u32, 10).unwrap());
-            if column == map[row].len() - 1 {
+            curr_line.push(char::from_digit(row[column].value as u32, 10).unwrap());
+            if column == row.len() - 1 {
                 curr_line.push('|');
             }
         }
@@ -361,34 +359,31 @@ fn print_path_map_overlay(map: &Vec<Vec<Node>>, path_map: &Vec<Direction>) {
     }
 
     // Draw border bottom
-    for _ in 0..map[0].len() + 2 {
-        curr_line.push('-');
-    }
+    curr_line.resize(curr_line.len() + map[0].len() + 2, '-');
     print_board.push(curr_line);
 
     // Start overlaying path map
     // Start at (1, 1) to avoid border
     let mut curr_pos = Coordinate { x: 1, y: 1 };
     for step in path_map {
-        let dir_char: char;
-        match step {
+        let dir_char: char = match step {
             Direction::N => {
                 curr_pos.x -= 1;
-                dir_char = '^';
+                '^'
             }
             Direction::S => {
                 curr_pos.x += 1;
-                dir_char = 'v';
+                'v'
             }
             Direction::W => {
                 curr_pos.y -= 1;
-                dir_char = '<';
+                '<'
             }
             Direction::E => {
                 curr_pos.y += 1;
-                dir_char = '>';
+                '>'
             }
-        }
+        };
         print_board[curr_pos.x][curr_pos.y] = dir_char;
     }
 

@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use custom_helper::get_input;
     use crate::*;
+    use custom_helper::get_input;
 
     #[test]
     fn sample_input() {
@@ -9,7 +9,6 @@ mod tests {
         assert_eq!(part_1(&input), 1320);
         assert_eq!(part_2(&input), 145);
     }
-
 
     #[test]
     fn puzzle_input() {

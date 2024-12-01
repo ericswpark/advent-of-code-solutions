@@ -14,7 +14,6 @@ fn main() {
     println!("Part 2 answer: {part_2_answer}");
 }
 
-
 fn part_1(input: &Vec<String>) -> i64 {
     let mut sum = 0;
 
@@ -27,7 +26,7 @@ fn part_1(input: &Vec<String>) -> i64 {
 
 #[derive(Clone)]
 struct LensBox {
-    lenses: Vec<Lens>
+    lenses: Vec<Lens>,
 }
 
 #[derive(Clone)]
@@ -56,7 +55,10 @@ fn part_2(input: &Vec<String>) -> i64 {
                     }
                 }
                 if !found_lens {
-                    lens_boxes[box_num].lenses.push(Lens { label, focal_length })
+                    lens_boxes[box_num].lenses.push(Lens {
+                        label,
+                        focal_length,
+                    })
                 }
             }
             Operation::Remove => {
@@ -94,13 +96,25 @@ enum Operation {
 
 fn parse_step(input: &String) -> (String, Operation, u8) {
     return if !input.chars().nth(input.len() - 1).unwrap().is_numeric() {
-        ((&input[0..input.len() - 1]).to_string(), Operation::Remove, 0)
+        (
+            (&input[0..input.len() - 1]).to_string(),
+            Operation::Remove,
+            0,
+        )
     } else {
-        let focal_length: u8 = input.chars().nth(input.len() - 1).unwrap().to_digit(10).unwrap() as u8;
-        ((&input[0..input.len() - 2]).to_string(), Operation::Set, focal_length)
-    }
+        let focal_length: u8 = input
+            .chars()
+            .nth(input.len() - 1)
+            .unwrap()
+            .to_digit(10)
+            .unwrap() as u8;
+        (
+            (&input[0..input.len() - 2]).to_string(),
+            Operation::Set,
+            focal_length,
+        )
+    };
 }
-
 
 fn hash_algo(input: &String) -> u32 {
     let mut value = 0;

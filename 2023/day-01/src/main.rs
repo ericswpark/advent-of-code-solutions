@@ -51,7 +51,6 @@ fn get_sum(input: &[String], replace_num: bool) -> i32 {
         let mut last: i32= -1;
         let line: String = if !replace_num {line.to_string()} else {replace_numbers_in(line.to_string())};
 
-        println!("Got line {line}");
         // Iterate over each character
         for c in line.chars() {
             if c.is_numeric() {
@@ -62,7 +61,6 @@ fn get_sum(input: &[String], replace_num: bool) -> i32 {
                 last = c.to_digit(10).unwrap() as i32;
             }
         }
-        println!("We got the numbers {first} and {last}");
 
         // Add final number to sum
         sum += first * 10 + last;

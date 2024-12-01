@@ -32,7 +32,7 @@ fn main() {
     println!("Part 2 answer: {part_2_answer}");
 }
 
-fn part_1(input: &Vec<String>) -> i64 {
+fn part_1(input: &[String]) -> i64 {
     let sequence = get_sequence(&input[0]);
 
     let mut map: Vec<MapNode> = get_map(&input[2..]);
@@ -63,7 +63,7 @@ fn part_1(input: &Vec<String>) -> i64 {
     count
 }
 
-fn part_2(input: &Vec<String>) -> i64 {
+fn part_2(input: &[String]) -> i64 {
     let sequence = get_sequence(&input[0]);
 
     let mut map: Vec<MapNode> = get_map(&input[2..]);
@@ -105,12 +105,12 @@ fn part_2(input: &Vec<String>) -> i64 {
     lcm_vec(steps_for_index)
 }
 
-fn traverse_next_node(map: &mut Vec<MapNode>, node_index: &mut usize, next_direction: char) {
+fn traverse_next_node(map: &mut [MapNode], node_index: &mut usize, next_direction: char) {
     match next_direction {
         'L' => {
             let next_node_name = &map[*node_index].left;
 
-            if map[*node_index].left_index == None {
+            if map[*node_index].left_index.is_none() {
                 map[*node_index].left_index =
                     Some(map.iter().position(|r| r.name == *next_node_name).unwrap() as i32);
             }
@@ -120,7 +120,7 @@ fn traverse_next_node(map: &mut Vec<MapNode>, node_index: &mut usize, next_direc
         'R' => {
             let next_node_name = &map[*node_index].right;
 
-            if map[*node_index].right_index == None {
+            if map[*node_index].right_index.is_none() {
                 map[*node_index].right_index =
                     Some(map.iter().position(|r| r.name == *next_node_name).unwrap() as i32);
             }
@@ -134,8 +134,8 @@ fn traverse_next_node(map: &mut Vec<MapNode>, node_index: &mut usize, next_direc
 fn lcm_vec(input: Vec<i64>) -> i64 {
     let mut total = input[0];
 
-    for i in 0..input.len() {
-        total = lcm(total, input[i]);
+    for item in input {
+        total = lcm(total, item);
     }
 
     total
@@ -160,7 +160,7 @@ fn gcd(a: i64, b: i64) -> i64 {
     }
 }
 
-fn get_sequence(input: &String) -> Vec<char> {
+fn get_sequence(input: &str) -> Vec<char> {
     input.chars().collect()
 }
 

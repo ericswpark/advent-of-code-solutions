@@ -31,7 +31,27 @@ fn part_1(input: &Vec<String>) -> i64 {
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
-    todo!()
+    let mut safe_count = 0;
+
+    for report in input {
+        let levels: Vec<u32> = report.split(' ').map(|s| s.parse::<u32>().unwrap()).collect();
+
+        if check_report_safety(&levels) {
+            safe_count += 1;
+        } else {
+            for index in 0..levels.len() {
+                let mut dampened_levels = levels.clone();
+                dampened_levels.remove(index);
+
+                if check_report_safety(&dampened_levels) {
+                    safe_count += 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    safe_count
 }
 
 

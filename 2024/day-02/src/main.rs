@@ -78,7 +78,7 @@ fn check_report_safety(levels: &[u32]) -> bool {
         let next = levels[index + 1];
         let diff = current.abs_diff(next);
 
-        if diff <= 0 || diff > 3 {
+        if diff == 0 || diff > 3 {
             is_safe = false;
             break;
         }

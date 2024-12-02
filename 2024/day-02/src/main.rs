@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::time::Instant;
 
 use helpers::*;
@@ -19,7 +18,41 @@ fn main() {
 }
 
 fn part_1(input: &Vec<String>) -> i64 {
-    todo!()
+    let mut safe_count = 0;
+
+    for report in input {
+        let levels: Vec<u32> = report.split(' ').map(|s| s.parse::<u32>().unwrap()).collect();
+
+        // Check if strictly increasing or decreasing
+        let mut sorted: Vec<u32> = levels.clone();
+        sorted.sort();
+        let mut sorted_reverse = levels.clone();
+        sorted_reverse.sort_by(|a, b| b.cmp(a));
+
+        if !(levels == sorted || levels == sorted_reverse) {
+            // Not safe, not strictly increasing or decreasing
+            continue;
+        }
+
+        let mut is_safe = true;
+
+        for index in 0..levels.len() - 1 {
+            let current = levels[index];
+            let next = levels[index + 1];
+            let diff = current.abs_diff(next);
+
+            if diff <= 0 || diff > 3 {
+                is_safe = false;
+                break;
+            }
+        }
+
+        if is_safe {
+            safe_count += 1;
+        }
+    }
+
+    safe_count
 }
 
 fn part_2(input: &Vec<String>) -> i64 {

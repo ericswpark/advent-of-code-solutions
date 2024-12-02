@@ -21,7 +21,10 @@ fn part_1(input: &Vec<String>) -> i64 {
     let mut safe_count = 0;
 
     for report in input {
-        let levels: Vec<u32> = report.split(' ').map(|s| s.parse::<u32>().unwrap()).collect();
+        let levels: Vec<u32> = report
+            .split(' ')
+            .map(|s| s.parse::<u32>().unwrap())
+            .collect();
         if check_report_safety(&levels) {
             safe_count += 1;
         }
@@ -34,7 +37,10 @@ fn part_2(input: &Vec<String>) -> i64 {
     let mut safe_count = 0;
 
     for report in input {
-        let levels: Vec<u32> = report.split(' ').map(|s| s.parse::<u32>().unwrap()).collect();
+        let levels: Vec<u32> = report
+            .split(' ')
+            .map(|s| s.parse::<u32>().unwrap())
+            .collect();
 
         if check_report_safety(&levels) {
             safe_count += 1;
@@ -53,7 +59,6 @@ fn part_2(input: &Vec<String>) -> i64 {
 
     safe_count
 }
-
 
 fn check_report_safety(levels: &[u32]) -> bool {
     let mut sorted: Vec<u32> = levels.to_vec();

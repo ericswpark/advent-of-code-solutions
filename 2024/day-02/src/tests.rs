@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use helpers::get_input;
     use crate::*;
+    use helpers::get_input;
 
     #[test]
     fn sample_input() {

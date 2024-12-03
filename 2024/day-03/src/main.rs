@@ -31,5 +31,30 @@ fn part_1(input: &Vec<String>) -> i64 {
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
-    todo!()
+    let mut total = 0;
+    let re = Regex::new(r"mul\((\d+),(\d+)\)|don?'?t?\(\)").unwrap();
+
+    let mut enabled = true;
+    for line in input {
+        for item in re.captures_iter(&line) {
+            match item[0].chars().nth(0).unwrap() {
+                'm' => {
+                    if enabled {
+                        let lhs = item[1].parse::<i64>().unwrap();
+                        let rhs = item[2].parse::<i64>().unwrap();
+                        total += lhs * rhs;
+                    }
+                }
+                'd' => {
+                    if item[0] == *"do()" {
+                        enabled = true;
+                    } else if item[0] == *"don't()" {
+                        enabled = false;
+                    }
+                }
+                _ => {panic!("Not possible")}
+            }
+        }
+    }
+    total
 }

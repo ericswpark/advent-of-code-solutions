@@ -1,5 +1,5 @@
-use std::time::Instant;
 use regex::Regex;
+use std::time::Instant;
 
 use helpers::*;
 mod tests;
@@ -52,7 +52,9 @@ fn part_2(input: &Vec<String>) -> i64 {
                         enabled = false;
                     }
                 }
-                _ => {panic!("Not possible")}
+                _ => {
+                    panic!("Not possible")
+                }
             }
         }
     }

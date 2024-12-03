@@ -1,4 +1,5 @@
 use std::time::Instant;
+use regex::Regex;
 
 use helpers::*;
 mod tests;
@@ -18,7 +19,15 @@ fn main() {
 }
 
 fn part_1(input: &Vec<String>) -> i64 {
-    todo!()
+    let mut total = 0;
+    let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
+
+    for line in input {
+        for (_, [lhs, rhs]) in re.captures_iter(&line).map(|c| c.extract()) {
+            total += lhs.parse::<i64>().unwrap() * rhs.parse::<i64>().unwrap();
+        }
+    }
+    total
 }
 
 fn part_2(input: &Vec<String>) -> i64 {

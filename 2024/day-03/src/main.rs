@@ -23,7 +23,7 @@ fn part_1(input: &Vec<String>) -> i64 {
     let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
 
     for line in input {
-        for (_, [lhs, rhs]) in re.captures_iter(&line).map(|c| c.extract()) {
+        for (_, [lhs, rhs]) in re.captures_iter(line).map(|c| c.extract()) {
             total += lhs.parse::<i64>().unwrap() * rhs.parse::<i64>().unwrap();
         }
     }
@@ -36,8 +36,8 @@ fn part_2(input: &Vec<String>) -> i64 {
 
     let mut enabled = true;
     for line in input {
-        for item in re.captures_iter(&line) {
-            match item[0].chars().nth(0).unwrap() {
+        for item in re.captures_iter(line) {
+            match item[0].chars().next().unwrap() {
                 'm' => {
                     if enabled {
                         let lhs = item[1].parse::<i64>().unwrap();

@@ -18,11 +18,11 @@ fn main() {
 }
 
 fn part_1(input: &Vec<String>) -> i64 {
-    let map = get_map(&input);
+    let map = get_map(input);
     let mut count = 0;
 
     for (row_idx, row) in map.iter().enumerate() {
-        for (col_idx, ch) in row.iter().enumerate() {
+        for col_idx in 0..row.len() {
             for dir in SearchDirection::VALUES {
                 if search_map(&map, row_idx, col_idx, dir) {
                     count += 1;
@@ -34,7 +34,7 @@ fn part_1(input: &Vec<String>) -> i64 {
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
-    let map = get_map(&input);
+    let map = get_map(input);
     let mut count = 0;
 
     for (row_idx, row) in map.iter().enumerate() {
@@ -182,7 +182,7 @@ fn search_map(map: &[Vec<char>], row_idx: usize, col_idx: usize, dir: SearchDire
 }
 
 fn search_map_x_mas(map: &[Vec<char>], row_idx: usize, col_idx: usize) -> bool {
-    if row_idx <= 0 || row_idx + 1 >= map.len() || col_idx <= 0 || col_idx + 1 >= map[row_idx].len()
+    if row_idx == 0 || row_idx + 1 >= map.len() || col_idx == 0 || col_idx + 1 >= map[row_idx].len()
     {
         return false;
     }

@@ -35,7 +35,17 @@ fn part_1(input: &Vec<String>) -> i64 {
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
-    todo!()
+    let map = get_map(&input);
+    let mut count = 0;
+
+    for (row_idx, row) in map.iter().enumerate() {
+        for (col_idx, _) in row.iter().enumerate() {
+            if search_map_x_mas(&map, row_idx, col_idx) {
+                count += 1;
+            }
+        }
+    }
+    count
 }
 
 
@@ -65,7 +75,7 @@ fn get_map(input: &Vec<String>) -> Vec<Vec<char>> {
 }
 
 const PATTERN: &str = "XMAS";
-
+const X_MAS_PATTERN: &str = "MAS";
 
 fn search_map(map: &[Vec<char>], row_idx: usize, col_idx: usize, dir: SearchDirection) -> bool {
     match dir {
@@ -126,4 +136,20 @@ fn search_map(map: &[Vec<char>], row_idx: usize, col_idx: usize, dir: SearchDire
             true
         }
     }
+}
+
+fn search_map_x_mas(map: &[Vec<char>], row_idx: usize, col_idx: usize) -> bool {
+    if row_idx <= 0 || row_idx + 1 >= map.len() || col_idx <= 0 || col_idx + 1 >= map[row_idx].len() { return false; }
+    if map[row_idx][col_idx] != 'A' { return false; }
+
+    let crossdown = format!("{}{}{}", map[row_idx-1][col_idx-1], 'A', map[row_idx+1][col_idx+1]);
+    let crossup = format!("{}{}{}", map[row_idx+1][col_idx-1], 'A', map[row_idx-1][col_idx+1]);
+
+    let mut count = 0;
+    if crossdown == X_MAS_PATTERN { count += 1; }
+    if crossdown.chars().rev().collect::<String>() == X_MAS_PATTERN { count += 1; }
+    if crossup == X_MAS_PATTERN { count += 1; }
+    if crossup.chars().rev().collect::<String>() == X_MAS_PATTERN { count += 1; }
+
+    count == 2
 }

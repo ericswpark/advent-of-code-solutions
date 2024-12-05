@@ -18,7 +18,7 @@ fn main() {
     println!("Time: {:.2?}", elapsed_time);
 }
 
-fn part_1(input: &Vec<String>) -> i64 {
+fn part_1(input: &[String]) -> i64 {
     let (page_ordering_rules, update_page_numbers) = parse_input(input);
     let correct_updates = get_correct_updates(&page_ordering_rules, &update_page_numbers);
 
@@ -29,7 +29,7 @@ fn part_1(input: &Vec<String>) -> i64 {
     sum
 }
 
-fn part_2(input: &Vec<String>) -> i64 {
+fn part_2(input: &[String]) -> i64 {
     let (page_ordering_rules, update_page_numbers) = parse_input(input);
     let incorrect_updates = get_incorrect_updates(&page_ordering_rules, &update_page_numbers);
     let corrected_updates = get_corrected_updates(&page_ordering_rules, &incorrect_updates);
@@ -47,7 +47,7 @@ fn parse_input(input: &[String]) -> (HashMap<i64, Vec<i64>>, Vec<Vec<i64>>) {
 
     let mut is_on_next_section = false;
     for line in input {
-        if line == "" {
+        if line.is_empty() {
             is_on_next_section = true;
             continue;
         }
@@ -110,9 +110,8 @@ fn get_incorrect_updates(
 fn update_is_correct(page_ordering_rules: &HashMap<i64, Vec<i64>>, update: &[i64]) -> bool {
     for (index, num) in update.iter().enumerate().rev() {
         if let Some(next_pages) = page_ordering_rules.get(num) {
-            for f_index in 0..index {
-                let prev_page = update[f_index];
-                if next_pages.contains(&prev_page) {
+            for prev_page in update.iter().take(index) {
+                if next_pages.contains(prev_page) {
                     return false;
                 }
             }

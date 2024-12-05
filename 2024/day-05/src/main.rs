@@ -22,7 +22,6 @@ fn part_1(input: &Vec<String>) -> i64 {
     let (page_ordering_rules, update_page_numbers) = parse_input(input);
     let correct_updates = get_correct_updates(&page_ordering_rules, &update_page_numbers);
 
-    println!("{:?}", correct_updates);
     let mut sum = 0;
     for update in correct_updates {
         sum += get_middle(&update);
@@ -31,7 +30,15 @@ fn part_1(input: &Vec<String>) -> i64 {
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
-    todo!()
+    let (page_ordering_rules, update_page_numbers) = parse_input(input);
+    let incorrect_updates = get_incorrect_updates(&page_ordering_rules, &update_page_numbers);
+    let corrected_updates = get_corrected_updates(&page_ordering_rules, &incorrect_updates);
+
+    let mut sum = 0;
+    for update in corrected_updates {
+        sum += get_middle(&update);
+    }
+    sum
 }
 
 
@@ -75,6 +82,18 @@ fn get_correct_updates(page_ordering_rules: &HashMap<i64, Vec<i64>>, update_page
     correct_updates
 }
 
+fn get_incorrect_updates(page_ordering_rules: &HashMap<i64, Vec<i64>>, update_page_numbers: &[Vec<i64>]) -> Vec<Vec<i64>> {
+    let mut incorrect_updates = Vec::new();
+
+    for update in update_page_numbers {
+        if !update_is_correct(page_ordering_rules, update) {
+            incorrect_updates.push(update.clone());
+        }
+    }
+
+    incorrect_updates
+}
+
 fn update_is_correct(page_ordering_rules: &HashMap<i64, Vec<i64>>, update: &[i64]) -> bool {
     for (index, num) in update.iter().enumerate().rev() {
         if let Some(next_pages) = page_ordering_rules.get(num) {
@@ -93,4 +112,37 @@ fn update_is_correct(page_ordering_rules: &HashMap<i64, Vec<i64>>, update: &[i64
 
 fn get_middle(update: &[i64]) -> i64 {
     update[update.len() / 2]
+}
+
+fn get_corrected_updates(page_ordering_rules: &HashMap<i64, Vec<i64>>, incorrect_updates: &[Vec<i64>]) -> Vec<Vec<i64>> {
+    let mut corrected_updates = Vec::new();
+    for update in incorrect_updates {
+        corrected_updates.push(get_corrected_update(page_ordering_rules, update))
+    }
+    corrected_updates
+}
+
+fn get_corrected_update(page_ordering_rules: &HashMap<i64, Vec<i64>>, incorrect_update: &[i64]) -> Vec<i64> {
+    let mut corrected_update = Vec::new();
+    let mut num_left = incorrect_update.to_vec();
+
+    while let Some(num) = num_left.pop() {
+        if let Some(rules) = page_ordering_rules.get(&num) {
+            // Try to insert at the rightmost location in corrected_update
+            let mut inserted = false;
+            for (index, f_num) in corrected_update.iter().enumerate() {
+                if rules.contains(f_num) {
+                    // We need to insert before f_num
+                    corrected_update.insert(index, num);
+                    inserted = true;
+                    break;
+                }
+            }
+            if !inserted {
+                corrected_update.push(num);
+            }
+        }
+    }
+
+    corrected_update
 }

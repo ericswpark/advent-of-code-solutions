@@ -184,11 +184,7 @@ fn will_loop_in_map(map: &[Vec<bool>], start_row: usize, start_col: usize) -> bo
 fn get_next_pos(map: &[Vec<bool>], direction: Direction, row: usize, col: usize) -> Option<(usize, usize)> {
     match direction {
         Left => {
-            if col == 0 {
-                None
-            } else {
-                Some((row, col - 1))
-            }
+            Some((row, col.checked_sub(1)?))
         }
         Right => {
             if col + 1 >= map[row].len() {
@@ -198,11 +194,7 @@ fn get_next_pos(map: &[Vec<bool>], direction: Direction, row: usize, col: usize)
             }
         }
         Up => {
-            if row == 0 {
-                None
-            } else {
-                Some((row - 1, col))
-            }
+            Some((row.checked_sub(1)?, col))
         }
         Down => {
             if row + 1 >= map.len() {

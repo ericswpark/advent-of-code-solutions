@@ -1,3 +1,4 @@
+use std::cmp::PartialEq;
 use std::time::Instant;
 
 use helpers::*;
@@ -21,7 +22,7 @@ fn main() {
 
 fn part_1(input: &[String]) -> i64 {
     let (map, guard_row, guard_col) = parse_map(input);
-    let mut walk_map: Vec<Vec<bool>> = get_walk_map(&map, guard_row, guard_col);
+    let walk_map: Vec<Vec<bool>> = get_walk_map(&map, guard_row, guard_col);
 
     // Count all trues in walk_map
     let mut count = 0;
@@ -37,9 +38,35 @@ fn part_1(input: &[String]) -> i64 {
 }
 
 fn part_2(input: &[String]) -> i64 {
-    todo!()
+    let (map, guard_row, guard_col) = parse_map(input);
+    let walk_map: Vec<Vec<bool>> = get_walk_map(&map, guard_row, guard_col);
+
+    let mut obstruction_count = 0;
+
+    for (row_idx, row) in walk_map.iter().enumerate() {
+        for (col_idx, spot) in row.iter().enumerate() {
+            // Skip start as we don't want to get caught
+            if row_idx == guard_row && col_idx == guard_col {
+                continue;
+            }
+
+            // Skip spots that the guard doesn't pass to speed up search
+            if !spot {
+                continue;
+            }
+
+            let mut new_map = map.clone();
+            new_map[row_idx][col_idx] = true;
+            if will_loop_in_map(&new_map, guard_row, guard_col) {
+                obstruction_count += 1;
+            }
+        }
+    }
+
+    obstruction_count
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
 enum Direction {
     Left,
     Right,
@@ -148,4 +175,72 @@ fn get_walk_map(map: &[Vec<bool>], start_row: usize, start_col: usize) -> Vec<Ve
     }
 
     walk_map
+}
+
+/// Get walk map based on map and guard starting position
+fn will_loop_in_map(map: &[Vec<bool>], start_row: usize, start_col: usize) -> bool {
+    let mut walk_map: Vec<Vec<Option<Direction>>> = vec![vec![None; map.len()]; map[0].len()];
+
+    let mut guard_row = start_row;
+    let mut guard_col = start_col;
+
+    // Mark starting position on walk_map
+    let mut cur_direction = Up;
+    walk_map[guard_row][guard_col] = Some(cur_direction);
+
+    loop {
+        let mut left_map = false;
+        let mut next_row = guard_row;
+        let mut next_col = guard_col;
+
+        match cur_direction {
+            Left => {
+                if next_col == 0 {
+                    left_map = true;
+                } else {
+                    next_col -= 1;
+                }
+            }
+            Right => {
+                if next_col + 1 >= map[next_row].len() {
+                    left_map = true;
+                } else {
+                    next_col += 1;
+                }
+            }
+            Up => {
+                if next_row == 0 {
+                    left_map = true;
+                } else {
+                    next_row -= 1;
+                }
+            }
+            Down => {
+                if next_row + 1 >= map.len() {
+                    left_map = true;
+                } else {
+                    next_row += 1;
+                }
+            }
+        }
+
+        if left_map {
+            return false;
+        }
+
+        // Check if next position is an obstruction and rotate otherwise
+        if map[next_row][next_col] {
+            cur_direction = cur_direction.rotate_right();
+        } else {
+            // Check if we've been here using the same direction before
+            if let Some(direction) = walk_map[next_row][next_col] {
+                if direction == cur_direction {
+                    return true;
+                }
+            }
+            walk_map[next_row][next_col] = Some(cur_direction);
+            guard_row = next_row;
+            guard_col = next_col;
+        }
+    }
 }

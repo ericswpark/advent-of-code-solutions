@@ -125,44 +125,12 @@ fn get_walk_map(map: &[Vec<bool>], start_row: usize, start_col: usize) -> Vec<Ve
     walk_map[guard_row][guard_col] = true;
 
     loop {
-        let mut left_map = false;
-        let mut next_row = guard_row;
-        let mut next_col = guard_col;
-
-        match guard_direction {
-            Left => {
-                if next_col == 0 {
-                    left_map = true;
-                } else {
-                    next_col -= 1;
-                }
-            }
-            Right => {
-                if next_col + 1 >= map[next_row].len() {
-                    left_map = true;
-                } else {
-                    next_col += 1;
-                }
-            }
-            Up => {
-                if next_row == 0 {
-                    left_map = true;
-                } else {
-                    next_row -= 1;
-                }
-            }
-            Down => {
-                if next_row + 1 >= map.len() {
-                    left_map = true;
-                } else {
-                    next_row += 1;
-                }
-            }
-        }
-
-        if left_map {
+        let check_next = get_next_pos(map, guard_direction, guard_row, guard_col);
+        if check_next.is_none() {
             break;
         }
+
+        let (next_row, next_col) = check_next.unwrap();
 
         // Check if next position is an obstruction and rotate otherwise
         if map[next_row][next_col] {
@@ -189,44 +157,12 @@ fn will_loop_in_map(map: &[Vec<bool>], start_row: usize, start_col: usize) -> bo
     walk_map[guard_row][guard_col] = Some(cur_direction);
 
     loop {
-        let mut left_map = false;
-        let mut next_row = guard_row;
-        let mut next_col = guard_col;
-
-        match cur_direction {
-            Left => {
-                if next_col == 0 {
-                    left_map = true;
-                } else {
-                    next_col -= 1;
-                }
-            }
-            Right => {
-                if next_col + 1 >= map[next_row].len() {
-                    left_map = true;
-                } else {
-                    next_col += 1;
-                }
-            }
-            Up => {
-                if next_row == 0 {
-                    left_map = true;
-                } else {
-                    next_row -= 1;
-                }
-            }
-            Down => {
-                if next_row + 1 >= map.len() {
-                    left_map = true;
-                } else {
-                    next_row += 1;
-                }
-            }
-        }
-
-        if left_map {
+        let check_next = get_next_pos(map, cur_direction, guard_row, guard_col);
+        if check_next.is_none() {
             return false;
         }
+
+        let (next_row, next_col) = check_next.unwrap();
 
         // Check if next position is an obstruction and rotate otherwise
         if map[next_row][next_col] {
@@ -241,6 +177,39 @@ fn will_loop_in_map(map: &[Vec<bool>], start_row: usize, start_col: usize) -> bo
             walk_map[next_row][next_col] = Some(cur_direction);
             guard_row = next_row;
             guard_col = next_col;
+        }
+    }
+}
+
+fn get_next_pos(map: &[Vec<bool>], direction: Direction, row: usize, col: usize) -> Option<(usize, usize)> {
+    match direction {
+        Left => {
+            if col == 0 {
+                None
+            } else {
+                Some((row, col - 1))
+            }
+        }
+        Right => {
+            if col + 1 >= map[row].len() {
+                None
+            } else {
+                Some((row, col + 1))
+            }
+        }
+        Up => {
+            if row == 0 {
+                None
+            } else {
+                Some((row - 1, col))
+            }
+        }
+        Down => {
+            if row + 1 >= map.len() {
+                None
+            } else {
+                Some((row + 1, col))
+            }
         }
     }
 }

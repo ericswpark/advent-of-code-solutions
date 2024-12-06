@@ -1,8 +1,8 @@
 use std::cmp::PartialEq;
 use std::time::Instant;
 
-use helpers::*;
 use crate::Direction::*;
+use helpers::*;
 
 mod tests;
 
@@ -88,7 +88,7 @@ impl Direction {
 /// Returns map where true means the spot has an obstacle, false otherwise
 /// Also returns guard position
 /// Starting direction is assumed to be north (heading up)
-fn parse_map(input: &[String]) -> (Vec<Vec<bool>>, usize, usize)  {
+fn parse_map(input: &[String]) -> (Vec<Vec<bool>>, usize, usize) {
     let mut map: Vec<Vec<bool>> = Vec::new();
     let mut guard_x: usize = 0;
     let mut guard_y: usize = 0;
@@ -104,7 +104,9 @@ fn parse_map(input: &[String]) -> (Vec<Vec<bool>>, usize, usize)  {
                     guard_x = x;
                     guard_y = y;
                 }
-                _ => { panic!("{} is not possible, bad input?", ch) }
+                _ => {
+                    panic!("{} is not possible, bad input?", ch)
+                }
             }
         }
         map.push(row);
@@ -181,11 +183,14 @@ fn will_loop_in_map(map: &[Vec<bool>], start_row: usize, start_col: usize) -> bo
     }
 }
 
-fn get_next_pos(map: &[Vec<bool>], direction: Direction, row: usize, col: usize) -> Option<(usize, usize)> {
+fn get_next_pos(
+    map: &[Vec<bool>],
+    direction: Direction,
+    row: usize,
+    col: usize,
+) -> Option<(usize, usize)> {
     match direction {
-        Left => {
-            Some((row, col.checked_sub(1)?))
-        }
+        Left => Some((row, col.checked_sub(1)?)),
         Right => {
             if col + 1 >= map[row].len() {
                 None
@@ -193,9 +198,7 @@ fn get_next_pos(map: &[Vec<bool>], direction: Direction, row: usize, col: usize)
                 Some((row, col + 1))
             }
         }
-        Up => {
-            Some((row.checked_sub(1)?, col))
-        }
+        Up => Some((row.checked_sub(1)?, col)),
         Down => {
             if row + 1 >= map.len() {
                 None

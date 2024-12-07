@@ -32,7 +32,16 @@ fn part_1(input: &[String]) -> i64 {
 }
 
 fn part_2(input: &[String]) -> i64 {
-    todo!()
+    let equations = get_equations(input);
+
+    let mut sum = 0;
+    for equation in equations {
+        if is_expanded_solvable(&equation) {
+            sum += equation.test_value;
+        }
+    }
+
+    sum
 }
 
 #[derive(Debug, Clone)]
@@ -66,4 +75,22 @@ fn is_solvable_sub(total: i64, left_num: i64, remaining_numbers: &[i64]) -> bool
         return (total == left_num + remaining_numbers[0]) || (total == left_num * remaining_numbers[0]);
     }
     return is_solvable_sub(total, left_num + remaining_numbers[0], &remaining_numbers[1..]) || is_solvable_sub(total, left_num * remaining_numbers[0], &remaining_numbers[1..]);
+}
+
+fn is_expanded_solvable(equation: &Equation) -> bool {
+    return is_expanded_solvable_sub(equation.test_value, equation.numbers[0], &equation.numbers[1..]);
+}
+
+fn is_expanded_solvable_sub(total: i64, left_num: i64, remaining_numbers: &[i64]) -> bool {
+    let right_num = remaining_numbers[0];
+    let concat_num = (left_num.to_string() + &right_num.to_string()).parse::<i64>().unwrap();
+
+    if remaining_numbers.len() <= 1 {
+        return (total == left_num + right_num) 
+        || (total == left_num * right_num)
+        || (total == concat_num);
+    }
+    return is_expanded_solvable_sub(total, left_num + right_num, &remaining_numbers[1..])
+    || is_expanded_solvable_sub(total, left_num * right_num, &remaining_numbers[1..])
+    || is_expanded_solvable_sub(total, concat_num, &remaining_numbers[1..]);
 }

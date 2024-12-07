@@ -72,11 +72,11 @@ fn get_equations(input: &[String]) -> Vec<Equation> {
 }
 
 fn is_solvable(equation: &Equation) -> bool {
-    return is_solvable_sub(
+    is_solvable_sub(
         equation.test_value,
         equation.numbers[0],
         &equation.numbers[1..],
-    );
+    )
 }
 
 fn is_solvable_sub(total: i64, left_num: i64, remaining_numbers: &[i64]) -> bool {
@@ -84,7 +84,7 @@ fn is_solvable_sub(total: i64, left_num: i64, remaining_numbers: &[i64]) -> bool
         return (total == left_num + remaining_numbers[0])
             || (total == left_num * remaining_numbers[0]);
     }
-    return is_solvable_sub(
+    is_solvable_sub(
         total,
         left_num + remaining_numbers[0],
         &remaining_numbers[1..],
@@ -92,15 +92,15 @@ fn is_solvable_sub(total: i64, left_num: i64, remaining_numbers: &[i64]) -> bool
         total,
         left_num * remaining_numbers[0],
         &remaining_numbers[1..],
-    );
+    )
 }
 
 fn is_expanded_solvable(equation: &Equation) -> bool {
-    return is_expanded_solvable_sub(
+    is_expanded_solvable_sub(
         equation.test_value,
         equation.numbers[0],
         &equation.numbers[1..],
-    );
+    )
 }
 
 fn is_expanded_solvable_sub(total: i64, left_num: i64, remaining_numbers: &[i64]) -> bool {
@@ -114,7 +114,7 @@ fn is_expanded_solvable_sub(total: i64, left_num: i64, remaining_numbers: &[i64]
             || (total == left_num * right_num)
             || (total == concat_num);
     }
-    return is_expanded_solvable_sub(total, left_num + right_num, &remaining_numbers[1..])
+    is_expanded_solvable_sub(total, left_num + right_num, &remaining_numbers[1..])
         || is_expanded_solvable_sub(total, left_num * right_num, &remaining_numbers[1..])
-        || is_expanded_solvable_sub(total, concat_num, &remaining_numbers[1..]);
+        || is_expanded_solvable_sub(total, concat_num, &remaining_numbers[1..])
 }

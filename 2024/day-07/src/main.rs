@@ -1,7 +1,5 @@
-use std::cmp::PartialEq;
 use std::time::Instant;
 
-use crate::Direction::*;
 use helpers::*;
 
 mod tests;
@@ -21,9 +19,51 @@ fn main() {
 }
 
 fn part_1(input: &[String]) -> i64 {
-    todo!()
+    let equations = get_equations(input);
+
+    let mut sum = 0;
+    for equation in equations {
+        if is_solvable(&equation) {
+            sum += equation.test_value;
+        }
+    }
+
+    sum
 }
 
 fn part_2(input: &[String]) -> i64 {
     todo!()
+}
+
+#[derive(Debug, Clone)]
+struct Equation {
+    test_value: i64,
+    numbers: Vec<i64>
+}
+
+
+fn get_equations(input: &[String]) -> Vec<Equation> {
+    input.iter().map(|line| {
+        let mut parts = line.split(": ");
+        let test_value = parts.next().unwrap().parse().unwrap();
+        let numbers_part = parts.next().unwrap();
+
+        let numbers = numbers_part.split(" ").map(|n| n.parse().unwrap()).collect::<Vec<i64>>();
+
+        Equation {
+            test_value,
+            numbers
+        }
+    }).collect()
+}
+
+fn is_solvable(equation: &Equation) -> bool {
+    return is_solvable_sub(equation.test_value, equation.numbers[0], &equation.numbers[1..]);
+}
+
+fn is_solvable_sub(total: i64, left_num: i64, remaining_numbers: &[i64]) -> bool {
+    if remaining_numbers.len() <= 1 {
+        return (total == left_num + remaining_numbers[0]) || (total == left_num * remaining_numbers[0]);
+    }
+    return is_solvable_sub(total, left_num + remaining_numbers[0], &remaining_numbers[1..]) || is_solvable_sub(total, left_num * remaining_numbers[0], &remaining_numbers[1..]);
 }

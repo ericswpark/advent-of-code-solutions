@@ -18,6 +18,17 @@ fn main() {
     println!("Time: {:.2?}", elapsed_time);
 }
 
+fn get_ranges(str: &str) -> Vec<Range> {
+    str.split(',')
+        .map(|range| {
+            let (start, end) = range
+                .split_once('-')
+                .map(|(start, end)| (start.parse().unwrap(), end.parse().unwrap()))
+                .unwrap();
+            Range { start, end }
+        })
+        .collect::<Vec<Range>>()
+}
 #[derive(Debug, Clone, Copy)]
 struct Range {
     start: i64,
@@ -26,16 +37,7 @@ struct Range {
 
 fn part_1(input: &[String]) -> i64 {
     let mut answer = 0;
-    let ranges = input[0]
-        .split(',')
-        .map(|range| {
-            let (start, end) = range
-                .split_once('-')
-                .map(|(start, end)| (start.parse().unwrap(), end.parse().unwrap()))
-                .unwrap();
-            Range { start, end }
-        })
-        .collect::<Vec<Range>>();
+    let ranges = get_ranges(&input[0]);
 
     for range in ranges {
         for number in range.start..=range.end {
@@ -70,6 +72,38 @@ fn part_1_check_validity(number: i64) -> bool {
     false
 }
 
+fn part_2_check_validity(number: i64) -> bool {
+    let number_string = number.to_string();
+
+    for check_length in (1..=(number_string.len() / 2)).rev() {
+        // Get all segments to compare
+        let segments = number_string
+            .as_bytes()
+            .chunks(check_length)
+            .map(|buf| unsafe { str::from_utf8_unchecked(buf) })
+            .collect::<Vec<&str>>();
+
+        // Check if all segments are equal
+        let first = segments[0];
+        if segments.iter().all(|segment| *segment == first) {
+            return false;
+        }
+    }
+
+    true
+}
+
 fn part_2(input: &[String]) -> i64 {
-    todo!()
+    let mut answer = 0;
+    let ranges = get_ranges(&input[0]);
+
+    for range in ranges {
+        for number in range.start..=range.end {
+            if !part_2_check_validity(number) {
+                answer += number;
+            }
+        }
+    }
+
+    answer
 }

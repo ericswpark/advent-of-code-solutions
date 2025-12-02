@@ -39,7 +39,7 @@ fn part_1(input: &[String]) -> i64 {
 
     for range in ranges {
         for number in range.start..=range.end {
-            if !check_validity(number) {
+            if !part_1_check_validity(number) {
                 answer += number;
             }
         }
@@ -48,7 +48,7 @@ fn part_1(input: &[String]) -> i64 {
     answer
 }
 
-fn check_validity(number: i64) -> bool {
+fn part_1_check_validity(number: i64) -> bool {
     let number_string = number.to_string();
 
     // If the length is not even, it cannot repeat

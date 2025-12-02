@@ -26,8 +26,8 @@ fn part_1(input: &[String]) -> i64 {
         let direction = line.chars().next().unwrap();
         let distance = line[1..].parse::<i64>().unwrap();
         match direction {
-            'L' => current += distance,
-            'R' => current -= distance,
+            'L' => current -= distance,
+            'R' => current += distance,
             _ => unreachable!("Shouldn't happen, direction is either L or R"),
         }
 

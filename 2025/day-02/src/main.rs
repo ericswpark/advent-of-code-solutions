@@ -54,7 +54,7 @@ fn part_1_check_validity(number: i64) -> bool {
     let number_string = number.to_string();
 
     // If the length is not even, it cannot repeat
-    if number_string.len() % 2 != 0 {
+    if !number_string.len().is_multiple_of(2) {
         return true;
     }
 

@@ -19,45 +19,22 @@ fn main() {
 }
 
 fn get_max_joltage(bank: &str) -> i64 {
-    let mut first_digit_index = bank.len() - 2;
-    let mut second_digit_index = bank.len() - 1;
-
-    // Figure out how big the first digit can be
-    for index in (0..first_digit_index - 1).rev() {
-        if bank.chars().nth(index).unwrap().to_digit(10).unwrap()
-            >= bank
-                .chars()
-                .nth(first_digit_index)
-                .unwrap()
-                .to_digit(10)
-                .unwrap()
-        {
-            first_digit_index = index;
+    let mut max_joltage = 0;
+    for first_digit_index in 0..bank.len() - 1 {
+        for second_digit_index in first_digit_index + 1..bank.len() {
+            let joltage = format!(
+                "{}{}",
+                bank.chars().nth(first_digit_index).unwrap(),
+                bank.chars().nth(second_digit_index).unwrap()
+            )
+            .parse::<i64>()
+            .unwrap();
+            if joltage > max_joltage {
+                max_joltage = joltage;
+            }
         }
     }
-
-    // Figure out how big the second digit can be
-    for index in (first_digit_index + 1..second_digit_index - 1).rev() {
-        if bank.chars().nth(index).unwrap().to_digit(10).unwrap()
-            >= bank
-                .chars()
-                .nth(second_digit_index)
-                .unwrap()
-                .to_digit(10)
-                .unwrap()
-        {
-            second_digit_index = index;
-        }
-    }
-
-    // Return parsed integer
-    format!(
-        "{}{}",
-        bank.chars().nth(first_digit_index).unwrap(),
-        bank.chars().nth(second_digit_index).unwrap()
-    )
-    .parse()
-    .unwrap()
+    max_joltage
 }
 
 fn part_1(input: &[String]) -> i64 {

@@ -46,6 +46,41 @@ fn part_1(input: &[String]) -> i64 {
     answer
 }
 
+fn get_max_twelve_batteries_joltage(bank: &str) -> i64 {
+    // Split bank into individual batteries
+    let mut batteries: Vec<u8> = bank
+        .chars()
+        .map(|c| c.to_digit(10).unwrap() as u8)
+        .collect();
+
+    while batteries.len() > 12 {
+        // If the second battery is bigger than the first, remove the first to make the number bigger
+        if batteries[1] > batteries[0] {
+            batteries.remove(0);
+        } else {
+            // Find the battery with the lowest joltage and remove it
+            let min_battery_index = batteries
+                .iter()
+                .position(|&battery| battery == *batteries.iter().min().unwrap())
+                .unwrap();
+            batteries.remove(min_battery_index);
+        }
+    }
+
+    // Combine batteries back into max joltage
+    let mut joltage = 0;
+    for battery in batteries {
+        joltage = joltage * 10 + battery as i64;
+    }
+    joltage
+}
+
 fn part_2(input: &[String]) -> i64 {
-    todo!();
+    let mut answer = 0;
+    for line in input {
+        let max_joltage = get_max_twelve_batteries_joltage(line);
+        println!("max joltage for bank is {}", max_joltage);
+        answer += max_joltage;
+    }
+    answer
 }

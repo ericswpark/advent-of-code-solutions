@@ -14,6 +14,6 @@ mod tests {
     fn puzzle_input() {
         let input = get_input("puzzle-input.txt");
         assert_eq!(part_1(&input), 17493);
-        assert_eq!(part_2(&input), 155100615296493);
+        assert_eq!(part_2(&input), 173685428989126);
     }
 }

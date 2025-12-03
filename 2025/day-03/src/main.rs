@@ -25,7 +25,7 @@ fn get_max_joltage(bank: &str) -> i64 {
     // Figure out how big the first digit can be
     for index in (0..first_digit_index - 1).rev() {
         if bank.chars().nth(index).unwrap().to_digit(10).unwrap()
-            > bank
+            >= bank
                 .chars()
                 .nth(first_digit_index)
                 .unwrap()
@@ -39,7 +39,7 @@ fn get_max_joltage(bank: &str) -> i64 {
     // Figure out how big the second digit can be
     for index in (first_digit_index + 1..second_digit_index - 1).rev() {
         if bank.chars().nth(index).unwrap().to_digit(10).unwrap()
-            > bank
+            >= bank
                 .chars()
                 .nth(second_digit_index)
                 .unwrap()

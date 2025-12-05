@@ -42,6 +42,8 @@ fn part_2(input: &[String]) -> i64 {
     let data = parse_input(input, false);
     let merged_ranges = merge_ranges(&data.ranges);
 
+    println!("Merged ranges: {:?}", merged_ranges);
+
     merged_ranges.iter().map(|range| range.count()).sum()
 }
 
@@ -114,7 +116,7 @@ fn insert_into_merged_ranges(merged_ranges: &mut Vec<Range>, range: &Range) {
     let mut existing_range: Option<usize> = None;
 
     for (i, merged_range) in merged_ranges.iter().enumerate() {
-        if merged_range.includes(range.start) || merged_range.includes(range.end) {
+        if range.start <= merged_range.end && merged_range.start <= range.end {
             existing_range = Some(i);
             break;
         }
@@ -122,16 +124,15 @@ fn insert_into_merged_ranges(merged_ranges: &mut Vec<Range>, range: &Range) {
 
     match existing_range {
         Some(index) => {
-            // Remove from array
+            // Merge, remove from array
             let merged_range = &mut merged_ranges[index];
             let new_merged_range = Range {
                 start: merged_range.start.min(range.start),
                 end: merged_range.end.max(range.end),
             };
+            merged_ranges.swap_remove(index);
 
-            merged_ranges.remove(index);
-
-            // Add back again
+            // Add new merged range recursively (to check for other overlaps)
             insert_into_merged_ranges(merged_ranges, &new_merged_range);
         }
         None => {

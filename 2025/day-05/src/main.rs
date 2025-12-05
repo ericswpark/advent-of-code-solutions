@@ -62,6 +62,13 @@ impl Range {
     fn overlaps(&self, other: &Range) -> bool {
         self.start <= other.end && other.start <= self.end
     }
+
+    fn merge(&self, other: &Range) -> Range {
+        Range {
+            start: other.start.min(self.start),
+            end: other.end.max(self.end),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -126,11 +133,7 @@ fn insert_into_merged_ranges(merged_ranges: &mut Vec<Range>, range: &Range) {
     match existing_range {
         Some(index) => {
             // Merge, remove from array
-            let merged_range = &mut merged_ranges[index];
-            let new_merged_range = Range {
-                start: merged_range.start.min(range.start),
-                end: merged_range.end.max(range.end),
-            };
+            let new_merged_range = merged_ranges[index].merge(range);
             merged_ranges.swap_remove(index);
 
             // Add new merged range recursively (to check for other overlaps)

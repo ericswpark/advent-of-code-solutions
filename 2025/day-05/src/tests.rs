@@ -7,14 +7,14 @@ mod tests {
     fn sample_input() {
         let input = get_input("sample-input.txt");
         assert_eq!(part_1(&input), 3);
-        //assert_eq!(part_2(&input), 43);
+        assert_eq!(part_2(&input), 14);
     }
 
     #[test]
     fn puzzle_input() {
         let input = get_input("puzzle-input.txt");
         assert_eq!(part_1(&input), 613);
-        //assert_eq!(part_2(&input), 9122);
+        assert_eq!(part_2(&input), 339268667296845);
     }
 
     #[test]

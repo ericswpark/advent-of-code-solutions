@@ -19,7 +19,7 @@ fn main() {
 }
 
 fn part_1(input: &[String]) -> i64 {
-    let data = parse_input(input);
+    let data = parse_input(input, true);
 
     // Merge ranges
     let merged_ranges = merge_ranges(&data.ranges);
@@ -39,7 +39,10 @@ fn part_1(input: &[String]) -> i64 {
 }
 
 fn part_2(input: &[String]) -> i64 {
-    todo!();
+    let data = parse_input(input, false);
+    let merged_ranges = merge_ranges(&data.ranges);
+
+    merged_ranges.iter().map(|range| range.count()).sum()
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -52,6 +55,10 @@ impl Range {
     fn includes(&self, value: i64) -> bool {
         self.start <= value && value <= self.end
     }
+
+    fn count(&self) -> i64 {
+        self.end - self.start + 1
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -60,7 +67,7 @@ struct Data {
     available: Vec<i64>,
 }
 
-fn parse_input(input: &[String]) -> Data {
+fn parse_input(input: &[String], include_available: bool) -> Data {
     let mut ranges = Vec::new();
     let mut available = Vec::new();
     let mut is_on_ranges = true;
@@ -68,6 +75,11 @@ fn parse_input(input: &[String]) -> Data {
     for line in input {
         if line == "" {
             is_on_ranges = false;
+
+            if !include_available {
+                break;
+            }
+
             continue;
         }
 
@@ -92,24 +104,38 @@ fn parse_input(input: &[String]) -> Data {
 
 fn merge_ranges(ranges: &[Range]) -> Vec<Range> {
     let mut merged_ranges: Vec<Range> = Vec::new();
+    ranges
+        .iter()
+        .for_each(|range| insert_into_merged_ranges(&mut merged_ranges, range));
+    merged_ranges
+}
 
-    for range in ranges {
-        let mut merged = false;
+fn insert_into_merged_ranges(merged_ranges: &mut Vec<Range>, range: &Range) {
+    let mut existing_range: Option<usize> = None;
 
-        // Check if range start or end is in any merged range
-        for merged_range in merged_ranges.iter_mut() {
-            if merged_range.includes(range.start) || merged_range.includes(range.end) {
-                merged_range.start = merged_range.start.min(range.start);
-                merged_range.end = merged_range.end.max(range.end);
-                merged = true;
-                break;
-            }
-        }
-
-        if !merged {
-            merged_ranges.push(*range);
+    for (i, merged_range) in merged_ranges.iter().enumerate() {
+        if merged_range.includes(range.start) || merged_range.includes(range.end) {
+            existing_range = Some(i);
+            break;
         }
     }
 
-    merged_ranges
+    match existing_range {
+        Some(index) => {
+            // Remove from array
+            let merged_range = &mut merged_ranges[index];
+            let new_merged_range = Range {
+                start: merged_range.start.min(range.start),
+                end: merged_range.end.max(range.end),
+            };
+
+            merged_ranges.remove(index);
+
+            // Add back again
+            insert_into_merged_ranges(merged_ranges, &new_merged_range);
+        }
+        None => {
+            merged_ranges.push(*range);
+        }
+    }
 }

@@ -58,6 +58,10 @@ impl Range {
     fn count(&self) -> i64 {
         self.end - self.start + 1
     }
+
+    fn overlaps(&self, other: &Range) -> bool {
+        self.start <= other.end && other.start <= self.end
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -113,7 +117,7 @@ fn insert_into_merged_ranges(merged_ranges: &mut Vec<Range>, range: &Range) {
     let mut existing_range: Option<usize> = None;
 
     for (i, merged_range) in merged_ranges.iter().enumerate() {
-        if range.start <= merged_range.end && merged_range.start <= range.end {
+        if merged_range.overlaps(range) {
             existing_range = Some(i);
             break;
         }

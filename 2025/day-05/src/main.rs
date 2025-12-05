@@ -26,7 +26,7 @@ fn part_1(input: &[String]) -> i64 {
 
     let mut count = 0;
 
-    for ingredient in data.available {
+    for ingredient in data.available.unwrap() {
         for range in &merged_ranges {
             if range.includes(ingredient) {
                 count += 1;
@@ -74,42 +74,40 @@ impl Range {
 #[derive(Debug, Clone)]
 struct Data {
     ranges: Vec<Range>,
-    available: Vec<i64>,
+    available: Option<Vec<i64>>,
 }
 
 fn parse_input(input: &[String], include_available: bool) -> Data {
     let mut ranges = Vec::new();
-    let mut available = Vec::new();
-    let mut is_on_ranges = true;
+    let mut iterator = input.iter();
 
-    for line in input {
-        if line == "" {
-            is_on_ranges = false;
-
-            if !include_available {
-                break;
-            }
-
-            continue;
-        }
-
-        match is_on_ranges {
-            true => {
-                let (start, end) = line.split_once('-').unwrap();
-                let range = Range {
-                    start: start.parse().unwrap(),
-                    end: end.parse().unwrap(),
-                };
-                ranges.push(range);
-            }
-            false => {
-                let num = line.parse().unwrap();
-                available.push(num);
-            }
-        }
+    for line in iterator.by_ref().take_while(|line| !line.is_empty()) {
+        let (start, end) = line.split_once('-').unwrap();
+        let range = Range {
+            start: start.parse().unwrap(),
+            end: end.parse().unwrap(),
+        };
+        ranges.push(range);
     }
 
-    Data { ranges, available }
+    if !include_available {
+        return Data {
+            ranges,
+            available: None,
+        };
+    }
+
+    let mut available = Vec::new();
+
+    for line in iterator {
+        let num = line.parse().unwrap();
+        available.push(num);
+    }
+
+    Data {
+        ranges,
+        available: Some(available),
+    }
 }
 
 fn merge_ranges(ranges: &[Range]) -> Vec<Range> {
@@ -121,17 +119,13 @@ fn merge_ranges(ranges: &[Range]) -> Vec<Range> {
 }
 
 fn insert_into_merged_ranges(merged_ranges: &mut Vec<Range>, range: &Range) {
-    let mut existing_range: Option<usize> = None;
-
-    for (i, merged_range) in merged_ranges.iter().enumerate() {
-        if merged_range.overlaps(range) {
-            existing_range = Some(i);
-            break;
-        }
-    }
-
-    match existing_range {
-        Some(index) => {
+    // Check if the new range overlaps any existing merged range
+    match merged_ranges
+        .iter()
+        .enumerate()
+        .find(|(_, merged_range)| merged_range.overlaps(range))
+    {
+        Some((index, _)) => {
             // Merge, remove from array
             let new_merged_range = merged_ranges[index].merge(range);
             merged_ranges.swap_remove(index);

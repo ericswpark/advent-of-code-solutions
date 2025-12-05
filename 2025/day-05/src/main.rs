@@ -41,9 +41,6 @@ fn part_1(input: &[String]) -> i64 {
 fn part_2(input: &[String]) -> i64 {
     let data = parse_input(input, false);
     let merged_ranges = merge_ranges(&data.ranges);
-
-    println!("Merged ranges: {:?}", merged_ranges);
-
     merged_ranges.iter().map(|range| range.count()).sum()
 }
 

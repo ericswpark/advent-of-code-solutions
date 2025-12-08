@@ -24,29 +24,29 @@ fn part_1(input: &[String]) -> i64 {
     let number_arrays = &arrays[0..arrays.len() - 1];
     let operations = arrays.last().unwrap();
 
-    let mut total = 0;
-
-    for (index, operation) in operations.iter().enumerate() {
-        match operation.chars().next().unwrap() {
-            '+' => {
-                let result: i64 = number_arrays
-                    .iter()
-                    .map(|numbers| numbers[index].parse::<i64>().unwrap())
-                    .sum();
-                total += result;
-            }
-            '*' => {
-                let result: i64 = number_arrays
-                    .iter()
-                    .map(|numbers| numbers[index].parse::<i64>().unwrap())
-                    .product();
-                total += result;
-            }
-            _ => unreachable!("Unsupported operation"),
-        }
-    }
-
-    total
+    operations
+        .iter()
+        .enumerate()
+        .map(
+            |(index, operation)| match operation.chars().next().unwrap() {
+                '+' => {
+                    let result: i64 = number_arrays
+                        .iter()
+                        .map(|numbers| numbers[index].parse::<i64>().unwrap())
+                        .sum();
+                    result
+                }
+                '*' => {
+                    let result: i64 = number_arrays
+                        .iter()
+                        .map(|numbers| numbers[index].parse::<i64>().unwrap())
+                        .product();
+                    result
+                }
+                _ => unreachable!("Unsupported operation"),
+            },
+        )
+        .sum()
 }
 
 fn part_2(input: &[String]) -> i64 {

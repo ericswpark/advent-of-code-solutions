@@ -51,7 +51,36 @@ fn part_1(input: &[String]) -> i64 {
 }
 
 fn part_2(input: &[String]) -> i64 {
-    todo!();
+    let map = construct_map(input);
+    let antenna_positions = get_antenna_positions(&map);
+    let mut antinode_coordinates: HashSet<Coordinate> = HashSet::new();
+
+    for letter in antenna_positions.keys() {
+        let antennas = antenna_positions.get(letter).unwrap();
+
+        for antenna in antennas {
+            for other_antenna in antennas {
+                if antenna == other_antenna {
+                    continue;
+                }
+
+                let new_antinodes = get_extended_antinodes(
+                    *antenna,
+                    *other_antenna,
+                    Coordinate {
+                        x: map[0].len(),
+                        y: map.len(),
+                    },
+                );
+                antinode_coordinates.extend(new_antinodes);
+
+                // Insert ourselves as well
+                antinode_coordinates.insert(*antenna);
+            }
+        }
+    }
+
+    antinode_coordinates.len() as i64
 }
 
 fn construct_map(input: &[String]) -> Vec<Vec<char>> {
@@ -120,4 +149,38 @@ fn get_antinode(antenna: Coordinate, other_antenna: Coordinate) -> Option<Coordi
     }
 
     None
+}
+
+/// Returns extended antinode coordinates produced by two antennas.
+///
+/// Note that we only get the antinode coordinate if you start from the antenna
+/// and jump over the other one to get to the antinode, so to get all antinodes
+/// from two antennas you need to call this function again with the antennas
+/// swapped.
+///
+/// Antinodes are guaranteed to be in bounds of the map dimensions given.
+fn get_extended_antinodes(
+    antenna: Coordinate,
+    other_antenna: Coordinate,
+    map_bounds: Coordinate,
+) -> HashSet<Coordinate> {
+    let mut antinodes = HashSet::new();
+
+    let (x1, y1) = (antenna.x as isize, antenna.y as isize);
+    let (x2, y2) = (other_antenna.x as isize, other_antenna.y as isize);
+
+    let dx = x1 - x2;
+    let dy = y1 - y2;
+
+    let mut new_x = x2 - dx;
+    let mut new_y = y2 - dy;
+
+    while new_x >= 0 && new_x < map_bounds.x as isize && new_y >= 0 && new_y < map_bounds.y as isize
+    {
+        antinodes.insert(Coordinate::new(new_x as usize, new_y as usize));
+        new_x -= dx;
+        new_y -= dy;
+    }
+
+    antinodes
 }

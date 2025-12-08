@@ -79,7 +79,75 @@ fn part_1(input: &[String]) -> i64 {
 }
 
 fn part_2(input: &[String]) -> i64 {
-    todo!();
+    let map = parse_map(input);
+
+    // Keep track of how many beams came from each possibility
+    let mut possibility_map = vec![vec![0; map[0].len()]; map.len()];
+
+    // Queue of beams
+    let mut queue: VecDeque<Coordinate> = VecDeque::new();
+
+    // Initialize with starting position
+    let starting_position = find_tachyon_position(&map);
+    queue.push_back(starting_position);
+    possibility_map[starting_position.row_idx][starting_position.col_idx] = 1;
+
+    // Keep track of visited coordinates
+    let mut visited: HashSet<Coordinate> = HashSet::new();
+
+    // Keep track of possibility count
+    let mut possibility_count = 0;
+
+    // Process queue of beams
+    while let Some(coord) = queue.pop_front() {
+        if visited.contains(&coord) {
+            continue;
+        }
+        visited.insert(coord);
+
+        // We are a beam, check the next coordinate if we are within bounds
+        if coord.row_idx + 1 < map.len() {
+            let new_coord = Coordinate {
+                row_idx: coord.row_idx + 1,
+                col_idx: coord.col_idx,
+            };
+            match map[new_coord.row_idx][new_coord.col_idx] {
+                Cell::Empty => {
+                    // We can advance, push a new beam into the queue
+                    queue.push_back(new_coord);
+                    // Add our current possibility count to the new coordinate
+                    possibility_map[new_coord.row_idx][new_coord.col_idx] +=
+                        possibility_map[coord.row_idx][coord.col_idx];
+                }
+                Cell::TachyonBeam => unreachable!("Multiple tachyon beam emitters"),
+                Cell::Splitter => {
+                    // We split into two beams, check bounds before pushing
+                    if coord.col_idx + 1 < map[coord.row_idx + 1].len() {
+                        queue.push_back(Coordinate {
+                            row_idx: coord.row_idx + 1,
+                            col_idx: coord.col_idx + 1,
+                        });
+                        possibility_map[coord.row_idx + 1][coord.col_idx + 1] +=
+                            possibility_map[coord.row_idx][coord.col_idx];
+                    }
+                    if coord.col_idx > 0 {
+                        queue.push_back(Coordinate {
+                            row_idx: coord.row_idx + 1,
+                            col_idx: coord.col_idx - 1,
+                        });
+                        possibility_map[coord.row_idx + 1][coord.col_idx - 1] +=
+                            possibility_map[coord.row_idx][coord.col_idx];
+                    }
+                }
+            }
+        } else {
+            // We've reached the end, add the total possibilities
+            possibility_count += possibility_map[coord.row_idx][coord.col_idx];
+        }
+    }
+
+    // Count number of possibilities
+    possibility_count
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]

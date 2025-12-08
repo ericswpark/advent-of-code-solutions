@@ -38,8 +38,8 @@ fn part_1(input: &[String]) -> i64 {
                 let antinode = get_antinode(*antenna, *other_antenna);
 
                 if let Some(antinode) = antinode
-                    && antinode.x < map.len()
-                    && antinode.y < map[0].len()
+                    && antinode.x < map[0].len()
+                    && antinode.y < map.len()
                 {
                     antinode_coordinates.insert(antinode);
                 }

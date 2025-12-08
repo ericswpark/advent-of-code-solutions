@@ -101,13 +101,6 @@ impl Coordinate {
     fn new(x: usize, y: usize) -> Self {
         Coordinate { x, y }
     }
-
-    fn checked_new(x: Option<usize>, y: Option<usize>) -> Option<Self> {
-        match (x, y) {
-            (Some(x), Some(y)) => Some(Self::new(x, y)),
-            _ => None,
-        }
-    }
 }
 
 fn get_antenna_positions(map: &Vec<Vec<char>>) -> HashMap<char, HashSet<Coordinate>> {

@@ -23,12 +23,7 @@ fn main() {
 
 fn part_1(input: &[String]) -> i64 {
     let map = construct_map(input);
-
-    println!("Map: {:?}", map);
     let antenna_positions = get_antenna_positions(&map);
-
-    println!("Antenna positions: {:?}", antenna_positions);
-
     let mut antinode_coordinates: HashSet<Coordinate> = HashSet::new();
 
     for letter in antenna_positions.keys() {
@@ -51,8 +46,6 @@ fn part_1(input: &[String]) -> i64 {
             }
         }
     }
-
-    println!("Antinode coordinates: {:?}", antinode_coordinates);
 
     antinode_coordinates.len() as i64
 }

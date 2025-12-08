@@ -1,0 +1,130 @@
+use std::{
+    collections::{HashMap, HashSet},
+    time::Instant,
+};
+
+use helpers::*;
+
+mod tests;
+
+fn main() {
+    let input = get_input(&get_path_from_arg());
+
+    let start_time = Instant::now();
+    let part_1_answer = part_1(&input);
+    println!("Part 1 answer: {part_1_answer}");
+
+    let part_2_answer = part_2(&input);
+    println!("Part 2 answer: {part_2_answer}");
+
+    let elapsed_time = start_time.elapsed();
+    println!("Time: {:.2?}", elapsed_time);
+}
+
+fn part_1(input: &[String]) -> i64 {
+    let map = construct_map(input);
+
+    println!("Map: {:?}", map);
+    let antenna_positions = get_antenna_positions(&map);
+
+    println!("Antenna positions: {:?}", antenna_positions);
+
+    let mut antinode_coordinates: HashSet<Coordinate> = HashSet::new();
+
+    for letter in antenna_positions.keys() {
+        let antennas = antenna_positions.get(letter).unwrap();
+
+        for antenna in antennas {
+            for other_antenna in antennas {
+                if antenna == other_antenna {
+                    continue;
+                }
+
+                let antinode = get_antinode(*antenna, *other_antenna);
+
+                if let Some(antinode) = antinode
+                    && antinode.x < map.len()
+                    && antinode.y < map[0].len()
+                {
+                    antinode_coordinates.insert(antinode);
+                }
+            }
+        }
+    }
+
+    println!("Antinode coordinates: {:?}", antinode_coordinates);
+
+    antinode_coordinates.len() as i64
+}
+
+fn part_2(input: &[String]) -> i64 {
+    todo!();
+}
+
+fn construct_map(input: &[String]) -> Vec<Vec<char>> {
+    let mut map = Vec::new();
+    for line in input {
+        map.push(line.trim().chars().collect());
+    }
+    map
+}
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
+struct Coordinate {
+    x: usize,
+    y: usize,
+}
+
+impl Coordinate {
+    fn new(x: usize, y: usize) -> Self {
+        Coordinate { x, y }
+    }
+
+    fn checked_new(x: Option<usize>, y: Option<usize>) -> Option<Self> {
+        match (x, y) {
+            (Some(x), Some(y)) => Some(Self::new(x, y)),
+            _ => None,
+        }
+    }
+}
+
+fn get_antenna_positions(map: &Vec<Vec<char>>) -> HashMap<char, HashSet<Coordinate>> {
+    let mut position_mapping = HashMap::new();
+
+    for (y, row) in map.iter().enumerate() {
+        for (x, &cell) in row.iter().enumerate() {
+            if cell != '.' {
+                position_mapping
+                    .entry(cell)
+                    .or_insert(HashSet::new())
+                    .insert(Coordinate { x, y });
+            }
+        }
+    }
+
+    position_mapping
+}
+
+/// Returns antinode coordinate produced by two antennas.
+///
+/// Note that we only get the antinode coordinate if you start from the antenna
+/// and jump over the other one to get to the antinode, so to get all antinodes
+/// from two antennas you need to call this function again with the antennas
+/// swapped.
+///
+/// Antennas are guaranteed to have correct `usize` values but may be out of bounds
+/// in terms of the map. If the `usize` constraint is not met then this function
+/// returns `None`.
+fn get_antinode(antenna: Coordinate, other_antenna: Coordinate) -> Option<Coordinate> {
+    let (x1, y1) = (antenna.x as isize, antenna.y as isize);
+    let (x2, y2) = (other_antenna.x as isize, other_antenna.y as isize);
+
+    let new_x = x2 - (x1 - x2);
+    let new_y = y2 - (y1 - y2);
+
+    if new_x >= 0 && new_y >= 0 {
+        return Some(Coordinate::new(new_x as usize, new_y as usize));
+    }
+
+    None
+}

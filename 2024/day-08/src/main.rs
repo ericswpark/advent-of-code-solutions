@@ -103,7 +103,7 @@ impl Coordinate {
     }
 }
 
-fn get_antenna_positions(map: &Vec<Vec<char>>) -> HashMap<char, HashSet<Coordinate>> {
+fn get_antenna_positions(map: &[Vec<char>]) -> HashMap<char, HashSet<Coordinate>> {
     let mut position_mapping = HashMap::new();
 
     for (y, row) in map.iter().enumerate() {

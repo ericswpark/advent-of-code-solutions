@@ -58,7 +58,7 @@ mod tests {
     }
 
     #[test]
-    fn extended_test_T_antennas() {
+    fn extended_test_t_antennas() {
         let input: Vec<String> = String::from(
             "T.........
 ...T......

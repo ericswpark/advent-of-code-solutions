@@ -105,9 +105,9 @@ fn get_antenna_positions(map: &Vec<Vec<char>>) -> HashMap<char, HashSet<Coordina
 /// from two antennas you need to call this function again with the antennas
 /// swapped.
 ///
-/// Antennas are guaranteed to have correct `usize` values but may be out of bounds
-/// in terms of the map. If the `usize` constraint is not met then this function
-/// returns `None`.
+/// The antinode is guaranteed to have correct `usize` values but may be out of
+/// bounds in terms of the map. If the `usize` constraint is not met then this
+/// function returns `None`.
 fn get_antinode(antenna: Coordinate, other_antenna: Coordinate) -> Option<Coordinate> {
     let (x1, y1) = (antenna.x as isize, antenna.y as isize);
     let (x2, y2) = (other_antenna.x as isize, other_antenna.y as isize);

@@ -7,7 +7,7 @@ mod tests {
     fn sample_input() {
         let input = get_input("sample-input.txt");
         assert_eq!(part_1(&input), 50);
-        //assert_eq!(part_2(&input), 25272);
+        assert_eq!(part_2(&input), 24);
     }
 
     #[test]

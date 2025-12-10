@@ -1,6 +1,7 @@
 use rayon::prelude::*;
 use std::{
     collections::{BinaryHeap, HashSet},
+    ops::Range,
     time::Instant,
 };
 
@@ -43,13 +44,13 @@ fn part_2(input: &[String]) -> i64 {
     let seen_points: HashSet<Point> = HashSet::from_iter(points.iter().cloned());
 
     points
-        .par_iter()
+        .iter()
         .enumerate()
-        .map(|(index, point)| {
+        .map(|(index, &point)| {
             points
-                .par_iter()
+                .iter()
                 .skip(index + 1)
-                .map(|other_point| {
+                .map(|&other_point| {
                     let pair1 = Point {
                         x: point.x,
                         y: other_point.y,
@@ -76,17 +77,15 @@ fn part_2(input: &[String]) -> i64 {
                         {
                             // Check if there are any points within the rectangle formed
                             let x_range = pair1.x.min(pair2.x) + 1..pair1.x.max(pair2.x);
-                            let y_range = pair1.y.min(pair2.y) + 1..pair2.y.max(pair2.y);
-
-                            for x in x_range {
-                                for y in y_range.clone() {
-                                    if points.contains(&Point { x, y }) {
-                                        // This rectangle cannot be formed
-                                        return -1;
-                                    }
-                                }
+                            let y_range = pair1.y.min(pair2.y) + 1..pair1.y.max(pair2.y);
+                            if points
+                                .iter()
+                                .any(|&check_point| within_range(&x_range, &y_range, &check_point))
+                            {
+                                return -1;
                             }
-                            // This rectangle can be formed, update max area
+
+                            // This rectangle can be formed
                             return calculate_area(&point, &other_point);
                         }
                     } else if seen_points.contains(&pair2) {
@@ -106,17 +105,15 @@ fn part_2(input: &[String]) -> i64 {
                         {
                             // Check if there are any points within the rectangle formed
                             let x_range = pair1.x.min(pair2.x) + 1..pair1.x.max(pair2.x);
-                            let y_range = pair1.y.min(pair2.y) + 1..pair2.y.max(pair2.y);
-
-                            for x in x_range {
-                                for y in y_range.clone() {
-                                    if points.contains(&Point { x, y }) {
-                                        // This rectangle cannot be formed
-                                        return -1;
-                                    }
-                                }
+                            let y_range = pair1.y.min(pair2.y) + 1..pair1.y.max(pair2.y);
+                            if points
+                                .iter()
+                                .any(|&check_point| within_range(&x_range, &y_range, &check_point))
+                            {
+                                return -1;
                             }
-                            // This rectangle can be formed, update max area
+
+                            // This rectangle can be formed
                             return calculate_area(&point, &other_point);
                         }
                     }
@@ -151,4 +148,12 @@ fn calculate_area(point1: &Point, point2: &Point) -> i64 {
     let dx = point1.x.abs_diff(point2.x);
     let dy = point1.y.abs_diff(point2.y);
     ((dx + 1) * (dy + 1)) as i64
+}
+
+fn within_range(
+    x_range: &std::ops::Range<i64>,
+    y_range: &std::ops::Range<i64>,
+    point: &Point,
+) -> bool {
+    x_range.contains(&point.x) && y_range.contains(&point.y)
 }

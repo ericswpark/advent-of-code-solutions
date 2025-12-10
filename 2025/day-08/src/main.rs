@@ -28,7 +28,26 @@ fn part_1(input: &[String]) -> i64 {
 }
 
 fn part_2(input: &[String]) -> i64 {
-    todo!();
+    let boxes = read_junction_boxes(input);
+    let mut distance_pairs = get_distance_pairs(&boxes);
+    let mut circuits = QuickUnionUf::<UnionBySize>::new(boxes.len());
+
+    let last_connecting_pair: Option<DistancePair>;
+    loop {
+        let min = distance_pairs.pop().unwrap();
+        circuits.union(min.first, min.second);
+
+        if circuits.get(min.first).size() == boxes.len() {
+            // We've reached the box that connects everything together
+            last_connecting_pair = Some(min);
+            break;
+        }
+    }
+
+    let first_box = boxes[last_connecting_pair.unwrap().first];
+    let second_box = boxes[last_connecting_pair.unwrap().second];
+
+    first_box.x * second_box.x
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

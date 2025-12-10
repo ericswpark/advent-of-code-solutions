@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::{
     collections::{BinaryHeap, HashSet},
     time::Instant,
@@ -42,11 +43,11 @@ fn part_2(input: &[String]) -> i64 {
     let seen_points: HashSet<Point> = HashSet::from_iter(points.iter().cloned());
 
     points
-        .iter()
+        .par_iter()
         .enumerate()
         .map(|(index, point)| {
             points
-                .iter()
+                .par_iter()
                 .skip(index + 1)
                 .map(|other_point| {
                     let pair1 = Point {

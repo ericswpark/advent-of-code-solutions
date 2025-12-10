@@ -41,84 +41,91 @@ fn part_2(input: &[String]) -> i64 {
     let points = parse_points(input);
     let seen_points: HashSet<Point> = HashSet::from_iter(points.iter().cloned());
 
-    let mut max_area = 0;
+    points
+        .iter()
+        .enumerate()
+        .map(|(index, point)| {
+            points
+                .iter()
+                .skip(index + 1)
+                .map(|other_point| {
+                    let pair1 = Point {
+                        x: point.x,
+                        y: other_point.y,
+                    };
+                    let pair2 = Point {
+                        x: other_point.x,
+                        y: point.y,
+                    };
+                    // Find connecting point
+                    if seen_points.contains(&pair1) {
+                        // See if there is some point further away than the other pair
+                        if (pair1.x > pair2.x
+                            && pair1.y > pair2.y
+                            && points.iter().any(|&p| p.x <= pair2.x && p.y <= pair2.y))
+                            || (pair1.x > pair2.x
+                                && pair1.y < pair2.y
+                                && points.iter().any(|&p| p.x <= pair2.x && p.y >= pair2.y))
+                            || (pair1.x < pair2.x
+                                && pair1.y > pair2.y
+                                && points.iter().any(|&p| p.x >= pair2.x && p.y <= pair2.y))
+                            || (pair1.x < pair2.x
+                                && pair1.y < pair2.y
+                                && points.iter().any(|&p| p.x >= pair2.x && p.y >= pair2.y))
+                        {
+                            // Check if there are any points within the rectangle formed
+                            let x_range = pair1.x.min(pair2.x) + 1..pair1.x.max(pair2.x);
+                            let y_range = pair1.y.min(pair2.y) + 1..pair2.y.max(pair2.y);
 
-    for (index, point) in points.iter().enumerate() {
-        for other_point in points.iter().skip(index + 1) {
-            let pair1 = Point {
-                x: point.x,
-                y: other_point.y,
-            };
-            let pair2 = Point {
-                x: other_point.x,
-                y: point.y,
-            };
-            // Find connecting point
-            if seen_points.contains(&pair1) {
-                // See if there is some point further away than the other pair
-                if (pair1.x > pair2.x
-                    && pair1.y > pair2.y
-                    && points.iter().any(|&p| p.x <= pair2.x && p.y <= pair2.y))
-                    || (pair1.x > pair2.x
-                        && pair1.y < pair2.y
-                        && points.iter().any(|&p| p.x <= pair2.x && p.y >= pair2.y))
-                    || (pair1.x < pair2.x
-                        && pair1.y > pair2.y
-                        && points.iter().any(|&p| p.x >= pair2.x && p.y <= pair2.y))
-                    || (pair1.x < pair2.x
-                        && pair1.y < pair2.y
-                        && points.iter().any(|&p| p.x >= pair2.x && p.y >= pair2.y))
-                {
-                    // Check if there are any points within the rectangle formed
-                    let x_range = pair1.x.min(pair2.x) + 1..pair1.x.max(pair2.x);
-                    let y_range = pair1.y.min(pair2.y) + 1..pair2.y.max(pair2.y);
-
-                    for x in x_range {
-                        for y in y_range.clone() {
-                            if points.contains(&Point { x, y }) {
-                                // This rectangle cannot be formed
-                                continue;
+                            for x in x_range {
+                                for y in y_range.clone() {
+                                    if points.contains(&Point { x, y }) {
+                                        // This rectangle cannot be formed
+                                        return -1;
+                                    }
+                                }
                             }
+                            // This rectangle can be formed, update max area
+                            return calculate_area(&point, &other_point);
+                        }
+                    } else if seen_points.contains(&pair2) {
+                        // See if there is some point further away than the other pair
+                        if (pair1.x > pair2.x
+                            && pair1.y > pair2.y
+                            && points.iter().any(|&p| p.x >= pair1.x && p.y >= pair1.y))
+                            || (pair1.x > pair2.x
+                                && pair1.y < pair2.y
+                                && points.iter().any(|&p| p.x >= pair1.x && p.y <= pair1.y))
+                            || (pair1.x < pair2.x
+                                && pair1.y > pair2.y
+                                && points.iter().any(|&p| p.x <= pair1.x && p.y >= pair1.y))
+                            || (pair1.x < pair2.x
+                                && pair1.y < pair2.y
+                                && points.iter().any(|&p| p.x <= pair1.x && p.y <= pair1.y))
+                        {
+                            // Check if there are any points within the rectangle formed
+                            let x_range = pair1.x.min(pair2.x) + 1..pair1.x.max(pair2.x);
+                            let y_range = pair1.y.min(pair2.y) + 1..pair2.y.max(pair2.y);
+
+                            for x in x_range {
+                                for y in y_range.clone() {
+                                    if points.contains(&Point { x, y }) {
+                                        // This rectangle cannot be formed
+                                        return -1;
+                                    }
+                                }
+                            }
+                            // This rectangle can be formed, update max area
+                            return calculate_area(&point, &other_point);
                         }
                     }
-                    // This rectangle can be formed, update max area
-                    max_area = max_area.max(calculate_area(&point, &other_point));
-                }
-            } else if seen_points.contains(&pair2) {
-                // See if there is some point further away than the other pair
-                if (pair1.x > pair2.x
-                    && pair1.y > pair2.y
-                    && points.iter().any(|&p| p.x >= pair1.x && p.y >= pair1.y))
-                    || (pair1.x > pair2.x
-                        && pair1.y < pair2.y
-                        && points.iter().any(|&p| p.x >= pair1.x && p.y <= pair1.y))
-                    || (pair1.x < pair2.x
-                        && pair1.y > pair2.y
-                        && points.iter().any(|&p| p.x <= pair1.x && p.y >= pair1.y))
-                    || (pair1.x < pair2.x
-                        && pair1.y < pair2.y
-                        && points.iter().any(|&p| p.x <= pair1.x && p.y <= pair1.y))
-                {
-                    // Check if there are any points within the rectangle formed
-                    let x_range = pair1.x.min(pair2.x) + 1..pair1.x.max(pair2.x);
-                    let y_range = pair1.y.min(pair2.y) + 1..pair2.y.max(pair2.y);
-
-                    for x in x_range {
-                        for y in y_range.clone() {
-                            if points.contains(&Point { x, y }) {
-                                // This rectangle cannot be formed
-                                continue;
-                            }
-                        }
-                    }
-                    // This rectangle can be formed, update max area
-                    max_area = max_area.max(calculate_area(&point, &other_point));
-                }
-            }
-        }
-    }
-
-    max_area
+                    -1
+                })
+                .max()
+                .unwrap_or(-1)
+        })
+        .max()
+        .unwrap()
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -1,5 +1,8 @@
 use helpers::*;
 
+use good_lp::{
+    Expression, Solution, SolverModel, Variable, constraint, default_solver, variable, variables,
+};
 use itertools::Itertools;
 
 mod tests;
@@ -8,11 +11,14 @@ aoc_main!();
 
 fn part_1(input: &[String]) -> i64 {
     let machines = parse_machines(input);
-    machines.iter().map(get_least_presses).sum()
+    machines.iter().map(get_least_presses_indicators).sum()
 }
 
 fn part_2(input: &[String]) -> i64 {
-    todo!();
+    parse_machines(input)
+        .iter()
+        .map(get_least_presses_joltage)
+        .sum()
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -115,7 +121,7 @@ fn parse_machine(line: &String) -> Machine {
     }
 }
 
-fn get_least_presses(machine: &Machine) -> i64 {
+fn get_least_presses_indicators(machine: &Machine) -> i64 {
     machine
         .button_wirings
         .iter()
@@ -137,4 +143,42 @@ fn get_least_presses(machine: &Machine) -> i64 {
         })
         .min()
         .unwrap()
+}
+
+fn get_least_presses_joltage(machine: &Machine) -> i64 {
+    let counter_count = machine.joltage_requirements.len();
+    let button_count = machine.button_wirings.len();
+
+    // Create variables for buttons
+    variables! {vars: 0 <= x[button_count] (integer) ; }
+
+    // Keep track of what button causes counter to go up
+    let mut counter_changing_button_indices = vec![vec![]; counter_count];
+    for (index, button_wiring) in machine.button_wirings.iter().enumerate() {
+        button_wiring.into_iter().for_each(|button| {
+            counter_changing_button_indices[button].push(index);
+        });
+    }
+
+    let mut constraints = Vec::new();
+    for (counter_index, button_indices) in counter_changing_button_indices.iter().enumerate() {
+        let joltage = button_indices
+            .iter()
+            .map(|&index| x[index])
+            .sum::<Expression>();
+        constraints.push(constraint!(
+            joltage == machine.joltage_requirements[counter_index] as f64
+        ));
+    }
+
+    let solution = vars
+        .minimise(x.iter().sum::<Expression>())
+        .using(default_solver)
+        .with_all(constraints)
+        .solve()
+        .unwrap();
+
+    (0..button_count)
+        .map(|index| solution.value(x[index]) as i64)
+        .sum()
 }

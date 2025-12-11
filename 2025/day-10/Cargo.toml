@@ -6,5 +6,6 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+good_lp = "1.14.2"
 helpers = { path = "../../helpers" }
 itertools = "0.14.0"

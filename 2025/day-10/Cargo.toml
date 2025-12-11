@@ -6,6 +6,6 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-good_lp = "1.14.2"
+good_lp = { version = "1.14.2", features = ["scip", "scip_bundled"], default-features = false }
 helpers = { path = "../../helpers" }
 itertools = "0.14.0"

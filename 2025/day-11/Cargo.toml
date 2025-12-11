@@ -7,3 +7,4 @@ edition = "2024"
 
 [dependencies]
 helpers = { path = "../../helpers" }
+memoize = "0.5.1"

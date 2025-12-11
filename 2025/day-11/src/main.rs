@@ -1,4 +1,5 @@
-use std::collections::{HashMap, HashSet};
+use memoize::memoize;
+use std::collections::{BTreeMap, HashSet};
 
 use helpers::*;
 
@@ -8,68 +9,47 @@ aoc_main!();
 
 fn part_1(input: &[String]) -> i64 {
     let network = construct_graph(input);
-
-    // Perform modified DFS starting from "you" node to "out" node
-    let mut stack = Vec::new();
-    let mut path_count = 0;
-    stack.push(network.nodes["you"]);
-    while let Some(current_node) = stack.pop() {
-        let neighbors = &network.edges[current_node];
-        for neighbor in neighbors {
-            // If the neighbor is "out", increment path count instead of adding to stack
-            if neighbor == &network.nodes["out"] {
-                path_count += 1;
-            } else {
-                stack.push(*neighbor);
-            }
-        }
-    }
-
-    path_count
+    let you_index = network.nodes["you"];
+    let out_index = network.nodes["out"];
+    get_path_count(network, you_index, out_index)
 }
 
 fn part_2(input: &[String]) -> i64 {
     let network = construct_graph(input);
 
-    // Perform modified DFS starting from "svr" node to "out" node
-    let mut stack = Vec::new();
-    let mut path_count = 0;
-    stack.push(vec![String::from("svr")]);
-    while let Some(current_path) = stack.pop() {
-        let current_node = current_path.last().unwrap();
-        let current_node_index = network.nodes[current_node];
-        let neighbors = &network.edges[current_node_index];
-        for neighbor_index in neighbors {
-            // If the neighbor is "out", and we pass through both "fft" and "dac"
-            if neighbor_index == &network.nodes["out"]
-                && current_path.contains(&String::from("fft"))
-                && current_path.contains(&String::from("dac"))
-            {
-                // This path is valid
-                path_count += 1;
-            } else {
-                // Add neighbor to path chain and push to stack
-                let neighbor = &network.node_indices[neighbor_index];
-                let mut new_path = current_path.clone();
-                new_path.push(neighbor.clone());
-                stack.push(new_path);
-            }
-        }
-    }
+    // Get all indices
+    let svr_index = network.nodes["svr"];
+    let fft_index = network.nodes["fft"];
+    let dac_index = network.nodes["dac"];
+    let out_index = network.nodes["out"];
+
+    // Two cases
+    // svr -> fft -> dac -> out
+    let svr_to_fft = get_path_count(network.clone(), svr_index, fft_index);
+    let fft_to_dac = get_path_count(network.clone(), fft_index, dac_index);
+    let dac_to_out = get_path_count(network.clone(), dac_index, out_index);
+    let svr_fft_dac_out = svr_to_fft * fft_to_dac * dac_to_out;
+
+    // svr -> dac -> fft -> out
+    let svr_to_dac = get_path_count(network.clone(), svr_index, dac_index);
+    let dac_to_fft = get_path_count(network.clone(), dac_index, fft_index);
+    let fft_to_out = get_path_count(network.clone(), fft_index, out_index);
+    let svr_dac_fft_out = svr_to_dac * dac_to_fft * fft_to_out;
+
+    // Total path count
+    let path_count = svr_fft_dac_out + svr_dac_fft_out;
 
     path_count
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Graph {
-    nodes: HashMap<String, usize>,
-    node_indices: HashMap<usize, String>,
+    nodes: BTreeMap<String, usize>,
     edges: Vec<Vec<usize>>,
 }
 
 fn construct_graph(input: &[String]) -> Graph {
-    let mut nodes: HashMap<String, usize> = HashMap::new();
-    let mut node_indices: HashMap<usize, String> = HashMap::new();
+    let mut nodes: BTreeMap<String, usize> = BTreeMap::new();
     let mut edges = Vec::new();
     let mut seen_nodes: HashSet<String> = HashSet::new();
 
@@ -77,40 +57,23 @@ fn construct_graph(input: &[String]) -> Graph {
         let parts: Vec<&str> = line.split(": ").collect();
         let node = parts[0].to_string();
 
-        check_and_insert_node(
-            &node,
-            &mut nodes,
-            &mut node_indices,
-            &mut edges,
-            &mut seen_nodes,
-        );
+        check_and_insert_node(&node, &mut nodes, &mut edges, &mut seen_nodes);
 
         let neighbors: Vec<String> = parts[1].split(" ").map(|s| s.to_string()).collect();
         neighbors.iter().for_each(|neighbor| {
-            check_and_insert_node(
-                neighbor,
-                &mut nodes,
-                &mut node_indices,
-                &mut edges,
-                &mut seen_nodes,
-            );
+            check_and_insert_node(neighbor, &mut nodes, &mut edges, &mut seen_nodes);
             let node_index = nodes[&node];
             let neighbor_index = nodes[neighbor];
             edges[node_index].push(neighbor_index);
         });
     }
 
-    Graph {
-        nodes,
-        node_indices,
-        edges,
-    }
+    Graph { nodes, edges }
 }
 
 fn check_and_insert_node(
     node: &String,
-    nodes: &mut HashMap<String, usize>,
-    node_indices: &mut HashMap<usize, String>,
+    nodes: &mut BTreeMap<String, usize>,
     edges: &mut Vec<Vec<usize>>,
     seen_nodes: &mut HashSet<String>,
 ) {
@@ -118,7 +81,21 @@ fn check_and_insert_node(
         seen_nodes.insert(node.clone());
         let index = nodes.len();
         nodes.insert(node.clone(), index);
-        node_indices.insert(index, node.clone());
         edges.push(Vec::new());
     }
+}
+
+#[memoize]
+fn get_path_count(network: Graph, start: usize, end: usize) -> i64 {
+    let mut path_count = 0;
+    let neighbors = &network.edges[start];
+    for neighbor in neighbors {
+        if *neighbor == end {
+            return 1;
+        } else {
+            path_count += get_path_count(network.clone(), *neighbor, end)
+        }
+    }
+
+    path_count
 }

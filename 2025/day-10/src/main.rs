@@ -76,10 +76,10 @@ impl<'a> Iterator for ButtonWiringIterator<'a> {
 }
 
 fn parse_machines(input: &[String]) -> Vec<Machine> {
-    input.iter().map(parse_machine).collect()
+    input.iter().map(|s| parse_machine(s)).collect()
 }
 
-fn parse_machine(line: &String) -> Machine {
+fn parse_machine(line: &str) -> Machine {
     let mut parts = line.split_whitespace().peekable();
 
     // Get indicators

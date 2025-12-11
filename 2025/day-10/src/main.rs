@@ -1,12 +1,13 @@
 use helpers::*;
 
+use itertools::Itertools;
+
 mod tests;
 
 aoc_main!();
 
 fn part_1(input: &[String]) -> i64 {
     let machines = parse_machines(input);
-
     machines.iter().map(get_least_presses).sum()
 }
 
@@ -36,6 +37,37 @@ struct ButtonWiring(Vec<usize>);
 impl FromIterator<usize> for ButtonWiring {
     fn from_iter<T: IntoIterator<Item = usize>>(iter: T) -> Self {
         Self(iter.into_iter().collect())
+    }
+}
+
+impl<'a> IntoIterator for &'a ButtonWiring {
+    type Item = usize;
+    type IntoIter = ButtonWiringIterator<'a>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        ButtonWiringIterator {
+            button_wiring: self,
+            index: 0,
+        }
+    }
+}
+
+struct ButtonWiringIterator<'a> {
+    button_wiring: &'a ButtonWiring,
+    index: usize,
+}
+
+impl<'a> Iterator for ButtonWiringIterator<'a> {
+    type Item = usize;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index < self.button_wiring.0.len() {
+            let button = self.button_wiring.0[self.index];
+            self.index += 1;
+            Some(button)
+        } else {
+            None
+        }
     }
 }
 
@@ -84,5 +116,25 @@ fn parse_machine(line: &String) -> Machine {
 }
 
 fn get_least_presses(machine: &Machine) -> i64 {
-    todo!();
+    machine
+        .button_wirings
+        .iter()
+        .powerset()
+        .flat_map(|method| {
+            let mut current_indicators = vec![false; machine.indicators.0.len()];
+
+            for &wiring in &method {
+                for button in wiring {
+                    current_indicators[button] = !current_indicators[button];
+                }
+            }
+
+            if machine.indicators.0 == current_indicators {
+                Some(method.len() as i64)
+            } else {
+                None
+            }
+        })
+        .min()
+        .unwrap()
 }

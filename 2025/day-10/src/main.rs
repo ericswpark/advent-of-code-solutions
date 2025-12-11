@@ -1,8 +1,6 @@
 use helpers::*;
 
-use good_lp::{
-    Expression, Solution, SolverModel, Variable, constraint, default_solver, variable, variables,
-};
+use good_lp::{Expression, Solution, SolverModel, constraint, default_solver, variables};
 use itertools::Itertools;
 
 mod tests;

@@ -6,7 +6,8 @@ aoc_main!();
 
 fn part_1(input: &[String]) -> i64 {
     let machines = parse_machines(input);
-    todo!();
+
+    machines.iter().map(get_least_presses).sum()
 }
 
 fn part_2(input: &[String]) -> i64 {
@@ -80,4 +81,8 @@ fn parse_machine(line: &String) -> Machine {
         button_wirings,
         joltage_requirements,
     }
+}
+
+fn get_least_presses(machine: &Machine) -> i64 {
+    todo!();
 }

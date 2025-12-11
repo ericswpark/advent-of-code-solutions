@@ -1,5 +1,30 @@
-use std::io::{stdin, stdout, Write};
+use std::io::{Write, stdin, stdout};
 use std::{env, fs};
+
+#[macro_export]
+macro_rules! aoc_main {
+    () => {
+        fn main() {
+            use std::time::Instant;
+
+            let input = get_input(&get_path_from_arg());
+
+            let start_time = Instant::now();
+
+            let part_1_answer = part_1(&input);
+            println!("Part 1 answer: {part_1_answer}");
+            let part_1_elapsed = start_time.elapsed();
+            println!("Part 1 time: {:.2?}", part_1_elapsed);
+
+            let part_2_answer = part_2(&input);
+            println!("Part 2 answer: {part_2_answer}");
+            let part_2_elapsed = start_time.elapsed() - part_1_elapsed;
+            println!("Part 2 time: {:.2?}", part_2_elapsed);
+
+            println!("Total time: {:.2?}", start_time.elapsed());
+        }
+    };
+}
 
 pub fn get_path_from_arg() -> String {
     let mut args: Vec<String> = env::args().collect();

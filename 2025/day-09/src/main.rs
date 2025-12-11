@@ -49,12 +49,6 @@ fn part_2(input: &[String]) -> i64 {
                     if edges.iter().any(|&edge| edge.intersects(&point1, &point2)) {
                         -1
                     } else {
-                        println!(
-                            "Found rectangle at {:?}-{:?} with area {}",
-                            point1,
-                            point2,
-                            calculate_area(&point1, &point2)
-                        );
                         calculate_area(&point1, &point2)
                     }
                 })

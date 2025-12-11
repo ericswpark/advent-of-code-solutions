@@ -10,12 +10,15 @@ fn main() {
     let start_time = Instant::now();
     let part_1_answer = part_1(&input);
     println!("Part 1 answer: {part_1_answer}");
+    let part_1_elapsed = start_time.elapsed();
+    println!("Part 1 time: {:.2?}", part_1_elapsed);
 
     let part_2_answer = part_2(&input);
     println!("Part 2 answer: {part_2_answer}");
+    let part_2_elapsed = start_time.elapsed() - part_1_elapsed;
+    println!("Part 2 time: {:.2?}", part_2_elapsed);
 
-    let elapsed_time = start_time.elapsed();
-    println!("Time: {:.2?}", elapsed_time);
+    println!("Total time: {:.2?}", start_time.elapsed());
 }
 
 fn part_1(input: &[String]) -> i64 {

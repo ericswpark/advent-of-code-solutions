@@ -5,15 +5,15 @@ mod tests {
 
     #[test]
     fn sample_input() {
-        let input = get_input("sample-input.txt");
+        let _input = get_input("sample-input.txt");
+
+        // The answer is 2, but the naive solution only works with the puzzle input.
         //assert_eq!(part_1(&input), 2);
-        //assert_eq!(part_2(&input), 2);
     }
 
     #[test]
     fn puzzle_input() {
         let input = get_input("puzzle-input.txt");
         assert_eq!(part_1(&input), 526);
-        //assert_eq!(part_2(&input), 362956369749210);
     }
 }

@@ -32,7 +32,7 @@ fn parse_puzzledata(input: &[String]) -> PuzzleData {
     while let Some(line) = iterator.next() {
         let parts = line.split(":").collect::<Vec<_>>();
 
-        if parts[1] == "" {
+        if parts[1].is_empty() {
             // Next couple of lines will be a shape definition
             let shape = iterator
                 .by_ref()

@@ -7,38 +7,17 @@ aoc_main!();
 fn part_1(input: &[String]) -> i64 {
     let puzzle_data = parse_puzzledata(input);
 
-    let mut satisfied = 0;
-
-    for region in puzzle_data.regions {
-        let mut queue = Vec::new();
-
-        // Put all shape indices in queue
-        for (index, entry) in region.requirements.iter().enumerate() {
-            for _ in 0..*entry {
-                queue.push(index);
+    puzzle_data
+        .regions
+        .iter()
+        .map(|region| {
+            if check_fit(region, &puzzle_data.shapes) {
+                1
+            } else {
+                0
             }
-        }
-
-        // Generate 2D map of region
-        let mut map = vec![vec![false; region.dimensions.1]; region.dimensions.0];
-
-        // Until we run out of items in the queue, try stuffing them into the map
-        while let Some(shape_index) = queue.pop() {
-            let shape = &puzzle_data.shapes[shape_index];
-
-            // Try placing shape on map
-            todo!();
-
-            // If shape does not fit, push back into queue and quit early
-            todo!();
-        }
-
-        if queue.is_empty() {
-            satisfied += 1;
-        }
-    }
-
-    satisfied
+        })
+        .sum()
 }
 
 fn part_2(input: &[String]) -> i64 {
@@ -101,4 +80,42 @@ fn parse_puzzledata(input: &[String]) -> PuzzleData {
     }
 
     PuzzleData { shapes, regions }
+}
+
+/// Check if a region can be filled with the given shapes
+fn check_fit(region: &Region, shapes: &[Shape]) -> bool {
+    let mut shapes_left_queue = Vec::new();
+
+    // Put all shape indices in queue
+    for (index, entry) in region.requirements.iter().enumerate() {
+        for _ in 0..*entry {
+            shapes_left_queue.push(index);
+        }
+    }
+    
+    // TODO: add possibility stack for backtracking
+    // For every spot on the map where the shape can be placed, place it and push
+    // into queue. Also consider rotating shape placement.
+    // This is probably going to be slow as fuck but I can't think of a better way
+    // at 12:42, come back to it later
+    todo!();
+
+    // Generate 2D map of region
+    let mut map = vec![vec![false; region.dimensions.1]; region.dimensions.0];
+
+    // Until we run out of items in the queue, try stuffing them into the map
+    while let Some(shape_index) = shapes_left_queue.pop() {
+        let shape = &shapes[shape_index];
+
+        // Try placing shape on map
+        todo!();
+
+        // If shape does not fit, push back into queue and quit early
+        todo!();
+    }
+
+    if shapes_left_queue.is_empty() {
+        return true;
+    }
+    false
 }

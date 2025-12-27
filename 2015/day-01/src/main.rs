@@ -2,29 +2,21 @@ mod tests;
 
 use helpers::*;
 
-fn main() {
-    let input = get_input(&get_path_from_arg());
+aoc_main!();
 
-    let part_1_answer = part_1(&input);
-    println!("Part 1 answer: {part_1_answer}");
-
-    let part_2_answer = part_2(&input);
-    println!("Part 2 answer: {part_2_answer}");
-}
-
-fn part_1(input: &[String]) -> i32 {
+fn part_1(input: &[String]) -> i64 {
     let input = &input[0];
 
     get_level(input)
 }
 
-fn part_2(input: &[String]) -> usize {
+fn part_2(input: &[String]) -> i64 {
     let input = &input[0];
 
     get_basement_position(input) + 1
 }
 
-fn get_level(input: &str) -> i32 {
+fn get_level(input: &str) -> i64 {
     let mut level = 0;
     for c in input.chars() {
         if c == '(' {
@@ -36,7 +28,7 @@ fn get_level(input: &str) -> i32 {
     level
 }
 
-fn get_basement_position(input: &str) -> usize {
+fn get_basement_position(input: &str) -> i64 {
     let mut level = 0;
     for (index, c) in input.chars().enumerate() {
         if c == '(' {
@@ -46,7 +38,7 @@ fn get_basement_position(input: &str) -> usize {
         }
 
         if level < 0 {
-            return index;
+            return index as i64;
         }
     }
     panic!("No basement level")

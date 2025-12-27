@@ -21,7 +21,19 @@ fn part_1(input: &[String]) -> i64 {
 }
 
 fn part_2(input: &[String]) -> i64 {
-    todo!();
+    let mut total = 0;
+
+    for line in input {
+        let Dimension((l, w, h)) = parse_dimensions(line);
+        let mut dims = [l, w, h];
+        dims.sort();
+        let wrap_length = dims.iter().take(2).sum::<i64>() * 2;
+        let bow_length = l * w * h;
+
+        total += wrap_length + bow_length;
+    }
+
+    total
 }
 
 #[derive(Debug, Clone, Copy)]

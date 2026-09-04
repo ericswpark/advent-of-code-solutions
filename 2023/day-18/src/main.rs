@@ -25,7 +25,12 @@ fn part_1(input: &Vec<String>) -> i64 {
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
-    todo!();
+    let digsteps = get_digsteps(input).expect("Failed to parse digsteps");
+    let digsteps = get_corrected_digsteps(&digsteps);
+
+    let coordinates = get_coordinates(&digsteps);
+
+    calculate_polygon_area(&coordinates) + (calculate_perimeter_length(&digsteps) / 2 + 1)
 }
 
 fn get_digsteps(input: &Vec<String>) -> Result<Vec<DigStep>, String> {
@@ -88,4 +93,29 @@ fn calculate_polygon_area(coordinates: &[Coordinates]) -> i64 {
 
 fn calculate_perimeter_length(digsteps: &[DigStep]) -> i64 {
     digsteps.iter().map(|d| d.length).sum::<usize>() as i64
+}
+
+fn get_corrected_digsteps(digsteps: &[DigStep]) -> Vec<DigStep> {
+    let mut corrected_digsteps = vec![];
+
+    for step in digsteps {
+        let hex_length: String = step.color.chars().take(5).collect();
+        let direction = step.color.chars().last().unwrap();
+
+        let direction = match direction {
+            '0' => Right,
+            '1' => Down,
+            '2' => Left,
+            '3' => Up,
+            _ => panic!("Invalid direction in color part"),
+        };
+
+        corrected_digsteps.push(DigStep {
+            direction,
+            length: usize::from_str_radix(&hex_length, 16).expect("Invalid length in color part"),
+            color: String::new(),
+        })
+    }
+
+    corrected_digsteps
 }

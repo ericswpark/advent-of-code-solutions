@@ -1,10 +1,10 @@
+mod digstep;
+mod direction;
 mod tests;
 
-use std::{collections::VecDeque, str::FromStr};
-
+use digstep::DigStep;
+use direction::Direction::*;
 use helpers::*;
-
-use Direction::*;
 
 fn main() {
     let input = get_input(&get_path_from_arg());
@@ -18,8 +18,10 @@ fn main() {
 
 fn part_1(input: &Vec<String>) -> i64 {
     let digsteps = get_digsteps(input).expect("Failed to parse digsteps");
-    
-    get_inner_count(&map.terrain) as i64
+
+    let coordinates = get_coordinates(&digsteps);
+
+    calculate_polygon_area(&coordinates) + (calculate_perimeter_length(&digsteps) / 2 + 1)
 }
 
 fn part_2(input: &Vec<String>) -> i64 {
@@ -30,197 +32,60 @@ fn get_digsteps(input: &Vec<String>) -> Result<Vec<DigStep>, String> {
     input.iter().map(|s| s.parse()).collect()
 }
 
-struct Map {
-    width: usize,
-    height: usize,
-    x: usize,
-    y: usize,
-    terrain: VecDeque<VecDeque<bool>>,
-}
+fn get_coordinates(digsteps: &[DigStep]) -> Vec<Coordinates> {
+    let mut coords = vec![];
+    let mut x: i64 = 0;
+    let mut y: i64 = 0;
 
-impl Map {
-    fn new() -> Self {
-        Self {
-            width: 1,
-            height: 1,
-            x: 0,
-            y: 0,
-            terrain: VecDeque::from([VecDeque::from([true])]),
-        }
-    }
-
-    fn from_digsteps(digsteps: &[DigStep]) -> Map {
-        let mut map = Self::new();
-        for step in digsteps {
-            for _ in 0..step.length {
-                map.move_to(step.direction);
-            }
-        }
-        map
-    }
-
-    fn move_to(&mut self, direction: Direction) {
-        match direction {
+    for step in digsteps {
+        match step.direction {
             Left => {
-                if self.x == 0 {
-                    for row in self.terrain.iter_mut() {
-                        row.push_front(false);
-                    }
-                    self.x += 1;
-                    self.width += 1;
-                }
-                self.x -= 1;
+                x -= step.length as i64;
             }
             Right => {
-                if self.x + 1 >= self.width {
-                    for row in self.terrain.iter_mut() {
-                        row.push_back(false);
-                    }
-                    self.width += 1;
-                }
-                self.x += 1;
+                x += step.length as i64;
             }
             Up => {
-                if self.y == 0 {
-                    self.terrain.push_front(VecDeque::from(
-                        std::iter::repeat(false)
-                            .take(self.width)
-                            .collect::<VecDeque<bool>>(),
-                    ));
-                    self.y += 1;
-                    self.height += 1;
-                }
-                self.y -= 1;
+                y += step.length as i64;
             }
             Down => {
-                if self.y + 1 >= self.height {
-                    self.terrain.push_back(VecDeque::from(
-                        std::iter::repeat(false)
-                            .take(self.width)
-                            .collect::<VecDeque<bool>>(),
-                    ));
-                    self.height += 1;
-                }
-                self.y += 1;
+                y -= step.length as i64;
             }
         }
 
-        self.terrain[self.y][self.x] = true;
-    }
-}
-
-type Terrain = VecDeque<VecDeque<bool>>;
-
-fn print_terrain_debug(terrain: &Terrain) {
-    println!("terrain current state:");
-    for row in terrain.iter() {
-        for cell in row {
-            print!("{}", if *cell { '#' } else { '.' });
-        }
-        println!();
-    }
-}
-
-fn get_inner_count(terrain: &VecDeque<VecDeque<bool>>) -> usize {
-    terrain.iter().map(|row| get_row_inside_counts(&row)).sum()
-}
-
-fn get_row_inside_counts(row: &VecDeque<bool>) -> usize {
-    if row.len() == 0 {
-        return 0;
+        coords.push(Coordinates { x, y })
     }
 
-    let mut count = 0;
-    let mut inside = false;
-    let mut prev_cell: Option<bool> = None;
-    let mut is_in_wall = false;
-
-    for (x, cell) in row.iter().enumerate() {
-        if *cell {
-            if prev_cell.is_none() || !prev_cell.unwrap() {
-                inside = !inside;
-            }
-
-            // Check for wall
-            if x + 1 < row.len() && row[x + 1] {
-                is_in_wall = true;
-            }
-        } else {
-            if is_in_wall {
-                inside = false;
-                is_in_wall = false;
-            }
-        }
-        if inside || *cell {
-            count += 1;
-        }
-
-        prev_cell = Some(*cell);
-        print!("{}", if *cell { '#' } else { '.' });
-    }
-    println!(" {}", count);
-
-    count
-}
-
-#[derive(Debug, Clone)]
-struct DigStep {
-    direction: Direction,
-    length: usize,
-    color: String,
-}
-
-impl FromStr for DigStep {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = s.split(' ').collect();
-        if parts.len() != 3 {
-            return Err("wrong number of parts in dig step".to_string());
-        }
-
-        let direction: Direction = parts[0].parse()?;
-        let length = parts[1]
-            .parse::<usize>()
-            .map_err(|_| "length is not usize".to_string())?;
-        let color: String = parts[2].chars().skip(2).take(parts[2].len() - 3).collect();
-        if color.len() != 6 {
-            return Err("incomplete hex code for color in dig step".to_string());
-        }
-
-        Ok(DigStep {
-            direction,
-            length,
-            color,
-        })
-    }
+    coords
 }
 
 #[derive(Debug, Clone, Copy)]
-enum Direction {
-    Left,
-    Right,
-    Up,
-    Down,
+struct Coordinates {
+    x: i64,
+    y: i64,
 }
 
-impl FromStr for Direction {
-    type Err = String;
+fn calculate_polygon_area(coordinates: &[Coordinates]) -> i64 {
+    let mut first: Option<&Coordinates> = None;
+    let mut iterator = coordinates.iter().peekable();
+    let mut area: i64 = 0;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.len() > 1 {
-            return Err("direction must be one char".to_string());
-        }
-        if let Some(c) = s.chars().next() {
-            match c {
-                'L' => Ok(Self::Left),
-                'R' => Ok(Self::Right),
-                'U' => Ok(Self::Up),
-                'D' => Ok(Self::Down),
-                _ => Err("unknown direction".to_string()),
-            }
+    while let Some(coord) = iterator.next() {
+        let next_coord = if iterator.peek().is_some() {
+            *iterator.peek().unwrap()
         } else {
-            Err("not enough characters".to_string())
+            first.unwrap()
+        };
+        area += coord.x * next_coord.y - next_coord.x * coord.y;
+
+        if first.is_none() {
+            first = Some(coord);
         }
     }
+
+    area.abs() / 2
+}
+
+fn calculate_perimeter_length(digsteps: &[DigStep]) -> i64 {
+    digsteps.iter().map(|d| d.length).sum::<usize>() as i64
 }

@@ -16,7 +16,7 @@ fn main() {
     println!("Part 2 answer: {part_2_answer}");
 }
 
-fn part_1(input: &Vec<String>) -> i64 {
+fn part_1(input: &[String]) -> i64 {
     let digsteps = get_digsteps(input).expect("Failed to parse digsteps");
 
     let coordinates = get_coordinates(&digsteps);
@@ -24,7 +24,7 @@ fn part_1(input: &Vec<String>) -> i64 {
     calculate_polygon_area(&coordinates) + (calculate_perimeter_length(&digsteps) / 2 + 1)
 }
 
-fn part_2(input: &Vec<String>) -> i64 {
+fn part_2(input: &[String]) -> i64 {
     let digsteps = get_digsteps(input).expect("Failed to parse digsteps");
     let digsteps = get_corrected_digsteps(&digsteps);
 
@@ -33,7 +33,7 @@ fn part_2(input: &Vec<String>) -> i64 {
     calculate_polygon_area(&coordinates) + (calculate_perimeter_length(&digsteps) / 2 + 1)
 }
 
-fn get_digsteps(input: &Vec<String>) -> Result<Vec<DigStep>, String> {
+fn get_digsteps(input: &[String]) -> Result<Vec<DigStep>, String> {
     input.iter().map(|s| s.parse()).collect()
 }
 
